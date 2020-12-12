@@ -60,7 +60,7 @@ export class GeolocationService {
   }
 
   getCongregations(long: number, lat: number, language: CongLanguage) : Observable<CongregationData> {
-   let url = `http://localhost:4200/api/weekly-meetings?lowerLatitude=${lat - 0.05}&lowerLongitude=${long - 0.05}&searchLanguageCode=${language.languageCode}&upperLatitude=${lat}&upperLongitude=${long}`;
+   let url = `http://localhost:4200/api/weekly-meetings?lowerLatitude=${lat - 0.1000}&lowerLongitude=${long - 0.1000}&searchLanguageCode=${language.languageCode}&upperLatitude=${lat + 0.1000}&upperLongitude=${long + 0.1000}`;
 
    let request = this.http.get(url).pipe(
     map(data => {

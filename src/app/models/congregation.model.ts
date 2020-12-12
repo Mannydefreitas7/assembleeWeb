@@ -1,3 +1,4 @@
+
 import { Address } from './address.model';
 
 export class Congregation {
@@ -59,7 +60,7 @@ export interface Phone {
 
 export interface Schedule {
    current:     Current;
-   futureDate:  null;
+   futureDate:  Date;
    changeStamp: null;
 }
 

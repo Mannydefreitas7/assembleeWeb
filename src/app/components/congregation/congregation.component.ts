@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { combineAll, debounceTime, distinctUntilChanged, map, windowWhen } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/auth.service';
 import { GeoZip, Place } from 'src/app/models/address.model';
-import { CongLanguage, Congregation, CongregationData } from 'src/app/models/congregation.model';
+import { CongLanguage, Congregation, CongregationData, GeoLocationList } from 'src/app/models/congregation.model';
 import { GeolocationService } from 'src/app/services/geolocation.service';
 import { faLanguage } from '@fortawesome/free-solid-svg-icons';
 
@@ -33,6 +33,7 @@ export class CongregationComponent implements OnInit {
    latitude: number;
    $geoZip: Observable<GeoZip>;
    $congregations: Observable<CongregationData>;
+   selectedCong: GeoLocationList;
    languages: CongLanguage[];
    checkedZip: boolean = false;
    checkedLanguage: boolean = false;
@@ -58,7 +59,8 @@ export class CongregationComponent implements OnInit {
    });
    this.languageForm = this.fb.group({
    languageControl: ['', [
-      Validators.required
+      Validators.required,
+      Validators.minLength(2)
    ]],
    }); 
   }
@@ -82,6 +84,10 @@ export class CongregationComponent implements OnInit {
   selectLanguage() {
       this.checkedLanguage = true;
       this.loadCongregations();
+  }
+
+  selectCongregation(congregation: GeoLocationList) {
+      this.selectedCong = congregation;
   }
 
   loadCongregations() {
