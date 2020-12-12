@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "assemblee-5ddb6": {
+      "hosting": {
+        "assembleeWeb": [
+          "assemblee-5ddb6"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+<div class="container" style="max-width: 400px;">
+
+  <h1 class="font-weight-bold">SIGNUP</h1>
+
+  <div class="d-flex mb-2">
+    <button class="btn btn-primary d-inline-flex align-items-center" (click)="auth.googleSignUp()"><i nz-icon
+        nzType="google"></i> <span class="ml-1">Google Sign In</span></button>
+    <button class="btn btn-dark ml-2 d-inline-flex align-items-center"><i nz-icon nzType="apple"></i> <span
+        class="ml-1">Apple Sign In</span></button>
+  </div>
+
+ 
+  <form [formGroup]="signUpForm">
+    <div class="mb-3">
+      <label for="exampleInputEmail1" class="form-label">Your Name</label>
+      <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Joe Publisher"
+        formControlName="displayName" autocomplete="none">
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" aria-describedby="emailHelp" formControlName="email"
+        placeholder="jose@publisher.com" required autocomplete="none">
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" [type]="hide ? 'password' : 'text'" [formControl]="password">
+    </div>
+    <button type="submit" class="btn btn-primary d-inline-flex align-items-center"
+      (click)="signUp()"><span>Submit</span></button>
+  </form>
+
+</div>

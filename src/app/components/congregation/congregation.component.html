@@ -1,0 +1,73 @@
+<div class="row justify-content-center align-items-center">
+  <div class="col-md-6 col-lg-6 col-sm-10">
+    <div class="card bg-white">
+
+      <div class="card-body">
+        <h4 class="card-title">Congregation Setup</h4>
+        <mat-vertical-stepper #stepper>
+          <mat-step [stepControl]="zipFormGroup">
+            <ng-template matStepLabel>Congregation Location</ng-template>
+            <form [formGroup]="zipFormGroup">
+
+              <div class="mt-2">
+               <label for="zipControl">Enter ZIP</label>
+                <input type="text" class="form-control" id="zipControl" placeholder="10987" formControlName="zipControl"
+                  required (keypress)="checkZIP($event)" (click)="checkZIP($event)" style="max-width: 100px;">
+              </div>
+            </form>
+            <div *ngIf="checkedZip && (zipInput.dirty)">
+              <ng-container *ngIf="$geoZip | async as zip; else loader">
+                <mat-list #places>
+                  <mat-list-item *ngFor="let place of zip.places">
+                    <mat-icon mat-list-icon>location_on</mat-icon>
+                    <div mat-line>{{ place["place name"] }}</div>
+                    <div mat-line> {{ place.state }}, {{ zip.country }}</div>
+                  </mat-list-item>
+                </mat-list>
+                <button class="btn btn-light" matStepperNext (click)="selectPlace()">Next</button>
+              </ng-container>
+
+            </div>
+          </mat-step>
+
+          <mat-step [stepControl]="languageForm">
+            <ng-template matStepLabel>Congregation Language</ng-template>
+            <ng-container *ngIf="languages; else loader">
+              <form [formGroup]="languageForm" class="my-2">
+                <label for="typeahead-format">Select Congregation Language</label>
+                <input id="typeahead-template" type="text" class="form-control" [ngbTypeahead]="search"
+                  [resultTemplate]="rt" formControlName="languageControl" [inputFormatter]="formatter"
+                  placeholder="Type language" [value]="language.value.languageName ? language.value.languageName : null" required />
+              </form>
+              <button class="btn btn-light mt-3"  matStepperNext (click)="selectLanguage()">Next</button>
+            </ng-container>
+            <ng-template #rt let-r="result" let-t="term">
+              <div class="d-inline-flex align-items-center py-2" >
+                <fa-icon [icon]="faLanguage" class="mr-2"></fa-icon>
+                <ngb-highlight [result]="r.languageName" [term]="t"></ngb-highlight>
+              </div>
+            </ng-template>
+          </mat-step>
+          <mat-step>
+            <ng-template matStepLabel>Select Congregation</ng-template>
+            <ng-container *ngIf="$congregations | async as congregations; else loader">
+
+               <div class="list-group-flush mt-2" *ngFor="let congregation of congregations.geoLocationList">
+
+                  <button type="button" class="list-group-item list-group-item-action">
+    
+                    <p class="h6">{{ congregation.properties.orgName }} <br>
+                     <span class="h6 text-muted">{{ congregation.properties.address }}</span>
+                    </p>
+                  </button>
+                </div>
+            </ng-container>
+          </mat-step>
+        </mat-vertical-stepper>
+        <ng-template #loader>
+          <mat-spinner></mat-spinner>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

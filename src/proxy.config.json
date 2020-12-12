@@ -1,0 +1,13 @@
+{
+   "/api/*": {
+      "target":  {
+        "host": "apps.jw.org",
+        "protocol": "https:",
+        "port": 443
+      },
+      "secure": false,
+       "logLevel": "debug",
+       "pathRewrite": {"^/api" : "https://apps.jw.org/api/public/meeting-search"},
+      "changeOrigin": true
+   }
+ }
