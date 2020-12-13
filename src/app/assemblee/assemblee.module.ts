@@ -10,20 +10,28 @@ import { DashboardComponent } from '../pages/dashboard/dashboard.component';
 import { AuthModule } from '../auth/auth.module';
 import { SharedModule } from '../shared/shared.module';
 import { AuthGuard } from '../auth/auth.guard';
+import { ProgramDetailComponent } from '../pages/programs/program-detail/program-detail.component';
 
 
 const routes: Routes = [
-   { path: 'home', component: DashboardComponent, canActivate: [AuthGuard],
+   { path: 'home', component: DashboardComponent,
    children: [
-      { path: '', component: HomeComponent },
-      { path: 'programs', component: ProgramsComponent },
+      { path: 'dashboard', component: HomeComponent },
+      { path: 'programs', component: ProgramsComponent, 
+      children: [
+         {
+            path: 'weeks/:id', component: ProgramDetailComponent, outlet: 'program'
+         }
+      ] 
+   },
+    
       { path: 'publishers', component: PublishersComponent },
       { path: 'speakers', component: SpeakersComponent },
       { path: 'export', component: ExportComponent }
    ] }
  ];
  
-
+ 
 @NgModule({
   imports: [
      AuthModule,

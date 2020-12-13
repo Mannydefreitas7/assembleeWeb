@@ -10,7 +10,7 @@
             <form [formGroup]="zipFormGroup">
 
               <div class="mt-2">
-               <label for="zipControl">Enter ZIP</label>
+               <label for="zipControl" class="mb-2">Enter ZIP</label>
                 <input type="text" class="form-control" id="zipControl" placeholder="10987" formControlName="zipControl"
                   required (keypress)="checkZIP($event)" (click)="checkZIP($event)" style="max-width: 100px;">
               </div>
@@ -35,7 +35,7 @@
             <ng-template matStepLabel>Language</ng-template>
             <ng-container *ngIf="languages; else loader">
               <form [formGroup]="languageForm" class="my-2">
-                <label for="typeahead-format">Enter Congregation Language</label>
+                <label for="typeahead-format" class="mb-2">Enter Congregation Language</label>
                 <input id="typeahead-template" type="text" class="form-control" [ngbTypeahead]="search"
                   [resultTemplate]="rt" formControlName="languageControl" [inputFormatter]="formatter"
                   placeholder="Type language" [value]="language.value.languageName ? language.value.languageName : null" required />

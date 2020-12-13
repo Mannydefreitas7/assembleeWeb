@@ -10,6 +10,9 @@ import { GeoZip, Place } from 'src/app/models/address.model';
 import { CongLanguage, Congregation, CongregationData, GeoLocationList } from 'src/app/models/congregation.model';
 import { GeolocationService } from 'src/app/services/geolocation.service';
 import { faLanguage } from '@fortawesome/free-solid-svg-icons';
+import { saveAs } from 'file-saver';
+import { FireStoreService } from 'src/app/services/fire-store.service';
+import { Publisher } from 'src/app/models/publisher.model';
 
 @Component({
   selector: 'ab-congregation',
@@ -38,12 +41,35 @@ export class CongregationComponent implements OnInit {
    checkedZip: boolean = false;
    checkedLanguage: boolean = false;
    faLanguage = faLanguage;
+   jsonObject: object = {
+      'City': [
+        {
+          'id': 1,
+          'name': 'Basel',
+          'founded': -200,
+          'beautiful': true,
+          'data': 123,
+          'keywords': ['Rhine', 'River']
+        },
+        {
+          'id': 1,
+          'name': 'Zurich',
+          'founded': 0,
+          'beautiful': false,
+          'data': 'no',
+          'keywords': ['Limmat', 'Lake']
+        }
+      ]
+    };
+
+
    constructor(
       public fb: FormBuilder,
       public auth: AuthService,
       private router: Router,
       private http: HttpClient,
-      private geoService: GeolocationService
+      private geoService: GeolocationService,
+      private fireStoreService: FireStoreService
     ) {
     }
 
@@ -72,6 +98,11 @@ export class CongregationComponent implements OnInit {
      this.geoService.getCongLanguages().subscribe(data => this.languages = data)
   }
 
+  saveJson() {
+   const blob = new Blob([JSON.stringify(this.jsonObject)], {type : 'application/json'});
+   saveAs(blob, 'abc.assemblee');
+  }
+
 
   selectPlace() {
      this.$geoZip.subscribe(data => {
@@ -83,11 +114,25 @@ export class CongregationComponent implements OnInit {
 
   selectLanguage() {
       this.checkedLanguage = true;
-      this.loadCongregations();
+      this.loadCongregations(); 
   }
 
   selectCongregation(congregation: GeoLocationList) {
       this.selectedCong = congregation;
+      let _congregation: Congregation = {
+         id: this.selectedCong.properties.orgGuid,
+         language: this.language.value,
+         geoLocation: this.selectedCong,
+         properties: this.selectedCong.properties
+      }
+      this.fireStoreService.create('congregations', this.selectedCong.properties.orgGuid,_congregation).then(() => {
+         this.auth.afAuth.user.subscribe(user => {
+            let publisher: Publisher = {
+               congregationID: this.selectedCong.properties.orgGuid
+            }
+            this.fireStoreService.update(`publishers/${user.uid}`, publisher).then(console.log)
+         })
+      })
   }
 
   loadCongregations() {

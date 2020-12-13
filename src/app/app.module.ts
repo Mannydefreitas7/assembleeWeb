@@ -15,7 +15,6 @@ import { SpeakersComponent } from './pages/speakers/speakers.component';
 import { ExportComponent } from './pages/export/export.component';
 import { AuthModule } from './auth/auth.module';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { SidebarModule } from 'ng-sidebar';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -26,7 +25,9 @@ import { SetupComponent } from './components/setup/setup.component';
 import { CongregationComponent } from './components/congregation/congregation.component';
 import { AddSpeakerComponent } from './components/add-speaker/add-speaker.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-
+import { AngularSvgIconModule } from 'angular-svg-icon';
+import { NGFORAGE_CONFIG_PROVIDER } from './ngforage.config';
+import { ProgramDetailComponent } from './pages/programs/program-detail/program-detail.component';
 registerLocaleData(en);
 
 @NgModule({
@@ -35,6 +36,7 @@ registerLocaleData(en);
       HomeComponent,
       DashboardComponent,
       ProgramsComponent,
+      ProgramDetailComponent,
       PublishersComponent,
       SpeakersComponent,
       ExportComponent,
@@ -50,15 +52,16 @@ registerLocaleData(en);
     AssembleeModule,
     AuthModule,
     CommonModule,
-    SidebarModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
     NgbModule,
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    AngularSvgIconModule.forRoot()
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  providers: [NGFORAGE_CONFIG_PROVIDER]
 })
 export class AppModule { }

@@ -1,1 +1,67 @@
-<p>programs works!</p>
+<div class="container">
+   
+   <div class="row mt-3">
+      <div class="p-0 mb-3 d-flex justify-content-end align-items-center">
+         
+         <select class="form-select mr-2" [(ngModel)]="selectedYear" style="width: 120px;" [disabled]="!storeService.showNextYear" (change)="loadMonths()" >
+            <option *ngFor="let year of years" [selected]="year == selectedYear" [value]="year" >{{ year }}</option>
+          </select>
+
+         <select class="form-select mr-2" style="width: 200px;" [(ngModel)]="monthData" >
+            <option *ngFor="let month of storeService.months" [ngValue]="month" [selected]="month == monthData">{{ month.name }}</option>
+          </select>
+          {{ monthData | json }}
+         <button class="btn btn-primary d-inline-block" (click)="addMonthProgram()">
+            <svg-icon src="assets/images/add-schedule.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+            <span class="ml-2 align-middle" >Add Program</span>
+         </button>
+      </div>
+      <mat-drawer-container class="card p-0">
+         <mat-drawer mode="side" opened style="width: 300px;">
+            <div class="card-header">
+               Weeks
+             </div>
+             <div class="card-body">
+            
+               <!-- <a [routerLink]="[ '/home/programs', { outlets: { program: ['weeks', 'ssfsfsd'] }}]" class="btn btn-link">ssfsfsd</a>
+               <a [routerLink]="[ '/home/programs', { outlets: { program: ['weeks', 'dffwdfsdf'] }}]" class="btn btn-link">dffwdfsdf</a>
+               <a [routerLink]="[ '/home/programs', { outlets: { program: ['weeks', 'sdfasdfsd'] }}]" class="btn btn-link">sdfasdfsd</a>
+               <a [routerLink]="[ '/home/programs', { outlets: { program: ['weeks', 'fgdfdvwef'] }}]" class="btn btn-link">fgdfdvwef</a> -->
+
+               <div class="d-flex">
+                  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills" orientation="vertical">
+                    <li ngbNavItem="top">
+                      <a ngbNavLink>Top</a>
+                      <ng-template ngbNavContent>
+                           <ab-program-detail id="ssfsfsd"></ab-program-detail>
+                      </ng-template>
+                    </li>
+                    <li ngbNavItem="middle">
+                      <a ngbNavLink>Middle</a>
+                      <ng-template ngbNavContent>
+                        <ab-program-detail id="dffwdfsdf"></ab-program-detail>
+                      </ng-template>
+                    </li>
+                    <li ngbNavItem="bottom">
+                      <a ngbNavLink>Bottom</a>
+                      <ng-template ngbNavContent>
+                        <ab-program-detail id="fgdfdvwef"></ab-program-detail>
+                      </ng-template>
+                    </li>
+                  </ul>
+                </div>
+             </div>
+         </mat-drawer>
+         <mat-drawer-content> 
+            <div class="card-header">
+               Programs
+             </div>
+             <div class="card-body" style="height: 400px;">
+               <div [ngbNavOutlet]="nav" class="ml-4"></div>
+              <!-- <router-outlet name='program'></router-outlet> -->
+             </div>
+         </mat-drawer-content>
+      </mat-drawer-container>
+   </div>
+
+</div>

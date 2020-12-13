@@ -2,8 +2,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Convert, GeoZip, GeoCity } from '../models/address.model';
+import { GeoZip, GeoCity } from '../models/address.model';
 import { CongLanguage, CongregationData } from '../models/congregation.model';
+import { Convert } from '../models/convert';
 
 @Injectable({
   providedIn: 'root'

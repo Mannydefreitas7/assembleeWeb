@@ -31,17 +31,4 @@ export interface Place {
    "state abbreviation": string;
    latitude:             string;
 }
-export class Convert {
-   public static toGeoZip(json: string): GeoZip {
-       return JSON.parse(json);
-   }
-   public static toGeoCity(json: string): GeoCity {
-      return JSON.parse(json);
-  }
-  public static toCongLanguage(json: string): CongLanguage {
-   return JSON.parse(json);
-}
-public static toCongregation(json: string): CongregationData {
-   return JSON.parse(json);
-}
-}
+

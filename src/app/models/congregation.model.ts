@@ -3,10 +3,9 @@ import { Address } from './address.model';
 
 export class Congregation {
    id?: string;
-   name?: string;
-	number?: string;
-   address?: Address; 
    language?: CongLanguage;
+   geoLocation?: GeoLocationList;
+   properties?: Properties;
 };
 
 export interface CongLanguage {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StoreService } from 'src/app/services/store.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,12 +8,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
 
-   opened: boolean = true;
-   constructor() { }
-   
-   toggleSidebar() {
-    this.opened = !this.opened;
-  }
+   constructor(public storeService: StoreService) { }
+
    ngOnInit(): void {
    }
 

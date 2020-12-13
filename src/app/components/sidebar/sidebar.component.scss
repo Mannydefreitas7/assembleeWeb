@@ -1,0 +1,23 @@
+.nav-link {
+
+   color: #000000 !important;
+   svg-icon {
+      svg {
+         path {
+            stroke: #000000 !important;
+         }
+      }
+   }
+
+   &.active {
+      color: #9b0101 !important;
+      svg-icon {
+         svg {
+   
+            path, line, polyline, polygon {
+               stroke: #9b0101 !important;
+            }
+         }
+      }
+   }
+}

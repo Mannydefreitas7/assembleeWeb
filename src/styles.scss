@@ -52,3 +52,9 @@ h1, h2, h3 {
    background-color: #001d3c !important;
 }
 
+.navbar-toggler {
+   border: 0px !important;
+   &:focus {
+      box-shadow: none !important;
+   }
+}

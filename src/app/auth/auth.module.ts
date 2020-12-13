@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 
 const routes: Routes = [
 
-   { path: '', redirectTo: '/login', pathMatch: 'full' },
+   { path: '', redirectTo: '/home', pathMatch: 'full' },
    { path: 'signup', component: SignupComponent },
    { path: 'reset', component: ResetComponent },
    { path: 'login', component: LoginComponent }
