@@ -18,7 +18,7 @@ export class WolApiService {
 
   parseWolContent(html: string) {
     let content: Document = this.parse.parseFromString(html, "text/html");
-    content.
+  //  content.
   }
 
 }
