@@ -27,6 +27,10 @@ export class FireStoreService {
     return this.fireStore.doc(path).valueChanges();
   }
 
+  readCollection(path: string) : Observable<any> {
+   return this.fireStore.collection(path).valueChanges();
+ }
+
   update(path: string, document: DocumentData) : Promise<any> {
      return this.fireStore.doc(path).update(document);
   }

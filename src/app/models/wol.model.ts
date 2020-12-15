@@ -1,3 +1,5 @@
+import { Privilege, Publisher } from "./publisher.model";
+
 export interface WOLWeek {
    items: Item[];
 }
@@ -25,17 +27,40 @@ export interface Item {
 
 export interface WeekProgram {
    id?: string;
+   range: string;
    date: Date;
-   items: Item[];
    midWeek: MidWeekProgram;
    weekEnd: WeekEndProgram;
+   isCOVisit?: boolean;
 }
 
 
 export interface MidWeekProgram {
-   
+   date?: Date;
+   treasuresTalk: Part;
+   treasuresDiscussion: Part;
+   bibleReading: Part;
+   applyParts: Part[];
+   lifeParts: Part[];
+   prayers: Part[];
 }
 
 export interface WeekEndProgram {
-   
+   date?: Date;
+   publicTalk: Part;
+   watchtowerStudy: Part;
+   prayers: Part[];
+}
+
+export interface Part {
+   id?: string;
+   privilege?: Privilege;
+   assignee?: Publisher;
+   hasAssistant?: boolean;
+   assistant?: Publisher;
+   length?: string;
+   lengthTime?: Date;
+   hasDiscussion?: boolean;
+   title?: string;
+   subTitle?: string;
 }

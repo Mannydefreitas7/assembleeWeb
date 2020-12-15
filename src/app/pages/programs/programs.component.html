@@ -29,27 +29,23 @@
                <a [routerLink]="[ '/home/programs', { outlets: { program: ['weeks', 'fgdfdvwef'] }}]" class="btn btn-link">fgdfdvwef</a> -->
 
                <div class="d-flex">
-                  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills" orientation="vertical">
-                    <li ngbNavItem="top">
-                      <a ngbNavLink>Top</a>
-                      <ng-template ngbNavContent>
-                           <ab-program-detail id="ssfsfsd"></ab-program-detail>
+                  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills" orientation="vertical" 
+                  >
+                     <ng-container *ngIf="$weekProgram | async as weekPrograms; else selectDate">
+                        <li [ngbNavItem]="week" *ngFor="let week of weekPrograms">
+                           <a ngbNavLink>{{ week.items[1].title }}</a>
+                           <ng-template ngbNavContent>
+                                <ab-program-detail [id]="week.items[1].title"></ab-program-detail>
+                           </ng-template>
+                         </li>
+                     </ng-container>
+                     <ng-template #selectDate>
+                        <mat-spinner></mat-spinner>
                       </ng-template>
-                    </li>
-                    <li ngbNavItem="middle">
-                      <a ngbNavLink>Middle</a>
-                      <ng-template ngbNavContent>
-                        <ab-program-detail id="dffwdfsdf"></ab-program-detail>
-                      </ng-template>
-                    </li>
-                    <li ngbNavItem="bottom">
-                      <a ngbNavLink>Bottom</a>
-                      <ng-template ngbNavContent>
-                        <ab-program-detail id="fgdfdvwef"></ab-program-detail>
-                      </ng-template>
-                    </li>
                   </ul>
+                 
                 </div>
+                
              </div>
          </mat-drawer>
          <mat-drawer-content> 
@@ -57,7 +53,7 @@
                Programs
              </div>
              <div class="card-body" style="height: 400px;">
-               <div [ngbNavOutlet]="nav" class="ml-4"></div>
+               <div [ngbNavOutlet]="nav" class="ml-4" *ngIf="$weekProgram | async as weekPrograms; else selectDate"></div>
               <!-- <router-outlet name='program'></router-outlet> -->
              </div>
          </mat-drawer-content>

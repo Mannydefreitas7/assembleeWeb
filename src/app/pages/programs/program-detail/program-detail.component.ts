@@ -14,10 +14,10 @@ id: string
 
 @Input('id') public uid: string;
   ngOnInit(): void {
-     this.route.paramMap
-        .subscribe(param => {
-           this.id = param.get('id');
-        });
+   //   this.route.paramMap
+   //      .subscribe(param => {
+   //         this.id = param.get('id');
+   //      });
   }
 
 }

@@ -11,6 +11,7 @@ import { AuthModule } from '../auth/auth.module';
 import { SharedModule } from '../shared/shared.module';
 import { AuthGuard } from '../auth/auth.guard';
 import { ProgramDetailComponent } from '../pages/programs/program-detail/program-detail.component';
+import { CongregationComponent } from '../components/congregation/congregation.component';
 
 
 const routes: Routes = [
@@ -25,7 +26,8 @@ const routes: Routes = [
       ] 
    },
     
-      { path: 'publishers', component: PublishersComponent },
+      { path: 'publishers', component: CongregationComponent },
+      { path: 'setup', component: CongregationComponent },
       { path: 'speakers', component: SpeakersComponent },
       { path: 'export', component: ExportComponent }
    ] }
