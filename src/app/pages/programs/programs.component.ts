@@ -9,8 +9,9 @@ import { FireStoreService } from 'src/app/services/fire-store.service';
 import { StoreService } from 'src/app/services/store.service';
 import { WolApiService } from 'src/app/services/wol-api.service';
 import moment from 'moment';
-import { WOLWeek } from 'src/app/models/wol.model';
+import { WeekProgram, WOLWeek } from 'src/app/models/wol.model';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-programs',
@@ -23,7 +24,7 @@ export class ProgramsComponent implements OnInit {
    selectedYear: number;
    years: number[];
    monthData: MonthData;
-   $weekProgram: Observable<WOLWeek[]>;
+   $weekProgram: Observable<WeekProgram[]>;
   constructor(
      private wolApiService: WolApiService,
      public storeService: StoreService,
@@ -65,7 +66,9 @@ export class ProgramsComponent implements OnInit {
                this.wolApiService.getWeekProgram(this.selectedYear, moment(monday).month() + 1, monday.getDate())
                .toPromise()
                .then(wolWeek => {
-                 this.fireStoreService.addWeekProgram(publisher.congregationID, monday, wolWeek)
+                  if (this.wolApiService.parseWolContent(wolWeek, monday)) {
+                     this.fireStoreService.addWeekProgram(publisher.congregationID, monday, this.wolApiService.parseWolContent(wolWeek, monday))
+                  }
                })
             })
          }))
@@ -75,32 +78,15 @@ export class ProgramsComponent implements OnInit {
   }
 
   loadWeeks() {
-     
      this.authService.afAuth.user
      .subscribe(user => {
       this.fireStoreService.read(`publishers/${user.uid}`)
       .subscribe((publisher: Publisher) => {
          console.log(publisher)
          console.log(publisher.congregationID)
-         this.$weekProgram =
-         this.fireStoreService.readCollection(`congregations/${publisher.congregationID}/weeks`)
-
-         this.$weekProgram.subscribe(data => {
-            this.wolApiService.parseWolContent(data[0].items[1].content);
-         })
-         //.subscribe(console.log)
-            // this.wolApiService.getWeekProgram(this.selectedYear, moment(monday).month() + 1, monday.getDate())
-            // .toPromise()
-            // .then(wolWeek => {
-            //   this.fireStoreService.addWeekProgram(publisher.congregationID, monday, wolWeek)
-            // })
-
+        this.$weekProgram =
+        this.fireStoreService.readCollection(`congregations/${publisher.congregationID}/weeks`).pipe(map(arr => arr.sort((a,b) => a.date - b.date)))
       })
    })
    }
-
-
-  
-
-
 }

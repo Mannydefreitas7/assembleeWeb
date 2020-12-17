@@ -9,7 +9,7 @@
             <ng-template matStepLabel>Location</ng-template>
             <form [formGroup]="zipFormGroup">
 
-              <div class="mt-2">
+              <div class="mt-2 ">
                <label for="zipControl" class="mb-2">Enter ZIP</label>
                 <input type="text" class="form-control" id="zipControl" placeholder="10987" formControlName="zipControl"
                   required (keypress)="checkZIP($event)" (click)="checkZIP($event)" style="max-width: 100px;">

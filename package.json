@@ -31,7 +31,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@ng-bootstrap/ng-bootstrap": "^6.2.0",
     "angular-svg-icon": "^11.0.0",
-    "bootstrap": "^5.0.0-alpha2",
+    "bootstrap": "^5.0.0-beta1",
     "carbon-components": "^10.25.0",
     "carbon-components-angular": "^4.31.1",
     "file-saver": "^2.0.5",

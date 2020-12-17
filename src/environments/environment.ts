@@ -15,7 +15,8 @@ const firebaseConfig = {
 
 export const environment = {
   production: false,
-  firebaseConfig: firebaseConfig
+  firebaseConfig: firebaseConfig,
+  wolApiUrl: 'http://localhost:4200/wol/',
 };
 
 /*

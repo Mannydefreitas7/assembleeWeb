@@ -19,7 +19,12 @@ export enum Privilege {
    pub = 'publisher',
    ms = 'ms',
    admin = 'admin',
-   elder = 'elder'
+   elder = 'elder',
+}
+
+export enum Gender {
+   brother = 'brother',
+   sister = 'sister'
 }
 
 export enum Permission {

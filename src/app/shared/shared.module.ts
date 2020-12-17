@@ -13,9 +13,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SortByPipe } from './helpers/sort-by.pipe';
 
 @NgModule({
-  declarations: [],
+  declarations: [SortByPipe],
   imports: [
     CommonModule,
     FormsModule,

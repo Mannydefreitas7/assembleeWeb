@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentData, DocumentReference } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Privilege, Permission } from '../models/publisher.model';
-import { WOLWeek } from '../models/wol.model';
+import { WeekProgram, WOLWeek } from '../models/wol.model';
 
 
 @Injectable({
@@ -19,8 +19,10 @@ export class FireStoreService {
     return this.fireStore.collection(collection).doc(doc).set(data);
   }
 
-  addWeekProgram(congregationID: string, date: Date, data: WOLWeek) : Promise<any> {
-     return this.fireStore.collection('congregations').doc(`${congregationID}`).collection('weeks').doc(`${date}`).set(data);
+  addWeekProgram(congregationID: string, date: Date, data: WeekProgram) : Promise<any> {
+  
+      return this.fireStore.collection('congregations').doc(`${congregationID}`).collection('weeks').doc(`${this.fireStore.createId()}`).set(data);
+
   }
 
   read(path: string) : Observable<any> {

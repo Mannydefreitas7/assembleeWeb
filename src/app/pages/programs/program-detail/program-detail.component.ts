@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { map, tap } from 'rxjs/operators';
+import { WeekProgram } from 'src/app/models/wol.model';
 
 @Component({
   selector: 'ab-program-detail',
@@ -12,7 +13,7 @@ export class ProgramDetailComponent implements OnInit {
   constructor(private router: Router, private route: ActivatedRoute) { }
 id: string
 
-@Input('id') public uid: string;
+@Input('weekProgram') public weekProgram: WeekProgram;
   ngOnInit(): void {
    //   this.route.paramMap
    //      .subscribe(param => {

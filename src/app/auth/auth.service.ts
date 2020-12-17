@@ -141,16 +141,26 @@ export class AuthService {
 //       });
 //   }
 
-  googleSignUp() {
+  googleLogin() {
     const provider = new firebase.default.auth.GoogleAuthProvider();
-
-    return this.socialLogin(provider)
-    .then(() => {
-      this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
-    })
+    return this.afAuth.signInWithPopup(provider)
+      .then((credential: firebase.default.auth.UserCredential) => {
+         if (credential.user)
+            this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
+      })
    // .then(() => this.snackBar.open('You are logged-in with Google','', { duration: 3000}))
   //  .catch(error => this.snackBar.open(error.message,'', { duration: 3000}));
   }
+
+  googleSignUp() {
+   const provider = new firebase.default.auth.GoogleAuthProvider();
+   this.socialLogin(provider)
+     .then(() => {
+           this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
+     })
+  // .then(() => this.snackBar.open('You are logged-in with Google','', { duration: 3000}))
+ //  .catch(error => this.snackBar.open(error.message,'', { duration: 3000}));
+ }
 
 
 //   facebookLogin() {
