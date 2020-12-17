@@ -28,6 +28,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { NGFORAGE_CONFIG_PROVIDER } from './ngforage.config';
 import { ProgramDetailComponent } from './pages/programs/program-detail/program-detail.component';
+import { SelectPublisherComponent } from './components/modals/select-publisher/select-publisher.component';
 registerLocaleData(en);
 
 @NgModule({
@@ -44,7 +45,8 @@ registerLocaleData(en);
       TopbarComponent,
       SetupComponent,
       CongregationComponent,
-      AddSpeakerComponent
+      AddSpeakerComponent,
+      SelectPublisherComponent
   ],
   imports: [
     BrowserModule,
