@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgbAlertModule, NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionModule, NgbAlertModule, NgbCollapseModule, NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -33,7 +33,9 @@ import { SortByPipe } from './helpers/sort-by.pipe';
     MatSelectModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    NgbAccordionModule,
+    NgbCollapseModule
   ],
   exports: [
    FormsModule,
@@ -51,7 +53,8 @@ import { SortByPipe } from './helpers/sort-by.pipe';
    MatSelectModule,
    MatProgressSpinnerModule,
    MatIconModule,
-   FontAwesomeModule
+   FontAwesomeModule,
+   NgbAccordionModule
   ]
 })
 export class SharedModule { }

@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { map, tap } from 'rxjs/operators';
+import { SelectPublisherComponent } from 'src/app/components/modals/select-publisher/select-publisher.component';
 import { WeekProgram } from 'src/app/models/wol.model';
 
 @Component({
@@ -10,7 +12,11 @@ import { WeekProgram } from 'src/app/models/wol.model';
 })
 export class ProgramDetailComponent implements OnInit {
 
-  constructor(private router: Router, private route: ActivatedRoute) { }
+  constructor(
+     private router: Router, 
+     private route: ActivatedRoute,
+     public modalService: NgbModal
+     ) { }
 id: string
 
 @Input('weekProgram') public weekProgram: WeekProgram;
@@ -20,5 +26,15 @@ id: string
    //         this.id = param.get('id');
    //      });
   }
+
+  openSelectPublisherModal() {
+   const modalRef = this.modalService.open(SelectPublisherComponent, { 
+      centered: false, 
+      keyboard: false,
+      backdrop: 'static',
+      size: 'md',
+      scrollable: true
+  })
+}
 
 }

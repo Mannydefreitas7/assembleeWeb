@@ -12,6 +12,7 @@ import moment from 'moment';
 import { WeekProgram, WOLWeek } from 'src/app/models/wol.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-programs',
@@ -80,12 +81,10 @@ export class ProgramsComponent implements OnInit {
   loadWeeks() {
      this.authService.afAuth.user
      .subscribe(user => {
-      this.fireStoreService.read(`publishers/${user.uid}`)
-      .subscribe((publisher: Publisher) => {
-         console.log(publisher)
-         console.log(publisher.congregationID)
+      this.fireStoreService.read(`users/${user.uid}`)
+      .subscribe((user: User) => {
         this.$weekProgram =
-        this.fireStoreService.readCollection(`congregations/${publisher.congregationID}/weeks`).pipe(map(arr => arr.sort((a,b) => a.date - b.date)))
+        this.fireStoreService.readCollection(`${user.congregation}/weeks`).pipe(map(arr => arr.sort((a,b) => a.date - b.date)))
       })
    })
    }

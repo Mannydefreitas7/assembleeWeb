@@ -8,13 +8,15 @@ import { SharedModule } from '../shared/shared.module';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+import { CongregationComponent } from '../components/congregation/congregation.component';
 
 const routes: Routes = [
 
-   { path: '', redirectTo: '/home', pathMatch: 'full' },
+   { path: '', redirectTo: '/login', pathMatch: 'full' },
    { path: 'signup', component: SignupComponent },
    { path: 'reset', component: ResetComponent },
-   { path: 'login', component: LoginComponent }
+   { path: 'login', component: LoginComponent },
+   { path: 'setup', component: CongregationComponent }
  ];
 
 

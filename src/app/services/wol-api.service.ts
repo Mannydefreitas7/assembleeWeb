@@ -112,7 +112,7 @@ export class WolApiService {
           lengthTime: element.textContent.match(/\(([^)]+)\)/) ? moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime() : null,
           privilege: [Privilege.elder, Privilege.ms],
           subTitle: '',
-          title: element.querySelectorAll('strong')[0].textContent,
+          title: element.textContent,
        })
     })
   

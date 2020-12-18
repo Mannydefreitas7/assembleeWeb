@@ -12,7 +12,9 @@ import { GeolocationService } from 'src/app/services/geolocation.service';
 import { faLanguage } from '@fortawesome/free-solid-svg-icons';
 import { saveAs } from 'file-saver';
 import { FireStoreService } from 'src/app/services/fire-store.service';
-import { Publisher } from 'src/app/models/publisher.model';
+import { Gender, Privilege, Publisher } from 'src/app/models/publisher.model';
+import { AngularFirestoreDocument, DocumentReference } from '@angular/fire/firestore';
+import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'ab-congregation',
@@ -24,8 +26,9 @@ import { Publisher } from 'src/app/models/publisher.model';
 
 
 export class CongregationComponent implements OnInit {
-   zipFormGroup: FormGroup;
+   congrationGroup: FormGroup;
    languageForm: FormGroup;
+   aboutForm: FormGroup;
    hide = true;
    empty = true;
    html: string;
@@ -39,8 +42,11 @@ export class CongregationComponent implements OnInit {
    selectedCong: GeoLocationList;
    languages: CongLanguage[];
    checkedZip: boolean = false;
-   checkedLanguage: boolean = false;
+   checkedLanguage: CongLanguage;
    faLanguage = faLanguage;
+   genders: Gender[] = [Gender.brother, Gender.sister]
+   $fireUser: Observable<User>;
+   privileges: Privilege[] = [Privilege.elder, Privilege.ms]
    jsonObject: object = {
       'City': [
         {
@@ -70,17 +76,21 @@ export class CongregationComponent implements OnInit {
       private http: HttpClient,
       private geoService: GeolocationService,
       private fireStoreService: FireStoreService
-    ) {
+    ) { 
     }
 
 
   ngOnInit(): void {
-   
-   this.zipFormGroup = this.fb.group({
+   this.$fireUser = this.auth.fireStoreUser;
+   this.congrationGroup = this.fb.group({
       zipControl: ['', [
          Validators.required, 
          Validators.minLength(5),
          Validators.maxLength(5)
+      ]],
+      languageControl: ['', [
+         Validators.required,
+         Validators.minLength(2)
       ]],
    });
    this.languageForm = this.fb.group({
@@ -89,14 +99,44 @@ export class CongregationComponent implements OnInit {
       Validators.minLength(2)
    ]],
    }); 
+   this.aboutForm = this.fb.group({
+      fname: ['',  [
+         Validators.required,
+         Validators.minLength(2)
+      ]],
+      lname: ['', [
+         Validators.required,
+         Validators.minLength(2)
+      ]],
+      gender: [{ value: Gender.brother, disabled: true}, [
+         Validators.required
+      ]],
+      privilege: [{ value: Privilege.elder, disabled: false}, [
+         Validators.required,
+      ]]  
+   }); 
+   this.$fireUser.subscribe(fireUser => {
+      if (fireUser) {
+         this.fname.setValue(fireUser.firstName)
+         this.lname.setValue(fireUser.lastName)
+      }
+   })
   }
 
-  get zipInput() { return this.zipFormGroup.get('zipControl'); }
-  get language() { return this.languageForm.get('languageControl'); }
+  get zipInput() { return this.congrationGroup.get('zipControl'); }
+  get language() { return this.congrationGroup.get('languageControl'); }
+
+  get fname() { return this.aboutForm.get('fname'); }
+  get lname() { return this.aboutForm.get('lname'); }
+  get gender() { return this.aboutForm.get('gender'); }
+  get privilege() { return this.aboutForm.get('privilege'); }
 
   loadLanguages() {
+     if (this.languages == null)
      this.geoService.getCongLanguages().subscribe(data => this.languages = data)
   }
+
+
 
   saveJson() {
    const blob = new Blob([JSON.stringify(this.jsonObject)], {type : 'application/json'});
@@ -108,31 +148,52 @@ export class CongregationComponent implements OnInit {
      this.$geoZip.subscribe(data => {
       this.latitude = Number(data.places[0].latitude)
       this.longitude = Number(data.places[0].longitude)
+      this.loadCongregations();
      })
-     this.loadLanguages();
   }
 
-  selectLanguage() {
-      this.checkedLanguage = true;
-      this.loadCongregations(); 
-  }
 
+  selectLanguage(language: CongLanguage) {
+     this.checkedLanguage = language
+     console.log(language)
+      this.language.setValue(language.languageName);
+      // this.loadCongregations(); 
+  }
+ 
   selectCongregation(congregation: GeoLocationList) {
       this.selectedCong = congregation;
-      let _congregation: Congregation = {
-         id: this.selectedCong.properties.orgGuid,
-         language: this.language.value,
-         geoLocation: this.selectedCong,
-         properties: this.selectedCong.properties
-      }
-      this.fireStoreService.create('congregations', this.selectedCong.properties.orgGuid,_congregation).then(() => {
-         this.auth.afAuth.user.subscribe(user => {
-            let publisher: Publisher = {
-               congregationID: this.selectedCong.properties.orgGuid
-            }
-            this.fireStoreService.update(`publishers/${user.uid}`, publisher).then(console.log)
+  }
+
+  verifyAll() {
+   let _congregation: Congregation = {
+      id: this.selectedCong.properties.orgGuid,
+      language: this.language.value,
+      geoLocation: this.selectedCong,
+      properties: this.selectedCong.properties
+   }
+    let congregationRef: AngularFirestoreDocument<Congregation> = this.fireStoreService.fireStore.doc(`congregations/${this.selectedCong.properties.orgGuid}`)
+   
+    congregationRef.set(_congregation).then((data) => {
+      this.auth.afAuth.user.subscribe(user => {
+         let updatedUser: User = {
+            congregation: congregationRef.ref
+         }
+         this.fireStoreService.update(`users/${user.uid}`, updatedUser).then(() => {
+
+               let publisher: Publisher = {
+                  email: user.email,
+                  firstName: this.fname.value,
+                  lastName: this.lname.value,
+                  gender: this.gender.value,
+                  photoURL: user.photoURL,
+                  privilege: this.privilege.value,
+                  uid: user.uid,
+                  isInvited: true
+               }
+               congregationRef.collection('publishers').doc(user.uid).set(publisher)
          })
       })
+    })
   }
 
   loadCongregations() {
@@ -151,10 +212,10 @@ export class CongregationComponent implements OnInit {
 
   checkZIP(e: Event) {
    
-   this.zipFormGroup.get('zipControl').valueChanges.subscribe((data: string) => {
+   this.congrationGroup.get('zipControl').valueChanges.subscribe((data: string) => {
       if (data.length > 4) {
          this.checkedZip = true;
-         if (this.zipInput.dirty && this.checkedZip) {
+         if (this.zipInput.valid && this.language.valid) {
             this.$geoZip = this.geoService.getGeolocationFromZip(Number(data));
          }
       } else {

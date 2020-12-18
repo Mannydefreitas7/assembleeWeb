@@ -29,6 +29,7 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
 import { NGFORAGE_CONFIG_PROVIDER } from './ngforage.config';
 import { ProgramDetailComponent } from './pages/programs/program-detail/program-detail.component';
 import { SelectPublisherComponent } from './components/modals/select-publisher/select-publisher.component';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 registerLocaleData(en);
 
 @NgModule({
@@ -64,6 +65,15 @@ registerLocaleData(en);
     AngularSvgIconModule.forRoot()
   ],
   bootstrap: [AppComponent],
-  providers: [NGFORAGE_CONFIG_PROVIDER]
+  providers: [
+     NGFORAGE_CONFIG_PROVIDER,
+     {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: { 
+         displayDefaultIndicatorType: false,
+         showError: true
+       }
+    }
+   ]
 })
 export class AppModule { }

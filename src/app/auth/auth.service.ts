@@ -6,7 +6,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { switchMap, map } from 'rxjs/operators';
 
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { of } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 import { User } from '../models/user.model';
@@ -33,14 +33,12 @@ export class AuthService {
       (user) => {
         if (user) {
           this.userDetails = user;
-          console.log(this.userDetails);
-          this.router.navigate(['/home/dashboard'])
         }
         else {
           this.userDetails = null;
         }
       }
-    );
+    ); 
   }
 
   get _currentUserObservable(): any {
@@ -92,6 +90,15 @@ export class AuthService {
     });
   }
 
+ fireStoreUser = new Observable<User>((observer) => {
+      this.afAuth.user.subscribe(user => {
+         this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`).valueChanges().toPromise().then(u => {
+            observer.next(u)
+         })
+      })
+      observer.complete();
+   })
+
   get isAuth(): boolean {
     return this.user !== null;
   }
@@ -120,7 +127,7 @@ export class AuthService {
   emailSignUp(email: string, password: string, firstName: string, lastName: string) {
     return this.afAuth.createUserWithEmailAndPassword(email, password)
     .then(credential => { 
-       console.log(credential)
+       
        this.createUserData(credential, firstName, lastName)
     });
   }
@@ -141,26 +148,24 @@ export class AuthService {
 //       });
 //   }
 
-  googleLogin() {
-    const provider = new firebase.default.auth.GoogleAuthProvider();
-    return this.afAuth.signInWithPopup(provider)
-      .then((credential: firebase.default.auth.UserCredential) => {
-         if (credential.user)
-            this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
-      })
-   // .then(() => this.snackBar.open('You are logged-in with Google','', { duration: 3000}))
-  //  .catch(error => this.snackBar.open(error.message,'', { duration: 3000}));
-  }
+//   googleLogin() {
+//     const provider = new firebase.default.auth.GoogleAuthProvider();
+//     return this.afAuth.signInWithPopup(provider)
+//       .then((credential: firebase.default.auth.UserCredential) => {
+//          if (credential.user)
+//             this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
+//       })
+//    // .then(() => this.snackBar.open('You are logged-in with Google','', { duration: 3000}))
+//   //  .catch(error => this.snackBar.open(error.message,'', { duration: 3000}));
+//   }
 
-  googleSignUp() {
+  googleSignIn() {
    const provider = new firebase.default.auth.GoogleAuthProvider();
    this.socialLogin(provider)
-     .then(() => {
-           this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
-     })
   // .then(() => this.snackBar.open('You are logged-in with Google','', { duration: 3000}))
  //  .catch(error => this.snackBar.open(error.message,'', { duration: 3000}));
  }
+
 
 
 //   facebookLogin() {
@@ -191,27 +196,44 @@ export class AuthService {
   private socialLogin(provider) {
     return this.afAuth.signInWithPopup(provider)
       .then((credential: firebase.default.auth.UserCredential) => {
-        return this.createUserData(credential, credential.additionalUserInfo.profile['given_name'], credential.additionalUserInfo.profile['family_name']);
+
+           let _users = this.fireStoreService.fireStore.collection<User>('users', ref => ref.where('uid', '==', credential.user.uid)).valueChanges()
+
+           _users.subscribe(users => {
+              if (users.length > 0) {
+                 // already exists
+                 if (users[0].congregation) {
+                  // already has congregation setup
+                     this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
+                 } else {
+                  this.ngZone.run(() => this.router.navigate(['/setup']));
+                 }
+              } else {
+               this.createUserData(credential, credential.additionalUserInfo.profile['given_name'], credential.additionalUserInfo.profile['family_name'])
+               .then(() => {
+                  this.ngZone.run(() => this.router.navigate(['/setup']));
+               })
+              }
+         })
       })
      // .catch(error => this.snackBar.open(error.message,'', { duration: 3000}));
   }
 
 
-  createUserData(credential: firebase.default.auth.UserCredential, firstName: string, lastName: string) {
+  createUserData(credential: firebase.default.auth.UserCredential, firstName: string, lastName: string) : Promise<any> {
    let privilege: Privilege = Privilege.admin
-   let data: Publisher = {
+   let data: User = {
      uid: credential.user.uid,
      email: credential.user.email,
-     congregationID: null,
-     photoURL: credential.user.photoURL ? credential.user.photoURL : null,
-     privilege: privilege,
-     permissions: this.fireStoreService.setPermissions(privilege),
+     congregation: null,
      firstName: firstName,
      lastName: lastName,
+     photoURL: credential.user.photoURL ? credential.user.photoURL : null,
+     permissions: this.fireStoreService.setPermissions(privilege),
      loginProvider: credential.additionalUserInfo.providerId,
      isEmailVerified: credential.user.emailVerified
    };
-    this.fireStoreService.create('publishers', credential.user.uid, data).then(console.log)
+   return this.fireStoreService.create('users', credential.user.uid, data);
 }
 
 

@@ -5,16 +5,11 @@
    <li ngbNavItem>
      <a ngbNavLink>Mid Week</a>
      <ng-template ngbNavContent>
-      <div class="my-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Chairman</label>
-         <div class="col-sm-12 col-md-4 col-lg-4">
-            <select class="form-select" aria-label="Default select example">
-               <option selected>Open this select menu</option>
-               <option value="1">One</option>
-               <option value="2">Two</option>
-               <option value="3">Three</option>
-            </select>
-          </div>
+      <div class="my-3 d-flex justify-content-between align-items-center">
+         <label for="prayer1" class="form-label">Chairman</label>
+            <button class="btn btn-light" (click)="openSelectPublisherModal()">
+               select publisher
+            </button>
        </div>
       <div class="my-3 row">
          <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Prayer</label>
@@ -28,9 +23,9 @@
           </div>
        </div>
        <hr>
-       <h4 class="my-3">Treasures From God's Word</h4>
+       <h4 class="my-3">TREASURES FROM GOD’S WORD</h4>
        <div class="mb-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Talk</label>
+         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">{{ weekProgram.midWeek.treasuresTalk.title }}</label>
          <div class="col-sm-12 col-md-4 col-lg-4">
             <select class="form-select" aria-label="Default select example">
                <option selected>Open this select menu</option>
@@ -41,7 +36,7 @@
           </div>
        </div>
        <div class="mb-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Discussion</label>
+         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">{{ weekProgram.midWeek.treasuresDiscussion.title }}</label>
          <div class="col-sm-12 col-md-4 col-lg-4">
             <select class="form-select" aria-label="Default select example">
                <option selected>Open this select menu</option>
@@ -52,7 +47,7 @@
           </div>
        </div>
        <div class="mb-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Bible Reading</label>
+         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">{{ weekProgram.midWeek.bibleReading.title }}</label>
          <div class="col-sm-12 col-md-4 col-lg-4">
             <select class="form-select" aria-label="Default select example">
                <option selected>Open this select menu</option>
@@ -62,9 +57,10 @@
             </select>
           </div>
        </div>
-       <h4 class="my-3">Treasures From God's Word</h4>
-       <div class="mb-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Talk</label>
+       <h4 class="my-3">APPLY YOURSELF TO THE FIELD MINISTRY</h4>
+
+       <div class="mb-3 row" *ngFor="let applyPart of weekProgram.midWeek.applyParts">
+         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label"> {{ applyPart.title }}</label>
          <div class="col-sm-12 col-md-4 col-lg-4">
             <select class="form-select" aria-label="Default select example">
                <option selected>Open this select menu</option>
@@ -74,53 +70,12 @@
             </select>
           </div>
        </div>
-       <div class="mb-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Discussion</label>
-         <div class="col-sm-12 col-md-4 col-lg-4">
-            <select class="form-select" aria-label="Default select example">
-               <option selected>Open this select menu</option>
-               <option value="1">One</option>
-               <option value="2">Two</option>
-               <option value="3">Three</option>
-            </select>
-          </div>
-       </div>
-       <div class="mb-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Bible Reading</label>
-         <div class="col-sm-12 col-md-4 col-lg-4">
-            <select class="form-select" aria-label="Default select example">
-               <option selected>Open this select menu</option>
-               <option value="1">One</option>
-               <option value="2">Two</option>
-               <option value="3">Three</option>
-            </select>
-          </div>
-       </div>
-       <h4 class="my-3">Treasures From God's Word</h4>
-       <div class="mb-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Talk</label>
-         <div class="col-sm-12 col-md-4 col-lg-4">
-            <select class="form-select" aria-label="Default select example">
-               <option selected>Open this select menu</option>
-               <option value="1">One</option>
-               <option value="2">Two</option>
-               <option value="3">Three</option>
-            </select>
-          </div>
-       </div>
-       <div class="mb-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Discussion</label>
-         <div class="col-sm-12 col-md-4 col-lg-4">
-            <select class="form-select" aria-label="Default select example">
-               <option selected>Open this select menu</option>
-               <option value="1">One</option>
-               <option value="2">Two</option>
-               <option value="3">Three</option>
-            </select>
-          </div>
-       </div>
-       <div class="mb-3 row">
-         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Bible Reading</label>
+
+
+       <h4 class="my-3">LIVING AS CHRISTIANS</h4>
+
+       <div class="mb-3 row" *ngFor="let lifePart of weekProgram.midWeek.lifeParts">
+         <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">{{ lifePart.title }}</label>
          <div class="col-sm-12 col-md-4 col-lg-4">
             <select class="form-select" aria-label="Default select example">
                <option selected>Open this select menu</option>

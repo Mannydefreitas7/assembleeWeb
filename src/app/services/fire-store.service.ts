@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentData, DocumentReference } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { Privilege, Permission } from '../models/publisher.model';
+import { map } from 'rxjs/operators';
+import { AuthService } from '../auth/auth.service';
+import { Privilege, Permission, Publisher } from '../models/publisher.model';
 import { WeekProgram, WOLWeek } from '../models/wol.model';
 
 
@@ -10,14 +12,22 @@ import { WeekProgram, WOLWeek } from '../models/wol.model';
 })
 export class FireStoreService {
 
-  constructor(public fireStore: AngularFirestore) { }
+  constructor(
+     public fireStore: AngularFirestore
+     ) { }
 
   // helpers firestore methods
 
   // CREATE
   create(collection: string, doc: string, data: any) : Promise<any> {
-    return this.fireStore.collection(collection).doc(doc).set(data);
+    return this.fireStore.collection(collection).doc(doc).set(data, { merge: true });
   }
+
+//   getCongregationPublishers() : Observable<Publisher[]> {
+
+    
+
+//   }
 
   addWeekProgram(congregationID: string, date: Date, data: WeekProgram) : Promise<any> {
   

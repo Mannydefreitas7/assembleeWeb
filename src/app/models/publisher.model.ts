@@ -1,16 +1,16 @@
+import { AngularFirestoreDocument, DocumentReference } from "@angular/fire/firestore";
+import { Congregation } from "./congregation.model";
 
 export class Publisher {
 
 	uid?: string;
    email?: string;
-   loginProvider?: string;
 	photoURL?: string;
-	congregationID?: string;
    firstName?: string;
    lastName?: string;
    privilege?:Privilege;
-   permissions?: Array<Permission>;
-   isEmailVerified?: boolean;
+   gender?: Gender;
+   isInvited?: boolean;
 };
 
 
