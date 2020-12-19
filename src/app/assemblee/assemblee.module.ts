@@ -26,8 +26,7 @@ const routes: Routes = [
       ] 
    },
     
-      { path: 'publishers', component: CongregationComponent },
-      { path: 'setup', component: CongregationComponent },
+      { path: 'publishers', component: PublishersComponent },
       { path: 'speakers', component: SpeakersComponent },
       { path: 'export', component: ExportComponent }
    ] }

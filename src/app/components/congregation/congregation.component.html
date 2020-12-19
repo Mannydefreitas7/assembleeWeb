@@ -1,10 +1,11 @@
-<section class="bg-light" style="height: 100vh;">
-   <div class="row justify-content-center align-items-center">
-      <div class="col-md-6 col-lg-6 col-sm-12">
-           <h4>Congregation Setup</h4>
-            <mat-vertical-stepper #stepper linear [disableRipple]="true" labelPosition='bottom'>
+<section class="bg-light d-flex justify-content-center align-items-center" style="height: 100vh;">
+  
+      <div class="container h-75">
+           <h2 class="text-center font-weight-bold">Register Congregation</h2>
+           <p class="w-auto text-center font-weight-normal text-dark mx-4 lh-base mb-5">Enter your congregation information. <br> We do not store private information. All congregation data are gathered from the public data of JW.ORG.</p>
+            <mat-horizontal-stepper #stepper linear [disableRipple]="true" labelPosition='bottom'>
              <mat-step [stepControl]="aboutForm" state="phone">
-                <ng-template matStepLabel><h6>About You</h6></ng-template>
+                <ng-template matStepLabel><h6>Your info</h6></ng-template>
                 <form [formGroup]="aboutForm">
                   <div class="mt-2 row g-2">
                    <div class="col-lg-2 col-md-3 col-sm-5">
@@ -32,45 +33,85 @@
                       </select>
                   </div>
                   </div>
-                  <button class="btn btn-secondary mt-3" matStepperNext (click)="loadLanguages()">Next</button>
+                  <div class="row mt-2 g-2">
+                     <div class=" col-lg-6 col-md-6 col-sm-12 card card-custom shadow-sm me-2">
+                        <div class="card-body">
+                           <div class="row align-items-center">
+                              <div class="col">
+                                 <h6 class="card-subtitle text-muted">First Name</h6>
+                                 <h5 class="card-title mb-0">{{ fname.value }}</h5>
+                                 <hr>
+                                 <h6 class="card-subtitle text-muted">Privilege</h6>
+                                 <h5 class="card-title mb-0">{{ privilege.value }}</h5>
+                              </div>
+                              <div class="col">
+                                 <h6 class="card-subtitle text-muted">Last Name</h6>
+                                 <h5 class="card-title mb-0">{{ lname.value }}</h5>
+                                 <hr>
+                                 <h6 class="card-subtitle text-muted">Gender</h6>
+                                 <h5 class="card-title mb-0">{{ gender.value }}</h5>
+                              </div>
+                            </div>
+                    </div>
+                   </div>
+                  </div>
+                  
+                  <button class="btn btn-secondary mt-4" matStepperNext (click)="loadLanguages()">Next</button>
                 </form>
               </mat-step>
               <mat-step [stepControl]="congrationGroup" (click)="loadLanguages()">
                 <ng-template matStepLabel><h6>Your Congregation</h6></ng-template>
                 <form [formGroup]="congrationGroup">
                    <div class="mt-2 row g-2">
-                      <p>Enter your Congregation details below:</p>
                    <div class="col-lg-6 col-md-6 col-sm-12">
                       <label for="typeahead-format" class="mb-2">Congregation Language</label>
+               
                     <input id="typeahead-template" type="text" class="form-control" [ngbTypeahead]="search"
                       [resultTemplate]="rt" formControlName="languageControl" [inputFormatter]="formatter"
                       placeholder="Type language" [value]="language.value.languageName ? language.value.languageName : null" required/>
                    </div>
                    <div class="col-lg-2 col-md-3 col-sm-4 mt-2">
                       <label for="zipControl" class="mb-2">ZIP Code</label>
-                      <input type="text" class="form-control" id="zipControl" placeholder="10987" formControlName="zipControl"
-                         required (keypress)="checkZIP($event)" (click)="checkZIP($event)">
+                        <input type="text" class="form-control" id="zipControl" placeholder="10987" formControlName="zipControl"
+                        required (keypress)="checkZIP($event)" (click)="checkZIP($event)">
+                    
+                     
                    </div>
-                   <div class="col-12">
-                      <div *ngIf="checkedZip && (zipInput.dirty)">
+                   <div class="row g-2">
+                     <div class="col-lg-4 col-md-6 col-sm-12 card card-custom shadow-sm me-2" *ngIf="language.value">
+                           <div class="card-body py-1">
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-start align-items-center ps-0">
+                             <svg-icon src="assets/images/translation.svg" [svgStyle]="{ 'width.px': 22 }" class="me-3"></svg-icon>
+                              <p class="fw-bolder mb-0 fs-6">{{ language.value.languageName }}
+                              </p>
+                            </li>
+                          </ul>
+                       </div>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12 card card-custom shadow-sm" *ngIf="zipInput.valid">
                          <ng-container *ngIf="$geoZip | async as zip; else loader">
-                           <mat-list #places>
-                             <mat-list-item *ngFor="let place of zip.places">
-                               <mat-icon mat-list-icon>location_on</mat-icon>
-                               <div mat-line>{{ place["place name"] }}</div>
-                               <div mat-line> {{ place.state }}, {{ zip.country }}</div>
-                             </mat-list-item>
-                           </mat-list>
-                           <button class="btn btn-secondary" matStepperNext (click)="selectPlace()">Next</button>
+                            <div class="card-body py-1">
+                           <ul #places class="list-group list-group-flush">
+                             <li *ngFor="let place of zip.places" class="list-group-item d-flex justify-content-start align-items-center ps-0">
+                              <svg-icon src="assets/images/pin.svg" [svgStyle]="{ 'height.px': 22 }" class="me-3"></svg-icon>
+                               <p class="fw-bolder mb-0 lh-base">{{ place["place name"] }} <br>
+                               <span class="fw-normal">{{ place.state }}, {{ zip.country }}</span></p>
+                             </li>
+                           </ul>
+                        </div>
                          </ng-container>
                        </div>
-                   </div>
+                  </div>
+                  <div class="col-12">
+                     <button class="btn btn-secondary mt-4 d-inline-block" *ngIf="zipInput.valid && language.valid" matStepperNext (click)="selectPlace()">Next</button>
+                  </div>
                    </div>
                 </form>
     
                 <ng-template #rt let-r="result" let-t="term">
                    <div class="d-inline-flex align-items-center py-2">
-                     <fa-icon [icon]="faLanguage" class="mr-2"></fa-icon>
+                     <svg-icon src="assets/images/translation.svg" [svgStyle]="{ 'height.px': 22 }" class="me-1"></svg-icon>
                      <ngb-highlight [result]="r.languageName" [term]="t"></ngb-highlight>
                    </div>
                  </ng-template>
@@ -96,18 +137,18 @@
                 <p class="h6 px-2 py-4" *ngIf="selectedCong">{{ selectedCong.properties.orgName }} <br>
                    <span class="fs-6 text-muted font-weight-light">{{ selectedCong.properties.address }}</span>
                 </p>
-                <button type="button" class="btn btn-secondary" (click)="verifyAll()">
+                <button type="button" class="btn btn-secondary mt-4" (click)="verifyAll()">
                    Done
                 </button> 
               </mat-step>
               <ng-template matStepperIcon="phone">
                 <mat-icon>call_end</mat-icon>
               </ng-template>
-            </mat-vertical-stepper>
+            </mat-horizontal-stepper>
             <ng-template #loader>
               <mat-spinner></mat-spinner>
             </ng-template>
       </div>
-    </div>
+  
     
 </section>

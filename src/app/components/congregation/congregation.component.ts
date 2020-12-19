@@ -81,7 +81,7 @@ export class CongregationComponent implements OnInit {
 
 
   ngOnInit(): void {
-   this.$fireUser = this.auth.fireStoreUser;
+ 
    this.congrationGroup = this.fb.group({
       zipControl: ['', [
          Validators.required, 
@@ -115,13 +115,16 @@ export class CongregationComponent implements OnInit {
          Validators.required,
       ]]  
    }); 
-   this.$fireUser.subscribe(fireUser => {
+   this.auth.afAuth.user.subscribe(user => {
+      this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`)
+      .valueChanges().subscribe(fireUser => {
       if (fireUser) {
          this.fname.setValue(fireUser.firstName)
          this.lname.setValue(fireUser.lastName)
       }
    })
-  }
+  })
+}
 
   get zipInput() { return this.congrationGroup.get('zipControl'); }
   get language() { return this.congrationGroup.get('languageControl'); }
@@ -191,6 +194,9 @@ export class CongregationComponent implements OnInit {
                   isInvited: true
                }
                congregationRef.collection('publishers').doc(user.uid).set(publisher)
+               .then(() => {
+                  this.router.navigateByUrl('home/dashboard');
+               })
          })
       })
     })

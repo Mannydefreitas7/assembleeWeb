@@ -90,14 +90,7 @@ export class AuthService {
     });
   }
 
- fireStoreUser = new Observable<User>((observer) => {
-      this.afAuth.user.subscribe(user => {
-         this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`).valueChanges().toPromise().then(u => {
-            observer.next(u)
-         })
-      })
-      observer.complete();
-   })
+
 
   get isAuth(): boolean {
     return this.user !== null;
