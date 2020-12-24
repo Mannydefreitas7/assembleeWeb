@@ -14,3 +14,4 @@ export const environment = {
   firebaseConfig: firebaseConfig,
   wolApiUrl: 'https://wol.jw.org/wol/',
 };
+
