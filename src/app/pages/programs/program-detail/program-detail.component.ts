@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { map, tap } from 'rxjs/operators';
 import { SelectPublisherComponent } from 'src/app/components/modals/select-publisher/select-publisher.component';
-import { WeekProgram } from 'src/app/models/wol.model';
+import { Part, WeekProgram } from 'src/app/models/wol.model';
 
 @Component({
   selector: 'ab-program-detail',
@@ -25,9 +25,11 @@ id: string
    //      .subscribe(param => {
    //         this.id = param.get('id');
    //      });
+   this.weekProgram.weekEnd.watchtowerStudy.title
   }
 
-  openSelectPublisherModal() {
+  openSelectPublisherModal(part: Part) {
+     
    const modalRef = this.modalService.open(SelectPublisherComponent, { 
       centered: false, 
       keyboard: false,
@@ -35,6 +37,8 @@ id: string
       size: 'md',
       scrollable: true
   })
+  modalRef.componentInstance.part = part;
+  modalRef.componentInstance.weekProgram = this.weekProgram;
 }
 
 }

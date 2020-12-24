@@ -15,7 +15,7 @@ import { CongregationComponent } from '../components/congregation/congregation.c
 
 
 const routes: Routes = [
-   { path: 'home', component: DashboardComponent,
+   { path: 'home', component: DashboardComponent, canActivate: [AuthGuard],
    children: [
       { path: 'dashboard', component: HomeComponent },
       { path: 'programs', component: ProgramsComponent, 

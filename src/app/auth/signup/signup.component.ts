@@ -53,15 +53,7 @@ export class SignupComponent implements OnInit {
 
    signUp() {
       if (this.signUpForm.valid) {
-         return this.auth.emailSignUp(this.email.value, this.password.value, this.firstName.value, this.lastName.value)
-            .then(user => {
-               if (this.signUpForm.valid) {
-                  this.router.navigate(['/home']);
-               }
-            }).catch(err => {
-               console.log(err)
-               // this.pub.snackBar.open(err.message, '', { duration: 3000 })
-            })
+         this.auth.emailSignUp(this.email.value, this.password.value, this.firstName.value, this.lastName.value)
       }
    }
 

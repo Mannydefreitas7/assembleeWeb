@@ -1,4 +1,5 @@
 
+import { FireStoreService } from '../services/fire-store.service';
 import { Address } from './address.model';
 
 export class Congregation {
@@ -6,6 +7,7 @@ export class Congregation {
    language?: CongLanguage;
    geoLocation?: GeoLocationList;
    properties?: Properties;
+   fireLanguage?: FireLanguage;
 };
 
 export interface CongLanguage {
@@ -29,11 +31,17 @@ export interface GeoLocationList {
    isPrimary:  boolean;
    location:   Location;
    properties: Properties;
+   isClaimed?: boolean;
 }
 
 export interface Location {
    latitude:  number;
    longitude: number;
+}
+
+export interface FireLanguage {
+   languageCode: string;
+   apiURL: string;
 }
 
 export interface Properties {

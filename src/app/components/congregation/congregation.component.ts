@@ -1,13 +1,13 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { combineAll, debounceTime, distinctUntilChanged, map, windowWhen } from 'rxjs/operators';
+import { debounceTime, map } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/auth.service';
 import { GeoZip, Place } from 'src/app/models/address.model';
-import { CongLanguage, Congregation, CongregationData, GeoLocationList } from 'src/app/models/congregation.model';
+import { CongLanguage, Congregation, CongregationData, FireLanguage, GeoLocationList } from 'src/app/models/congregation.model';
 import { GeolocationService } from 'src/app/services/geolocation.service';
 import { faLanguage } from '@fortawesome/free-solid-svg-icons';
 import { saveAs } from 'file-saver';
@@ -15,7 +15,13 @@ import { FireStoreService } from 'src/app/services/fire-store.service';
 import { Gender, Privilege, Publisher } from 'src/app/models/publisher.model';
 import { AngularFirestoreDocument, DocumentReference } from '@angular/fire/firestore';
 import { User } from 'src/app/models/user.model';
+import { MatStepper } from '@angular/material/stepper';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { AutoUnsubscribe } from "ngx-auto-unsubscribe";
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ClaimedCongregationComponent } from '../modals/claimed-congregation/claimed-congregation.component';
 
+@AutoUnsubscribe()
 @Component({
   selector: 'ab-congregation',
   templateUrl: './congregation.component.html',
@@ -25,7 +31,7 @@ import { User } from 'src/app/models/user.model';
 
 
 
-export class CongregationComponent implements OnInit {
+export class CongregationComponent implements OnInit, OnDestroy {
    congrationGroup: FormGroup;
    languageForm: FormGroup;
    aboutForm: FormGroup;
@@ -74,14 +80,15 @@ export class CongregationComponent implements OnInit {
       public auth: AuthService,
       private router: Router,
       private http: HttpClient,
+      private modalService: NgbModal,
       private geoService: GeolocationService,
-      private fireStoreService: FireStoreService
+      private fireStoreService: FireStoreService,
     ) { 
     }
 
 
   ngOnInit(): void {
- 
+  
    this.congrationGroup = this.fb.group({
       zipControl: ['', [
          Validators.required, 
@@ -93,12 +100,6 @@ export class CongregationComponent implements OnInit {
          Validators.minLength(2)
       ]],
    });
-   this.languageForm = this.fb.group({
-   languageControl: ['', [
-      Validators.required,
-      Validators.minLength(2)
-   ]],
-   }); 
    this.aboutForm = this.fb.group({
       fname: ['',  [
          Validators.required,
@@ -124,6 +125,12 @@ export class CongregationComponent implements OnInit {
       }
    })
   })
+}
+
+ngOnDestroy(): void {
+   //Called once, before the instance is destroyed.
+   //Add 'implements OnDestroy' to the class.
+   
 }
 
   get zipInput() { return this.congrationGroup.get('zipControl'); }
@@ -163,43 +170,64 @@ export class CongregationComponent implements OnInit {
       // this.loadCongregations(); 
   }
  
-  selectCongregation(congregation: GeoLocationList) {
+  selectCongregation(congregation: GeoLocationList, matStepper: MatStepper) {
+     if (congregation.isClaimed) {
+     const modalRef = this.modalService.open(ClaimedCongregationComponent, {
+        centered: true,
+        size: 'md',
+     })
+     modalRef.componentInstance.congregation = congregation 
+     } else {
       this.selectedCong = congregation;
+      matStepper.next();
+     }
   }
 
   verifyAll() {
-   let _congregation: Congregation = {
-      id: this.selectedCong.properties.orgGuid,
-      language: this.language.value,
-      geoLocation: this.selectedCong,
-      properties: this.selectedCong.properties
-   }
-    let congregationRef: AngularFirestoreDocument<Congregation> = this.fireStoreService.fireStore.doc(`congregations/${this.selectedCong.properties.orgGuid}`)
-   
-    congregationRef.set(_congregation).then((data) => {
-      this.auth.afAuth.user.subscribe(user => {
-         let updatedUser: User = {
-            congregation: congregationRef.ref
-         }
-         this.fireStoreService.update(`users/${user.uid}`, updatedUser).then(() => {
 
-               let publisher: Publisher = {
-                  email: user.email,
-                  firstName: this.fname.value,
-                  lastName: this.lname.value,
-                  gender: this.gender.value,
-                  photoURL: user.photoURL,
-                  privilege: this.privilege.value,
-                  uid: user.uid,
-                  isInvited: true
-               }
-               congregationRef.collection('publishers').doc(user.uid).set(publisher)
-               .then(() => {
-                  this.router.navigateByUrl('home/dashboard');
-               })
+   let fireLanguageSubscription = this.fireStoreService.fireStore.doc(`languages/${this.selectedCong.properties.languageCode}`).valueChanges();
+
+   fireLanguageSubscription.subscribe((lang : FireLanguage) => {
+      if (lang) {
+         let _congregation: Congregation = {
+            id: this.selectedCong.properties.orgGuid,
+            language: this.language.value,
+            geoLocation: this.selectedCong,
+            properties: this.selectedCong.properties,
+            fireLanguage: {
+               apiURL: lang.apiURL,
+               languageCode: lang.languageCode
+            }
+         }
+      let congregationRef: AngularFirestoreDocument<Congregation> = this.fireStoreService.fireStore.doc(`congregations/${this.selectedCong.properties.orgGuid}`)
+      congregationRef.set(_congregation).then((data) => {
+         this.auth.afAuth.user.subscribe(user => {
+            let updatedUser: User = {
+               congregation: congregationRef.ref
+            }
+            this.fireStoreService.update(`users/${user.uid}`, updatedUser).then(() => {
+   
+                  let publisher: Publisher = {
+                     email: user.email,
+                     firstName: this.fname.value,
+                     lastName: this.lname.value,
+                     gender: this.gender.value,
+                     photoURL: user.photoURL,
+                     privilege: this.privilege.value,
+                     uid: user.uid,
+                     isInvited: true
+                  }
+                  congregationRef.collection('publishers').doc(user.uid).set(publisher)
+                  .then(() => {
+                     this.router.navigateByUrl('home/dashboard');
+                  })
+            })
          })
-      })
-    })
+       })
+      } else {
+         console.log('this language is not available yet.')
+      }
+   }, (error) => console.log(error))
   }
 
   loadCongregations() {

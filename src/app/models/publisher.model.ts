@@ -11,9 +11,30 @@ export class Publisher {
    privilege?:Privilege;
    gender?: Gender;
    isInvited?: boolean;
+   isWTConductor?: boolean;
+   speaker?: Speaker;
 };
 
+export class Speaker {
+   isOutGoing?: boolean;
+   talks?: Talk[];
+}
 
+export class Talk {
+   id?: string;
+   title?: string;
+   number?: number;
+   lastDelivered?: Date;
+   songNumber?: Song;
+   isSymposium?: boolean;
+   symposiumAssistant?: Publisher;
+}
+
+export class Song {
+   id?: string;
+   title?: string;
+   number?: number;
+}
 
 export enum Privilege {
    pub = 'publisher',

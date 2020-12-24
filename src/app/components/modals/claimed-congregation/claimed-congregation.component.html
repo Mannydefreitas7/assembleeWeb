@@ -1,0 +1,27 @@
+
+         <div class="modal-header">
+            <h5 class="modal-title fw-bold">{{ congregation.properties.orgName }} is Claimed</h5>
+         </div>
+         <div class="modal-body">
+            <p class="lh-sm p-2">
+               It looks like this congregation is already claimed. You can contact the admin user below if you want to have admin rights for this congregation.
+            </p>
+            <p class="fw-bold fs-5">Admin:</p>
+            <div class="list-group list-group-flush" *ngIf="$users | async as users">
+                  <div class="list-group-item d-flex align-content-center" *ngFor="let user of users">
+                     <img [src]="user.photoURL" alt="" style="width: 50px; height: 50px;" class="rounded-circle">
+                     <p class="lh-sm ms-3 mb-0">
+                        {{ user.lastName }} {{ user.firstName }} <br>
+                        <a [href]="'mailto:' + user.email" >{{ user.email }}</a>
+                     </p>
+                  </div>
+            </div>
+            <hr>
+            <h5 class="fw-bold">It's a mistake?</h5>
+            <p class="lh-sm p-2">If you think this congregation was claimed by mistake, please email us at 
+               <a href="mailto:wolinweb@gmail.com">wolinweb@gmail.com</a>. We will get back to you as soon as possible.
+            </p>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="activeModal.close()">Close</button>
+         </div>

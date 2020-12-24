@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbAccordionModule, NgbAlertModule, NgbCollapseModule, NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -14,7 +14,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SortByPipe } from './helpers/sort-by.pipe';
-
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { NgxWebstorageModule } from 'ngx-webstorage';
 @NgModule({
   declarations: [SortByPipe],
   imports: [
@@ -35,7 +37,10 @@ import { SortByPipe } from './helpers/sort-by.pipe';
     MatIconModule,
     FontAwesomeModule,
     NgbAccordionModule,
-    NgbCollapseModule
+    NgbCollapseModule,
+    NgxSpinnerModule,
+    NgxSkeletonLoaderModule.forRoot(),
+    NgxWebstorageModule.forRoot()
   ],
   exports: [
    FormsModule,
@@ -54,7 +59,10 @@ import { SortByPipe } from './helpers/sort-by.pipe';
    MatProgressSpinnerModule,
    MatIconModule,
    FontAwesomeModule,
-   NgbAccordionModule
-  ]
+   NgbAccordionModule,
+   NgxSpinnerModule,
+   NgxSkeletonLoaderModule
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule { }

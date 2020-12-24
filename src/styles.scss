@@ -2,6 +2,13 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
+@import '../node_modules/@spectrum-css/vars/dist/spectrum-dark.css';
+@import '../node_modules/@spectrum-css/vars/dist/spectrum-global.css';
+@import '../node_modules/@spectrum-css/vars/dist/spectrum-medium.css';
+@import '../node_modules/@spectrum-css/vars/dist/spectrum-light.css';
+@import '../node_modules/@spectrum-css/page/dist/index-vars.css';
+@import '../node_modules/@spectrum-css/button/dist/index-vars.css';
+
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -109,4 +116,7 @@ h1, h2, h3 {
 }
 .card-custom {
    border: none !important;
+}
+.sr-only {
+   display: none;
 }

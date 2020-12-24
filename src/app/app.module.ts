@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { AngularFireModule } from "@angular/fire";
@@ -30,6 +30,9 @@ import { NGFORAGE_CONFIG_PROVIDER } from './ngforage.config';
 import { ProgramDetailComponent } from './pages/programs/program-detail/program-detail.component';
 import { SelectPublisherComponent } from './components/modals/select-publisher/select-publisher.component';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { ClaimedCongregationComponent } from './components/modals/claimed-congregation/claimed-congregation.component';
+import { FilterPipe } from './shared/helpers/filter.pipe';
+
 registerLocaleData(en);
 
 @NgModule({
@@ -47,7 +50,9 @@ registerLocaleData(en);
       SetupComponent,
       CongregationComponent,
       AddSpeakerComponent,
-      SelectPublisherComponent
+      SelectPublisherComponent,
+      ClaimedCongregationComponent,
+      FilterPipe
   ],
   imports: [
     BrowserModule,
@@ -62,7 +67,7 @@ registerLocaleData(en);
     HttpClientModule,
     BrowserAnimationsModule,
     FontAwesomeModule,
-    AngularSvgIconModule.forRoot()
+    AngularSvgIconModule.forRoot(),
   ],
   bootstrap: [AppComponent],
   providers: [
@@ -74,6 +79,7 @@ registerLocaleData(en);
          showError: true
        }
     }
-   ]
+   ],
+   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule { }

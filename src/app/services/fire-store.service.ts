@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentData, DocumentReference } from '@angular/fire/firestore';
+import { LocalStorageService } from 'ngx-webstorage';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { Privilege, Permission, Publisher } from '../models/publisher.model';
+import { User } from '../models/user.model';
 import { WeekProgram, WOLWeek } from '../models/wol.model';
 
 
@@ -13,7 +15,8 @@ import { WeekProgram, WOLWeek } from '../models/wol.model';
 export class FireStoreService {
 
   constructor(
-     public fireStore: AngularFirestore
+     public fireStore: AngularFirestore,
+     private storage: LocalStorageService
      ) { }
 
   // helpers firestore methods
@@ -23,15 +26,14 @@ export class FireStoreService {
     return this.fireStore.collection(collection).doc(doc).set(data, { merge: true });
   }
 
-//   getCongregationPublishers() : Observable<Publisher[]> {
+  getCongregationPublishers() : Observable<Publisher[]> {
+    let congregation: string = this.storage.retrieve('congregationRef');
+   return this.fireStore.collection<Publisher>(`${congregation}/publishers`).valueChanges();
+  }
 
-    
-
-//   }
-
-  addWeekProgram(congregationID: string, date: Date, data: WeekProgram) : Promise<any> {
+  addWeekProgram(congregation: string, date: Date, data: WeekProgram) : Promise<any> {
   
-      return this.fireStore.collection('congregations').doc(`${congregationID}`).collection('weeks').doc(`${this.fireStore.createId()}`).set(data);
+      return this.fireStore.collection(`${congregation}/weeks`).doc(`${data.id}`).set(data);
 
   }
 

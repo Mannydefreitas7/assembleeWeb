@@ -18,10 +18,8 @@ export class TopbarComponent implements OnInit {
      ) { }
 
   ngOnInit(): void {
-     this.activeRoute.url.subscribe((data) => {
-      console.log(this.router.isActive('home/publishers', true)) 
-     })
-    
+ 
+   
   }
 
 }

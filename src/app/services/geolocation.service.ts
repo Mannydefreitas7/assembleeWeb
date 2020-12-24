@@ -3,15 +3,19 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { GeoZip, GeoCity } from '../models/address.model';
-import { CongLanguage, CongregationData } from '../models/congregation.model';
+import { CongLanguage, Congregation, CongregationData } from '../models/congregation.model';
 import { Convert } from '../models/convert';
+import { FireStoreService } from './fire-store.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeolocationService {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+     private http: HttpClient,
+     private fireStore: FireStoreService
+     ) { }
 
   getGeolocationFromZip(zip: number) : Observable<GeoZip> {
       let url = `http://api.zippopotam.us/us/${zip}`;
@@ -53,7 +57,6 @@ export class GeolocationService {
          data.forEach(item => {
             languages.push(Convert.toCongLanguage(JSON.stringify(item)))
          })
-        
          return languages;
       })
    )
@@ -66,6 +69,18 @@ export class GeolocationService {
    let request = this.http.get(url).pipe(
     map(data => {
        let congregation: CongregationData = Convert.toCongregation(JSON.stringify(data));
+     
+
+       this.fireStore.fireStore.collection<Congregation>('congregations')
+       .valueChanges().subscribe(congs => {
+         congs.forEach(cong => {
+           let existing = congregation.geoLocationList.filter(c => c.properties.orgGuid == cong.id)
+
+           if (existing.length > 0) {
+               existing[0].isClaimed = true;
+           }
+         })
+       })
        return congregation;
     })
  )

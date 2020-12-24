@@ -38,11 +38,12 @@ export interface WeekProgram {
 
 export interface MidWeekProgram {
    date?: Date;
-   treasuresTalk?: Part;
+  // treasuresTalk?: Part;
    chairman?: Part;
-   treasuresDiscussion?: Part;
-   bibleReading?: Part;
+  // treasuresDiscussion?: Part;
+ //  bibleReading?: Part;
    applyParts?: Part[];
+   treasuresParts?: Part[];
    lifeParts?: Part[];
    prayers?: Part[];
 }
@@ -67,4 +68,5 @@ export interface Part {
    hasDiscussion?: boolean;
    title?: string;
    subTitle?: string;
+   isConfirmed?: boolean;
 }

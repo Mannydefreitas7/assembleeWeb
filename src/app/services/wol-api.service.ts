@@ -18,8 +18,8 @@ export class WolApiService {
      private fireStore: FireStoreService
      ) { }
 
-  getWeekProgram(year: number, month: number, day: number) : Observable<WOLWeek> {
-     let url = `http://localhost:4200/wol/dt/r1/lp-e/${year}/${month}/${day}`;
+  getWeekProgram(year: number, month: number, day: number, apiURL: string) : Observable<WOLWeek> {
+     let url = `http://localhost:4200/${apiURL}${year}/${month}/${day}`;
       return this.http.get<WOLWeek>(url);
   }
 
@@ -29,55 +29,40 @@ export class WolApiService {
       let endContent: Document = this.parse.parseFromString(wolWeek.items[2].content, "text/html");
       let midWeek : MidWeekProgram;
       let weekEnd : WeekEndProgram;
-      
-      let treasureTalk: Part = {
-        id: this.fireStore.fireStore.createId(),
-        assignee: null,
-        assistant: null,
-        hasAssistant: false,
-        gender: [Gender.brother],
-        hasDiscussion: false,
-        privilege: [Privilege.elder, Privilege.ms],
-        title: midContent.querySelector('#section2').querySelector('ul').querySelector('.so').textContent,
-        length: midContent.querySelector('#section2').querySelector('ul').querySelector('.so').textContent.match(/\(([^)]+)\)/)[1],
-        lengthTime: moment(midContent.querySelector('#section2').querySelector('ul').querySelector('.so').textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0], 'hh:mm:ss').toDate().getTime()
-      }
+      let treasuresParts : Part[] = [];
+
+      midContent.getElementById('section2')
+      .querySelector('ul')
+      .querySelectorAll('.so')
+      .forEach(element => {
+         treasuresParts.push({
+            assignee: null,
+            hasDiscussion: false,
+            hasAssistant: false,
+            assistant: null,
+            gender: [Gender.brother],
+            id: this.fireStore.fireStore.createId(),
+            length: element.textContent.match(/\(([^)]+)\)/)[1],
+            privilege: element.textContent.match(/\(([^)]+)\)/)[1].includes('10') ? [Privilege.elder, Privilege.ms] : [Privilege.pub, Privilege.elder, Privilege.ms],
+            subTitle: "",
+            title: element.textContent,
+            lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime()
+         })
+      })
+
+      treasuresParts[1].hasDiscussion = true;
   
-      let treasuresDiscussion : Part = {
-        id: this.fireStore.fireStore.createId(),
+      let prayer: Part = {
         assignee: null,
-        assistant: null,
-        hasAssistant: false,
-        gender: [Gender.brother],
-        privilege: [Privilege.elder, Privilege.ms],
-        hasDiscussion: true,
-        title: midContent.querySelector('#section2').querySelector('ul').querySelectorAll('.so')[1].textContent,
-        length: midContent.querySelector('#section2').querySelector('ul').querySelectorAll('.so')[1].textContent.match(/\(([^)]+)\)/)[1],
-        lengthTime: moment(midContent.querySelector('#section2').querySelector('ul').querySelectorAll('.so')[1].textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0], 'hh:mm:ss').toDate().getTime()
-      }
-      
-      let bibleReading : Part = {
         id: this.fireStore.fireStore.createId(),
-        assignee: null,
-        assistant: null,
-        hasAssistant: false,
-        hasDiscussion: false,
-        gender: [Gender.brother],
         privilege: [Privilege.elder, Privilege.ms, Privilege.pub],
-        title: midContent.querySelector('#section2').querySelector('ul').querySelectorAll('.so')[2].textContent,
-        length: midContent.querySelector('#section2').querySelector('ul').querySelectorAll('.so')[2].textContent.match(/\(([^)]+)\)/)[1],
-         lengthTime: moment(midContent.querySelector('#section2').querySelector('ul').querySelectorAll('.so')[2].textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0], 'hh:mm:ss').toDate().getTime()
-      }
-  
-      let prayer = {
-        assignee: null,
-        id: this.fireStore.fireStore.createId(),
+        gender: [Gender.brother]
      }
   
     let applyParts : Part[] = [];
     midContent.getElementById('section3')
     .querySelector('ul')
-    .querySelectorAll('li')
+    .querySelectorAll('.so')
     .forEach(element => {
      
        applyParts.push({
@@ -90,7 +75,7 @@ export class WolApiService {
           length: element.textContent.match(/\(([^)]+)\)/)[1],
           privilege: element.textContent.match(/\(([^)]+)\)/)[1].includes('15') ? [Privilege.elder, Privilege.ms] : [Privilege.pub],
           subTitle: "",
-          title: element.querySelectorAll('strong')[0].textContent,
+          title: element.textContent,
           lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime()
        })
     })
@@ -128,13 +113,11 @@ export class WolApiService {
            privilege: [Privilege.elder],
            id: this.fireStore.fireStore.createId()
          },
-         treasuresTalk : treasureTalk,
-         treasuresDiscussion: treasuresDiscussion,
-         bibleReading: bibleReading,
          prayers: [
            prayer,
            prayer
          ],
+         treasuresParts: treasuresParts,
         applyParts: applyParts,
         lifeParts: lifeParts,
         date: date

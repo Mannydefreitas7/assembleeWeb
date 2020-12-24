@@ -4,8 +4,7 @@
            <h2 class="text-center font-weight-bold">Register Congregation</h2>
            <p class="w-auto text-center font-weight-normal text-dark mx-4 lh-base mb-5">Enter your congregation information. <br> We do not store private information. All congregation data are gathered from the public data of JW.ORG.</p>
             <mat-horizontal-stepper #stepper linear [disableRipple]="true" labelPosition='bottom'>
-             <mat-step [stepControl]="aboutForm" state="phone">
-                <ng-template matStepLabel><h6>Your info</h6></ng-template>
+             <mat-step [stepControl]="aboutForm" state="phone" label="Your info">
                 <form [formGroup]="aboutForm">
                   <div class="mt-2 row g-2">
                    <div class="col-lg-2 col-md-3 col-sm-5">
@@ -37,33 +36,44 @@
                      <div class=" col-lg-6 col-md-6 col-sm-12 card card-custom shadow-sm me-2">
                         <div class="card-body">
                            <div class="row align-items-center">
-                              <div class="col">
-                                 <h6 class="card-subtitle text-muted">First Name</h6>
-                                 <h5 class="card-title mb-0">{{ fname.value }}</h5>
-                                 <hr>
-                                 <h6 class="card-subtitle text-muted">Privilege</h6>
-                                 <h5 class="card-title mb-0">{{ privilege.value }}</h5>
+                              <div class="col-lg-6 col-md-6 col-sm-12 p-2">
+                                 <p class="fs-6 text-muted fw-normal">First Name<br>
+                                    <span class="fs-6 mb-0 fw-bold lh-sm text-dark">{{ fname.value }}</span>
+                                 </p>
                               </div>
-                              <div class="col">
-                                 <h6 class="card-subtitle text-muted">Last Name</h6>
-                                 <h5 class="card-title mb-0">{{ lname.value }}</h5>
-                                 <hr>
-                                 <h6 class="card-subtitle text-muted">Gender</h6>
-                                 <h5 class="card-title mb-0">{{ gender.value }}</h5>
+   
+                              <div class="col-lg-6 col-md-6 col-sm-12 p-2">
+                                 <p class="fs-6 text-muted fw-normal ">Last Name<br>
+                                    <span class="fs-6 mb-0 fw-bold lh-sm text-dark">{{ lname.value }}</span>
+                                 </p>
+                              </div>
+   
+                              <div class="col-lg-6 col-md-6 col-sm-12 p-2">
+                                 <p class="fs-6 text-muted fw-normal ">Privilege<br>
+                                    <span class="fs-6 mb-0 fw-bold lh-sm text-dark">{{ privilege.value }}</span>
+                                 </p>
+                              </div>
+   
+                              <div class="col-lg-6 col-md-6 col-sm-12 p-2">
+                                 <p class="fs-6 text-muted fw-normal ">Gender<br>
+                                    <span class="fs-6 mb-0 fw-bold lh-sm text-dark">{{ gender.value }}</span>
+                                 </p>
                               </div>
                             </div>
                     </div>
                    </div>
                   </div>
-                  
+                  <!-- <div style="max-width: 50px; max-height: 50px;">
+                     <ngx-spinner type="ball-scale-multiple" [fullScreen]="false"></ngx-spinner>
+                  </div> -->
                   <button class="btn btn-secondary mt-4" matStepperNext (click)="loadLanguages()">Next</button>
                 </form>
+
               </mat-step>
-              <mat-step [stepControl]="congrationGroup" (click)="loadLanguages()">
-                <ng-template matStepLabel><h6>Your Congregation</h6></ng-template>
+              <mat-step [stepControl]="congrationGroup" (click)="loadLanguages()" label="Fill out your address">
                 <form [formGroup]="congrationGroup">
                    <div class="mt-2 row g-2">
-                   <div class="col-lg-6 col-md-6 col-sm-12">
+                   <div class="col-lg-3 col-md-6 col-sm-12">
                       <label for="typeahead-format" class="mb-2">Congregation Language</label>
                
                     <input id="typeahead-template" type="text" class="form-control" [ngbTypeahead]="search"
@@ -78,7 +88,7 @@
                      
                    </div>
                    <div class="row g-2">
-                     <div class="col-lg-4 col-md-6 col-sm-12 card card-custom shadow-sm me-2" *ngIf="language.value">
+                     <div class="col-lg-3 col-md-6 col-sm-12 card card-custom shadow-sm me-2" *ngIf="language.value">
                            <div class="card-body py-1">
                           <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-start align-items-center ps-0">
@@ -117,36 +127,80 @@
                  </ng-template>
               </mat-step>
     
-              <mat-step>
-                <ng-template matStepLabel>Select Congregation</ng-template>
+              <mat-step label="Select Congregation">
                 <ng-container *ngIf="$congregations | async as congregations; else loader">
     
-                   <div class="list-group-flush mt-2" *ngFor="let congregation of congregations.geoLocationList">
+                   <ul class="list-group-flush mt-2 shadow-sm rounded ps-0">
     
-                      <button type="button" class="list-group-item list-group-item-action" (click)="selectCongregation(congregation)" matStepperNext>
-        
-                        <p class="h6">{{ congregation.properties.orgName }} <br>
-                         <span class="fs-6 text-muted font-weight-light">{{ congregation.properties.address }}</span>
-                        </p>
-                      </button>
-                    </div>
+                      <li *ngFor="let congregation of congregations.geoLocationList" class="list-group-item list-group-item-action p-4 d-inline-flex align-items-center justify-content-between" (click)="selectCongregation(congregation, stepper)" matStepperNext type="button">
+                         <div class="d-inline-flex align-items-center">
+                           <svg-icon src="assets/images/congregation.svg" [svgStyle]="{ 'height.px': 22 }" class="me-4"></svg-icon>
+                           <p class="fs-6 mb-0 fw-bold lh-sm">{{ congregation.properties.orgName }} <br>
+                            <span class="fs-6 text-muted fw-normal">{{ congregation.properties.address }}</span>
+                           </p>
+                         </div>
+                        <div *ngIf="congregation.isClaimed" class="d-inline-flex align-items-center text-warning">
+                           <span>Claimed</span>
+                           <svg-icon src="assets/images/c-info.svg" [svgStyle]="{ 'height.px': 18 }" class="ms-2"></svg-icon>
+                        </div>
+                        
+                     </li>
+                  </ul>
                 </ng-container>
               </mat-step>
-              <mat-step>
-                <ng-template matStepLabel>Verify</ng-template>
-                <p class="h6 px-2 py-4" *ngIf="selectedCong">{{ selectedCong.properties.orgName }} <br>
-                   <span class="fs-6 text-muted font-weight-light">{{ selectedCong.properties.address }}</span>
-                </p>
-                <button type="button" class="btn btn-secondary mt-4" (click)="verifyAll()">
-                   Done
-                </button> 
+              <mat-step label="Verify">
+
+               <div class="row mt-2 g-2">
+                  <div class=" col-lg-6 col-md-6 col-sm-12 card card-custom shadow-sm me-2">
+                     <div class="card-body p-4">
+                        <div class="row align-items-center">
+
+                           <div class="col-lg-6 col-md-6 col-sm-12 p-2">
+                              <p class="fs-6 text-muted fw-normal">First Name<br>
+                                 <span class="fs-6 mb-0 fw-bold lh-sm text-dark">{{ fname.value }}</span>
+                              </p>
+                           </div>
+
+                           <div class="col-lg-6 col-md-6 col-sm-12 p-2">
+                              <p class="fs-6 text-muted fw-normal ">Last Name<br>
+                                 <span class="fs-6 mb-0 fw-bold lh-sm text-dark">{{ lname.value }}</span>
+                              </p>
+                           </div>
+
+                           <div class="col-lg-6 col-md-6 col-sm-12 p-2">
+                              <p class="fs-6 text-muted fw-normal ">Privilege<br>
+                                 <span class="fs-6 mb-0 fw-bold lh-sm text-dark">{{ privilege.value }}</span>
+                              </p>
+                           </div>
+
+                           <div class="col-lg-6 col-md-6 col-sm-12 p-2">
+                              <p class="fs-6 text-muted fw-normal ">Gender<br>
+                                 <span class="fs-6 mb-0 fw-bold lh-sm text-dark">{{ gender.value }}</span>
+                              </p>
+                           </div>
+
+                           <hr class="mt-3">
+                           <div class="col-12" *ngIf="selectedCong">
+                              <div class="d-inline-flex align-items-center">
+                                 <svg-icon src="assets/images/congregation.svg" [svgStyle]="{ 'height.px': 22 }" class="me-4"></svg-icon>
+                                 <p class="fs-6 mb-0 fw-bold lh-sm">{{ selectedCong.properties.orgName }} <br>
+                                  <span class="fs-6 text-muted fw-normal">{{ selectedCong.properties.address }}</span>
+                                 </p>
+                              </div>
+                        </div>
+                     </div>
+                 </div>
+                </div>
+               </div>
+                <button type="button" class="btn btn-secondary mt-4" (click)="verifyAll()">Done</button> 
+
               </mat-step>
               <ng-template matStepperIcon="phone">
                 <mat-icon>call_end</mat-icon>
               </ng-template>
             </mat-horizontal-stepper>
             <ng-template #loader>
-              <mat-spinner></mat-spinner>
+               <ngx-skeleton-loader count="5" appearance="circle"></ngx-skeleton-loader>
             </ng-template>
       </div>
   

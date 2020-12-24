@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DocumentData, DocumentReference } from '@angular/fire/firestore';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { config } from 'process';
@@ -13,13 +13,16 @@ import { WeekProgram, WOLWeek } from 'src/app/models/wol.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { User } from 'src/app/models/user.model';
+import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
+import { Congregation } from 'src/app/models/congregation.model';
 
+@AutoUnsubscribe()
 @Component({
   selector: 'app-programs',
   templateUrl: './programs.component.html',
   styleUrls: ['./programs.component.scss']
 })
-export class ProgramsComponent implements OnInit {
+export class ProgramsComponent implements OnInit, OnDestroy {
 
    year: number;
    selectedYear: number;
@@ -32,7 +35,7 @@ export class ProgramsComponent implements OnInit {
      public fireStoreService: FireStoreService,
      public authService: AuthService
   ) { }
-  active = 'top';
+  active = '';
   ngOnInit(): void {
      this.year = new Date().getFullYear();
      this.selectedYear = new Date().getFullYear();
@@ -48,6 +51,12 @@ export class ProgramsComponent implements OnInit {
 //     this.monthData = this.storeService.months[0];
   }
 
+  ngOnDestroy(): void {
+     //Called once, before the instance is destroyed.
+     //Add 'implements OnDestroy' to the class.
+     
+  }
+
   loadMonths() {
      
       this.storeService.getMonths(this.selectedYear);
@@ -58,21 +67,28 @@ export class ProgramsComponent implements OnInit {
   addMonthProgram() {
      let mondays = this.storeService.getMondays(this.monthData.date);
       // if has account, do fireStore
+      
       this.authService.afAuth.user
       .subscribe(user => {
-         this.fireStoreService.read(`publishers/${user.uid}`)
-         .subscribe((publisher => {
-            mondays.forEach(monday => {
+
+         this.fireStoreService.read(`users/${user.uid}`)
+         .subscribe((fireUser: User) => {
+
+            this.fireStoreService.read(fireUser.congregation.path).subscribe((congregation: Congregation) => {
+
+               mondays.forEach(monday => {
           
-               this.wolApiService.getWeekProgram(this.selectedYear, moment(monday).month() + 1, monday.getDate())
-               .toPromise()
-               .then(wolWeek => {
-                  if (this.wolApiService.parseWolContent(wolWeek, monday)) {
-                     this.fireStoreService.addWeekProgram(publisher.congregationID, monday, this.wolApiService.parseWolContent(wolWeek, monday))
-                  }
+                  this.wolApiService.getWeekProgram(this.selectedYear, moment(monday).month() + 1, monday.getDate(), congregation.fireLanguage.apiURL)
+                  .toPromise()
+                  .then(wolWeek => {
+                     if (this.wolApiService.parseWolContent(wolWeek, monday)) {
+                        this.fireStoreService.addWeekProgram(fireUser.congregation.path, monday, this.wolApiService.parseWolContent(wolWeek, monday))
+                     }
+                  })
                })
             })
-         }))
+
+         })
       })
       // if not, use localStorage
      
@@ -81,10 +97,16 @@ export class ProgramsComponent implements OnInit {
   loadWeeks() {
      this.authService.afAuth.user
      .subscribe(user => {
+      if (user)
       this.fireStoreService.read(`users/${user.uid}`)
       .subscribe((user: User) => {
         this.$weekProgram =
-        this.fireStoreService.readCollection(`${user.congregation}/weeks`).pipe(map(arr => arr.sort((a,b) => a.date - b.date)))
+        this.fireStoreService.readCollection(`${user.congregation.path}/weeks`).pipe(map(arr => arr.sort((a,b) => a.date - b.date)))
+
+        this.$weekProgram.subscribe(data => {
+           if (data)
+           this.active = data[0].id;
+        })
       })
    })
    }
