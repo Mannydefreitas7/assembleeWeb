@@ -76,6 +76,7 @@ export class SelectPublisherComponent implements OnInit {
 
 
    selectPublisher(publisher: Publisher) {
+      
       this.auth.afAuth.user.subscribe(user => {
          this.fireStoreService.read(`users/${user.uid}`)
             .subscribe((fireUser: User) => {
@@ -85,11 +86,14 @@ export class SelectPublisherComponent implements OnInit {
                this.isCollapsed = true
                this.fireStoreService.fireStore.firestore.doc(`${congregationRef}/weeks/${this.weekProgram.id}`).set(this.weekProgram)
                   .then(() => {
-                     this.modal.close()
+                     this.fireStoreService.fireStore.doc(`${congregationRef}/publishers/${publisher.uid}/parts/${this.part.id}`).set(this.part)
                   })
+                  .then(() => {
+                     this.modal.close()
+               })
             })
-      })
-   }
+         })
+      }
 
    addPublisher() {
       if (this.publisherForm.valid) {

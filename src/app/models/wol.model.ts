@@ -69,4 +69,5 @@ export interface Part {
    title?: string;
    subTitle?: string;
    isConfirmed?: boolean;
+   pathToUpdate?: string;
 }

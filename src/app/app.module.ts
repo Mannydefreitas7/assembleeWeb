@@ -3,6 +3,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { AngularFireModule } from "@angular/fire";
+import { AngularFireDatabaseModule } from "@angular/fire/database";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { environment } from 'src/environments/environment';
 import { NgbAlertModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -67,6 +68,7 @@ registerLocaleData(en);
     HttpClientModule,
     BrowserAnimationsModule,
     FontAwesomeModule,
+    AngularFireDatabaseModule,
     AngularSvgIconModule.forRoot(),
   ],
   bootstrap: [AppComponent],

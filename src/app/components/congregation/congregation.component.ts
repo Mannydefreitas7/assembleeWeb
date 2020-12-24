@@ -20,6 +20,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { AutoUnsubscribe } from "ngx-auto-unsubscribe";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClaimedCongregationComponent } from '../modals/claimed-congregation/claimed-congregation.component';
+import { FireDBService } from 'src/app/services/fire-db.service';
 
 @AutoUnsubscribe()
 @Component({
@@ -83,6 +84,7 @@ export class CongregationComponent implements OnInit, OnDestroy {
       private modalService: NgbModal,
       private geoService: GeolocationService,
       private fireStoreService: FireStoreService,
+      private fireDBService: FireDBService,
     ) { 
     }
 
@@ -185,7 +187,10 @@ ngOnDestroy(): void {
 
   verifyAll() {
 
-   let fireLanguageSubscription = this.fireStoreService.fireStore.doc(`languages/${this.selectedCong.properties.languageCode}`).valueChanges();
+  // let fireLanguageSubscription = this.fireStoreService.fireStore.doc(`languages/${this.selectedCong.properties.languageCode}`).valueChanges();
+
+   let fireLanguageSubscription = this.fireDBService.fireDBService.object(`languages/${this.selectedCong.properties.languageCode}`).valueChanges();
+ 
 
    fireLanguageSubscription.subscribe((lang : FireLanguage) => {
       if (lang) {
@@ -199,11 +204,14 @@ ngOnDestroy(): void {
                languageCode: lang.languageCode
             }
          }
-      let congregationRef: AngularFirestoreDocument<Congregation> = this.fireStoreService.fireStore.doc(`congregations/${this.selectedCong.properties.orgGuid}`)
+     let congregationRef = this.fireStoreService.fireStore.doc(`congregations/${this.selectedCong.properties.orgGuid}`).ref
+
+    //  let congregationRef = this.fireDBService.fireDBService.database.ref(`congregations/${this.selectedCong.properties.orgGuid}`).ref
+
       congregationRef.set(_congregation).then((data) => {
          this.auth.afAuth.user.subscribe(user => {
             let updatedUser: User = {
-               congregation: congregationRef.ref
+               congregation: congregationRef
             }
             this.fireStoreService.update(`users/${user.uid}`, updatedUser).then(() => {
    
@@ -221,9 +229,9 @@ ngOnDestroy(): void {
                   .then(() => {
                      this.router.navigateByUrl('home/dashboard');
                   })
-            })
+              })
+           })
          })
-       })
       } else {
          console.log('this language is not available yet.')
       }

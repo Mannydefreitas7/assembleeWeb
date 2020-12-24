@@ -1,5 +1,6 @@
 import { AngularFirestoreDocument, DocumentReference } from "@angular/fire/firestore";
 import { Congregation } from "./congregation.model";
+import { Part } from "./wol.model";
 
 export class Publisher {
 
@@ -13,6 +14,7 @@ export class Publisher {
    isInvited?: boolean;
    isWTConductor?: boolean;
    speaker?: Speaker;
+   parts?: Part[];
 };
 
 export class Speaker {

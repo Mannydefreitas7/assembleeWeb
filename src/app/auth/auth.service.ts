@@ -2,17 +2,12 @@ import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
-
-import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { switchMap, map } from 'rxjs/operators';
-
-import { Observable, forkJoin } from 'rxjs';
-import { of } from 'rxjs';
-import { FormBuilder } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
 import { FireStoreService } from '../services/fire-store.service';
-import { Publisher, Privilege } from '../models/publisher.model';
-import { LocalStorage, LocalStorageService, SessionStorage } from 'ngx-webstorage';
+import { Privilege } from '../models/publisher.model';
+import { LocalStorageService } from 'ngx-webstorage';
+import { FireDBService } from '../services/fire-db.service';
 
 @Injectable({
    providedIn: 'root'
@@ -25,6 +20,7 @@ export class AuthService {
    constructor(
       public afAuth: AngularFireAuth,
       private fireStoreService: FireStoreService,
+      private fireDBService: FireDBService,
       private router: Router,
       private ngZone: NgZone,
       public storage: LocalStorageService,
@@ -264,7 +260,8 @@ export class AuthService {
          loginProvider: credential.additionalUserInfo.providerId,
          isEmailVerified: credential.user.emailVerified
       };
-      return this.fireStoreService.create('users', credential.user.uid, data);
+      return this.fireDBService.fireDBService.object(`users/${credential.user.uid}`).set(data)
+     // return this.fireStoreService.create('users', credential.user.uid, data);
    }
 
 
