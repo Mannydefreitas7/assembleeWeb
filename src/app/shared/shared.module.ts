@@ -17,6 +17,12 @@ import { SortByPipe } from './helpers/sort-by.pipe';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { NgxWebstorageModule } from 'ngx-webstorage';
+import { TreasuresPipe } from './helpers/treasures.pipe';
+import { ApplyPipe } from './helpers/apply.pipe';
+import { LifePipe } from './helpers/life.pipe';
+import { WeekendPipe } from './helpers/weekend.pipe';
+import { ChairmansPipe } from './helpers/chairmans.pipe';
+import { PrayersPipe } from './helpers/prayers.pipe';
 @NgModule({
   declarations: [SortByPipe],
   imports: [

@@ -1,3 +1,4 @@
+import { DocumentReference } from "@angular/fire/firestore";
 import { Gender, Privilege, Publisher } from "./publisher.model";
 
 export interface WOLWeek {
@@ -29,32 +30,27 @@ export interface WeekProgram {
    id?: string;
    range?: string;
    date?: Date;
-   
-   midWeek?: MidWeekProgram;
-   weekEnd?: WeekEndProgram;
    isCOVisit?: boolean;
+   parts?: Part[];
 }
 
 
-export interface MidWeekProgram {
-   date?: Date;
-  // treasuresTalk?: Part;
-   chairman?: Part;
-  // treasuresDiscussion?: Part;
- //  bibleReading?: Part;
-   applyParts?: Part[];
-   treasuresParts?: Part[];
-   lifeParts?: Part[];
-   prayers?: Part[];
-}
+// export interface MidWeekProgram {
+//    date?: Date;
+//    chairman?: string;
+//    applyParts?: string[];
+//    treasuresParts?: string[];
+//    lifeParts?: string[];
+//    prayers?: string[];
+// }
 
-export interface WeekEndProgram {
-   date?: Date;
-   publicTalk: Part;
-   watchtowerStudy: Part;
-   chairman?: Part;
-   prayers: Part[];
-}
+// export interface WeekEndProgram {
+//    date?: Date;
+//    publicTalk: string;
+//    watchtowerStudy: string;
+//    chairman?: string;
+//    prayers: string[]
+// }
 
 export interface Part {
    id?: string;
@@ -69,5 +65,16 @@ export interface Part {
    title?: string;
    subTitle?: string;
    isConfirmed?: boolean;
-   pathToUpdate?: string;
+   index?: number;
+   parent?: Parent;
+}
+
+
+export enum Parent {
+   treasures = 'treasures',
+   apply = 'apply',
+   life = 'life',
+   weekend = 'weekend',
+   chairman = 'chairman',
+   prayer = 'prayer'
 }

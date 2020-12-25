@@ -33,6 +33,12 @@ import { SelectPublisherComponent } from './components/modals/select-publisher/s
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { ClaimedCongregationComponent } from './components/modals/claimed-congregation/claimed-congregation.component';
 import { FilterPipe } from './shared/helpers/filter.pipe';
+import { WeekendPipe } from './shared/helpers/weekend.pipe';
+import { TreasuresPipe } from './shared/helpers/treasures.pipe';
+import { PrayersPipe } from './shared/helpers/prayers.pipe';
+import { LifePipe } from './shared/helpers/life.pipe';
+import { ChairmansPipe } from './shared/helpers/chairmans.pipe';
+import { ApplyPipe } from './shared/helpers/apply.pipe';
 
 registerLocaleData(en);
 
@@ -53,7 +59,13 @@ registerLocaleData(en);
       AddSpeakerComponent,
       SelectPublisherComponent,
       ClaimedCongregationComponent,
-      FilterPipe
+      FilterPipe,
+      WeekendPipe,
+      TreasuresPipe,
+      PrayersPipe,
+      LifePipe,
+      ChairmansPipe,
+      ApplyPipe
   ],
   imports: [
     BrowserModule,

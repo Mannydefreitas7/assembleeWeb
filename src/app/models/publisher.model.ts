@@ -14,7 +14,8 @@ export class Publisher {
    isInvited?: boolean;
    isWTConductor?: boolean;
    speaker?: Speaker;
-   parts?: Part[];
+   parts?: DocumentReference<Part>[];
+   
 };
 
 export class Speaker {
