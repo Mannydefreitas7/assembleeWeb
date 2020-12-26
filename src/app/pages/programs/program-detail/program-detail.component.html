@@ -1,156 +1,103 @@
 <h3 class="mb-4">{{ weekProgram.range }}</h3>
 
-<ng-container *ngIf="$parts | async as parts; else loader">
+<ng-container *ngIf="parts">
 
    <ul ngbNav #nav="ngbNav" class="nav-tabs">
 
-      <li ngbNavItem>
+    <button type="button" class="btn btn-outline-primary" (click)="downloadAsPDF()">
+      Button
+    </button>
+
+      <li ngbNavItem >
         <a ngbNavLink>Midweek</a>
         <ng-template ngbNavContent>
-   
-         <div class="mt-3 d-flex justify-content-between align-items-center">
+
+         <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="chairmans.length > 0 && chairmans[0]">
             <label for="prayer1" class="form-label">Chairman</label>
-            <div class="d-inline-flex align-content-center">
-            <a type="button" class="fs-6" *ngIf="(parts | chairmans)[0].assignee">
-               {{ weekProgram.midWeek.chairman.assignee.firstName }} {{ weekProgram.midWeek.chairman.assignee.lastName }}
-            </a>
-               <button class="btn btn-light" *ngIf="!weekProgram.midWeek.chairman.assignee" (click)="openSelectPublisherModal(weekProgram.midWeek.chairman)">
-                  select
-               </button>
-            </div>
+              <part-actions [part]="chairmans[0]" [weekProgram]="weekProgram"></part-actions>
           </div>
-          
-         
-         <div class="mt-3 d-flex justify-content-between align-items-center">
-            <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Prayer</label>
-            <div class="d-inline-flex align-content-center">
-               <a type="button" class="fs-6" *ngIf="weekProgram.midWeek.prayers[0].assignee">
-                  {{ weekProgram.midWeek.prayers[0].assignee.firstName }} {{ weekProgram.midWeek.prayers[0].assignee.lastName }}
-               </a>
-                  <button class="btn btn-light" *ngIf="!weekProgram.midWeek.prayers[0].assignee" (click)="openSelectPublisherModal(weekProgram.midWeek.prayers[0])">
-                     select
-                  </button>
-               </div>
+
+
+         <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[0]">
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prayer</label>
+               <part-actions [part]="prayers[0]" [weekProgram]="weekProgram"></part-actions>
           </div>
-   
-   
+
+
           <hr>
           <h4 class="my-3">TREASURES FROM GOD’S WORD</h4>
-   
-          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let treasuresPart of weekProgram.midWeek.treasuresParts">
-            <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label"> {{ treasuresPart.title }}</label>
-   
-            <div class="d-inline-flex align-content-center">
-               <a type="button" class="fs-6" *ngIf="treasuresPart.assignee">
-                  {{ treasuresPart.assignee.firstName }} {{ treasuresPart.assignee.lastName }}
-               </a>
-                  <button class="btn btn-light" *ngIf="!treasuresPart.assignee" (click)="openSelectPublisherModal(treasuresPart)">select</button>
-               </div>
+          <div *ngIf="treasures.length > 0">
+          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of treasures">
+
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ part.title.split(')')[0] }})</label>
+            <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
+            </div>
           </div>
-   
+
           <h4 class="my-3">APPLY YOURSELF TO THE FIELD MINISTRY</h4>
-   
-          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let applyPart of weekProgram.midWeek.applyParts">
-            <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label"> {{ applyPart.title }}</label>
-   
-            <div class="d-inline-flex align-content-center">
-               <a type="button" class="fs-6" *ngIf="applyPart.assignee">
-                  {{ applyPart.assignee.firstName }} {{ applyPart.assignee.lastName }}
-               </a>
-                  <button class="btn btn-light" *ngIf="!applyPart.assignee" (click)="openSelectPublisherModal(applyPart)">select</button>
-               </div>
-          </div>
-   
-   
+          <div *ngIf="apply.length > 0">
+          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of apply">
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ part.title.split(')')[0] }})</label>
+
+            <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
+            </div>
+         </div>
+
           <h4 class="my-3">LIVING AS CHRISTIANS</h4>
-   
-          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let lifePart of weekProgram.midWeek.lifeParts">
-            <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">{{ lifePart.title }}</label>
-            <div class="d-inline-flex align-content-center">
-               <a type="button" class="fs-6" *ngIf="lifePart.assignee">
-                  {{ lifePart.assignee.firstName }} {{ lifePart.assignee.lastName }}
-               </a>
-                  <button class="btn btn-light" *ngIf="!lifePart.assignee" (click)="openSelectPublisherModal(lifePart)">select</button>
-               </div>
+          <div *ngIf="life.length > 0">
+          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of life">
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">{{ part.title.split(')')[0] }})</label>
+            <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
+          </div>
           </div>
           <hr>
-          <div class="mt-3 d-flex justify-content-between align-items-center">
-            <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Prayer</label>
-            <div class="d-inline-flex align-content-center">
-               <a type="button" class="fs-6" *ngIf="weekProgram.midWeek.prayers[1].assignee">
-                  {{ weekProgram.midWeek.prayers[1].assignee.firstName }} {{ weekProgram.midWeek.prayers[1].assignee.lastName }}
-               </a>
-                  <button class="btn btn-light" *ngIf="!weekProgram.midWeek.prayers[1].assignee" (click)="openSelectPublisherModal(weekProgram.midWeek.prayers[1])">select</button>
-               </div>
+          <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[1]">
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prayer</label>
+              <part-actions [part]="prayers[1]" [weekProgram]="weekProgram"></part-actions>
           </div>
         </ng-template>
       </li>
-   
+
       <li ngbNavItem>
         <a ngbNavLink>Weekend</a>
         <ng-template ngbNavContent>
-   
-         <div class="mt-3 d-flex justify-content-between align-items-center">
+
+         <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="chairmans.length > 0 && chairmans[1]">
             <label for="prayer1" class="form-label">Chairman</label>
-            <div class="d-inline-flex align-content-center">
-            <a type="button" class="fs-6" *ngIf="weekProgram.weekEnd.chairman.assignee">
-               {{ weekProgram.weekEnd.chairman.assignee.firstName }} {{ weekProgram.weekEnd.chairman.assignee.lastName }}
-            </a>
-               <button class="btn btn-light" *ngIf="!weekProgram.weekEnd.chairman.assignee" (click)="openSelectPublisherModal(weekProgram.weekEnd.chairman)">
-                  select
-               </button>
-            </div>
+              <part-actions [part]="chairmans[1]" [weekProgram]="weekProgram"></part-actions>
           </div>
-   
-          <div class="mt-3 d-flex justify-content-between align-items-center">
-            <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label">Prayer</label>
-            <div class="d-inline-flex align-content-center">
-               <a type="button" class="fs-6" *ngIf="weekProgram.weekEnd.prayers[0].assignee">
-                  {{ weekProgram.weekEnd.prayers[0].assignee.firstName }} {{ weekProgram.weekEnd.prayers[0].assignee.lastName }}
-               </a>
-                  <button class="btn btn-light" *ngIf="!weekProgram.weekEnd.prayers[0].assignee" (click)="openSelectPublisherModal(weekProgram.weekEnd.prayers[0])">
-                     select
-                  </button>
-               </div>
+
+          <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[2]">
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prayer</label>
+              <part-actions [part]="prayers[2]" [weekProgram]="weekProgram"></part-actions>
           </div>
-   
+
           <hr>
           <h4 class="my-3">PUBLIC TALK</h4>
-   
-          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center">
-   
-            <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label"> {{ weekProgram.weekEnd.publicTalk.title ? weekProgram.weekEnd.publicTalk.title : '' }}</label>
-   
-            <div class="d-inline-flex align-content-center">
-               <a type="button" class="fs-6" *ngIf="weekProgram.weekEnd.publicTalk.assignee">
-                  {{ weekProgram.weekEnd.publicTalk.assignee.firstName }} {{ weekProgram.weekEnd.publicTalk.assignee.lastName }}
-               </a>
-                  <button class="btn btn-light" *ngIf="!weekProgram.weekEnd.publicTalk.assignee" (click)="openSelectPublisherModal(weekProgram.weekEnd.publicTalk)">select</button>
-               </div>
+
+          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngIf="weekend.length > 0 && weekend[0]">
+
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ weekend[0].title ? weekend[0].title : '' }}</label>
+
+              <part-actions [part]="weekend[0]" [weekProgram]="weekProgram"></part-actions>
           </div>
-   
           <hr>
           <h4 class="my-3">WATCHTOWER STUDY</h4>
-   
-          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center">
-   
-            <label for="prayer1" class="col-sm-12 col-md-8 col-lg-8 col-form-label"> {{ weekProgram.weekEnd.watchtowerStudy.subTitle ? weekProgram.weekEnd.watchtowerStudy.subTitle : 'Theme' }}</label>
-   
-            <div class="d-inline-flex align-content-center">
-               <a type="button" class="fs-6" *ngIf="weekProgram.weekEnd.watchtowerStudy.assignee">
-                  {{ weekProgram.weekEnd.watchtowerStudy.assignee.firstName }} {{ weekProgram.weekEnd.watchtowerStudy.assignee.lastName }}
-               </a>
-                  <button class="btn btn-light" *ngIf="!weekProgram.weekEnd.watchtowerStudy.assignee" (click)="openSelectPublisherModal(weekProgram.weekEnd.watchtowerStudy)">select</button>
-               </div>
+          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngIf="weekend.length > 0 && weekend[1]">
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ weekend[1].subTitle ? weekend[1].subTitle : 'Theme' }}</label>
+              <part-actions [part]="weekend[1]" [weekProgram]="weekProgram"></part-actions>
           </div>
-   
+          <hr>
+          <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[3]">
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prayer</label>
+              <part-actions [part]="prayers[3]" [weekProgram]="weekProgram"></part-actions>
+          </div>
         </ng-template>
       </li>
     </ul>
-
+    <div [ngbNavOutlet]="nav"></div>
 </ng-container>
 
 
 
 
- <div [ngbNavOutlet]="nav"></div>

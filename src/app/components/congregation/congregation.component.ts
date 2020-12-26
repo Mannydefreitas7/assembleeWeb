@@ -9,14 +9,12 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { GeoZip, Place } from 'src/app/models/address.model';
 import { CongLanguage, Congregation, CongregationData, FireLanguage, GeoLocationList } from 'src/app/models/congregation.model';
 import { GeolocationService } from 'src/app/services/geolocation.service';
-import { faLanguage } from '@fortawesome/free-solid-svg-icons';
 import { saveAs } from 'file-saver';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import { Gender, Privilege, Publisher } from 'src/app/models/publisher.model';
 import { AngularFirestoreDocument, DocumentReference } from '@angular/fire/firestore';
 import { User } from 'src/app/models/user.model';
 import { MatStepper } from '@angular/material/stepper';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { AutoUnsubscribe } from "ngx-auto-unsubscribe";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClaimedCongregationComponent } from '../modals/claimed-congregation/claimed-congregation.component';
@@ -50,7 +48,6 @@ export class CongregationComponent implements OnInit, OnDestroy {
    languages: CongLanguage[];
    checkedZip: boolean = false;
    checkedLanguage: CongLanguage;
-   faLanguage = faLanguage;
    genders: Gender[] = [Gender.brother, Gender.sister]
    $fireUser: Observable<User>;
    privileges: Privilege[] = [Privilege.elder, Privilege.ms]
@@ -84,16 +81,15 @@ export class CongregationComponent implements OnInit, OnDestroy {
       private modalService: NgbModal,
       private geoService: GeolocationService,
       private fireStoreService: FireStoreService,
-      private fireDBService: FireDBService,
-    ) { 
+    ) {
     }
 
 
   ngOnInit(): void {
-  
+
    this.congrationGroup = this.fb.group({
       zipControl: ['', [
-         Validators.required, 
+         Validators.required,
          Validators.minLength(5),
          Validators.maxLength(5)
       ]],
@@ -116,9 +112,10 @@ export class CongregationComponent implements OnInit, OnDestroy {
       ]],
       privilege: [{ value: Privilege.elder, disabled: false}, [
          Validators.required,
-      ]]  
-   }); 
+      ]]
+   });
    this.auth.afAuth.user.subscribe(user => {
+      if (user)
       this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`)
       .valueChanges().subscribe(fireUser => {
       if (fireUser) {
@@ -129,10 +126,7 @@ export class CongregationComponent implements OnInit, OnDestroy {
   })
 }
 
-ngOnDestroy(): void {
-   //Called once, before the instance is destroyed.
-   //Add 'implements OnDestroy' to the class.
-   
+ngOnDestroy() {
 }
 
   get zipInput() { return this.congrationGroup.get('zipControl'); }
@@ -169,16 +163,16 @@ ngOnDestroy(): void {
      this.checkedLanguage = language
      console.log(language)
       this.language.setValue(language.languageName);
-      // this.loadCongregations(); 
+      // this.loadCongregations();
   }
- 
+
   selectCongregation(congregation: GeoLocationList, matStepper: MatStepper) {
      if (congregation.isClaimed) {
      const modalRef = this.modalService.open(ClaimedCongregationComponent, {
         centered: true,
         size: 'md',
      })
-     modalRef.componentInstance.congregation = congregation 
+     modalRef.componentInstance.congregation = congregation
      } else {
       this.selectedCong = congregation;
       matStepper.next();
@@ -187,10 +181,7 @@ ngOnDestroy(): void {
 
   verifyAll() {
 
-  // let fireLanguageSubscription = this.fireStoreService.fireStore.doc(`languages/${this.selectedCong.properties.languageCode}`).valueChanges();
-
-   let fireLanguageSubscription = this.fireDBService.fireDBService.object(`languages/${this.selectedCong.properties.languageCode}`).valueChanges();
- 
+   let fireLanguageSubscription = this.fireStoreService.fireStore.doc(`languages/${this.selectedCong.properties.languageCode}`).valueChanges();
 
    fireLanguageSubscription.subscribe((lang : FireLanguage) => {
       if (lang) {
@@ -206,15 +197,13 @@ ngOnDestroy(): void {
          }
      let congregationRef = this.fireStoreService.fireStore.doc(`congregations/${this.selectedCong.properties.orgGuid}`).ref
 
-    //  let congregationRef = this.fireDBService.fireDBService.database.ref(`congregations/${this.selectedCong.properties.orgGuid}`).ref
-
       congregationRef.set(_congregation).then((data) => {
          this.auth.afAuth.user.subscribe(user => {
             let updatedUser: User = {
                congregation: congregationRef
             }
             this.fireStoreService.update(`users/${user.uid}`, updatedUser).then(() => {
-   
+
                   let publisher: Publisher = {
                      email: user.email,
                      firstName: this.fname.value,
@@ -223,7 +212,9 @@ ngOnDestroy(): void {
                      photoURL: user.photoURL,
                      privilege: this.privilege.value,
                      uid: user.uid,
-                     isInvited: true
+                     isInvited: true,
+                     isWTConductor: false,
+                     parts: []
                   }
                   congregationRef.collection('publishers').doc(user.uid).set(publisher)
                   .then(() => {
@@ -249,11 +240,11 @@ ngOnDestroy(): void {
       map(term => term === '' ? []
         : this.languages.filter(v => v.languageName.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
     )
-  
+
     formatter = (x: {name: string}) => x.name;
 
   checkZIP(e: Event) {
-   
+
    this.congrationGroup.get('zipControl').valueChanges.subscribe((data: string) => {
       if (data.length > 4) {
          this.checkedZip = true;

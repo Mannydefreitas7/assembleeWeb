@@ -70,7 +70,7 @@ export class WolApiService {
           gender: element.textContent.match(/\(([^)]+)\)/)[1].includes('15') ? [Gender.brother] : [Gender.sister, Gender.brother],
           id: this.fireStore.fireStore.createId(),
           length: element.textContent.match(/\(([^)]+)\)/)[1],
-          privilege: element.textContent.match(/\(([^)]+)\)/)[1].includes('15') ? [Privilege.elder, Privilege.ms] : [Privilege.pub],
+          privilege: element.textContent.match(/\(([^)]+)\)/)[1].includes('15') ? [Privilege.elder, Privilege.ms] : [Privilege.elder, Privilege.ms, Privilege.pub],
           subTitle: "",
           title: element.textContent,
           lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime(),
@@ -164,7 +164,10 @@ export class WolApiService {
          assistant: null,
          length: '60',
          lengthTime: moment('01:00:00', 'hh:mm:ss').toDate().getTime(),
-         privilege: [Privilege.elder]
+         privilege: [Privilege.elder],
+         index: 1,
+         isConfirmed: false,
+         parent: Parent.weekend
        })  
   
       let weekProgram : WeekProgram = {

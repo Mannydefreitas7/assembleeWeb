@@ -25,20 +25,17 @@ import { TopbarComponent } from './components/topbar/topbar.component';
 import { SetupComponent } from './components/setup/setup.component';
 import { CongregationComponent } from './components/congregation/congregation.component';
 import { AddSpeakerComponent } from './components/add-speaker/add-speaker.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { NGFORAGE_CONFIG_PROVIDER } from './ngforage.config';
 import { ProgramDetailComponent } from './pages/programs/program-detail/program-detail.component';
+import { AngularFireFunctionsModule, NEW_ORIGIN_BEHAVIOR, ORIGIN, USE_EMULATOR } from '@angular/fire/functions';
 import { SelectPublisherComponent } from './components/modals/select-publisher/select-publisher.component';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { ClaimedCongregationComponent } from './components/modals/claimed-congregation/claimed-congregation.component';
 import { FilterPipe } from './shared/helpers/filter.pipe';
-import { WeekendPipe } from './shared/helpers/weekend.pipe';
-import { TreasuresPipe } from './shared/helpers/treasures.pipe';
-import { PrayersPipe } from './shared/helpers/prayers.pipe';
-import { LifePipe } from './shared/helpers/life.pipe';
-import { ChairmansPipe } from './shared/helpers/chairmans.pipe';
-import { ApplyPipe } from './shared/helpers/apply.pipe';
+import { SortByPipe } from './shared/helpers/sort-by.pipe';
+import { PartActionsComponent } from './components/part-actions/part-actions.component';
+import { ImportPubsComponent } from './components/import-pubs/import-pubs.component';
 
 registerLocaleData(en);
 
@@ -60,12 +57,9 @@ registerLocaleData(en);
       SelectPublisherComponent,
       ClaimedCongregationComponent,
       FilterPipe,
-      WeekendPipe,
-      TreasuresPipe,
-      PrayersPipe,
-      LifePipe,
-      ChairmansPipe,
-      ApplyPipe
+      SortByPipe,
+      PartActionsComponent,
+      ImportPubsComponent
   ],
   imports: [
     BrowserModule,
@@ -75,11 +69,11 @@ registerLocaleData(en);
     CommonModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
+    AngularFireFunctionsModule,
     NgbModule,
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    FontAwesomeModule,
     AngularFireDatabaseModule,
     AngularSvgIconModule.forRoot(),
   ],
@@ -88,11 +82,14 @@ registerLocaleData(en);
      NGFORAGE_CONFIG_PROVIDER,
      {
       provide: STEPPER_GLOBAL_OPTIONS,
-      useValue: { 
+      useValue: {
          displayDefaultIndicatorType: false,
          showError: true
        }
-    }
+    },
+    { provide: NEW_ORIGIN_BEHAVIOR, useValue: true },
+    { provide: ORIGIN, useValue: 'https://assemblee.web.app/' },
+    { provide: USE_EMULATOR, useValue: ['localhost', 4200] }
    ],
    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

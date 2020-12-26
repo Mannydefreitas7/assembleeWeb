@@ -12,19 +12,10 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { SortByPipe } from './helpers/sort-by.pipe';
-import { NgxSpinnerModule } from 'ngx-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { NgxWebstorageModule } from 'ngx-webstorage';
-import { TreasuresPipe } from './helpers/treasures.pipe';
-import { ApplyPipe } from './helpers/apply.pipe';
-import { LifePipe } from './helpers/life.pipe';
-import { WeekendPipe } from './helpers/weekend.pipe';
-import { ChairmansPipe } from './helpers/chairmans.pipe';
-import { PrayersPipe } from './helpers/prayers.pipe';
+import { NgxFileDropModule } from 'ngx-file-drop';
 @NgModule({
-  declarations: [SortByPipe],
   imports: [
     CommonModule,
     FormsModule,
@@ -41,12 +32,11 @@ import { PrayersPipe } from './helpers/prayers.pipe';
     MatSelectModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    FontAwesomeModule,
     NgbAccordionModule,
     NgbCollapseModule,
-    NgxSpinnerModule,
     NgxSkeletonLoaderModule.forRoot(),
-    NgxWebstorageModule.forRoot()
+    NgxWebstorageModule.forRoot(),
+    NgxFileDropModule
   ],
   exports: [
    FormsModule,
@@ -64,10 +54,9 @@ import { PrayersPipe } from './helpers/prayers.pipe';
    MatSelectModule,
    MatProgressSpinnerModule,
    MatIconModule,
-   FontAwesomeModule,
    NgbAccordionModule,
-   NgxSpinnerModule,
-   NgxSkeletonLoaderModule
+   NgxSkeletonLoaderModule,
+   NgxFileDropModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

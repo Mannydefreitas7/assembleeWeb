@@ -32,7 +32,7 @@ export class FireStoreService {
   }
 
   addWeekProgram(congregation: string, date: Date, data: WeekProgram) : Promise<any> {
-  
+
       return this.fireStore.collection(`${congregation}/weeks`).doc(`${data.id}`).set(data);
 
   }
@@ -57,21 +57,34 @@ export class FireStoreService {
    switch(privilege) {
       case Privilege.admin: {
          return [
-            Permission.add, 
+            Permission.add,
             Permission.delete,
             Permission.edit,
-            Permission.view
+            Permission.view,
+            Permission.programs,
+            Permission.publishers,
+            Permission.settings,
+            Permission.speakers,
          ]
       }
       case Privilege.elder: {
          return [
-            Permission.edit,
-            Permission.view
+            Permission.view,
+            Permission.programs,
+            Permission.publishers,
          ]
       }
+      case Privilege.talkCo: {
+        return [
+          Permission.view,
+          Permission.add,
+          Permission.delete,
+          Permission.edit,
+          Permission.speakers,
+        ]
+     }
       case Privilege.ms: {
          return [
-            Permission.edit,
             Permission.view
          ]
       }

@@ -14,8 +14,8 @@ export class Publisher {
    isInvited?: boolean;
    isWTConductor?: boolean;
    speaker?: Speaker;
-   parts?: DocumentReference<Part>[];
-   
+   parts?: string[];
+
 };
 
 export class Speaker {
@@ -44,6 +44,7 @@ export enum Privilege {
    ms = 'ms',
    admin = 'admin',
    elder = 'elder',
+   talkCo = 'talkCo',
 }
 
 export enum Gender {
@@ -55,5 +56,9 @@ export enum Permission {
    edit = 'edit',
    delete = 'delete',
    add = 'add',
-   view = 'view'
+   view = 'view',
+   programs = 'programs',
+   publishers = 'publishers',
+   settings = 'settings',
+   speakers = 'speakers'
 }

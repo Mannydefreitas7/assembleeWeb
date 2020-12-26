@@ -1,0 +1,33 @@
+export class HourglassModel {
+  lastname?:           string;
+  firstname?:          string;
+  middlename?:         string;
+  suffix?:             string;
+  fullname?:           string;
+  sex?:                string;
+  birth?:              Date;
+  baptism?:            Date;
+  piiconsentdate?:     string;
+  appt?:               string;
+  pioneerid?:          number | string;
+  email?:              string;
+  cellphone?:          number | string;
+  homephone?:          string;
+  address_id?:         number;
+  address_line1?:      string;
+  address_line2?:      string;
+  address_city?:       string;
+  address_state?:      string;
+  address_postalcode?: number | string;
+  address_country?:    string;
+  status?:             string;
+  group_id?:           number;
+  group_overseer?:     string;
+  firstmonth?:         string;
+  anointed?:           string;
+  familycontact?:      string;
+  comments?:           string;
+  advdirective?:       string;
+  inactive?:           string;
+  reportstobranch?:    string;
+}

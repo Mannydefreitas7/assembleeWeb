@@ -8,7 +8,7 @@ import { MonthData } from '../models/month.model';
 })
 export class StoreService {
 
-  isNavToggled: boolean = false; 
+  isNavToggled: boolean = false;
   today: Date = new Date();
   showNextYear: boolean = false;
    months: Array<MonthData> = [];
@@ -23,7 +23,7 @@ export class StoreService {
     let today = moment(new Date());
     let twoMonths = moment(new Date()).add(2, 'month');
     if (moment(today).year() === twoMonths.year()) {
-       
+
        this.showNextYear = false;
        for (var i = moment(new Date()).month(); i <= moment(new Date()).month() + 2; i++) {
           let month: MonthData = {
@@ -55,9 +55,9 @@ export class StoreService {
             date: nextTwoMonth.toDate()
          }
       ].filter(month => month.date.getFullYear() == year)
-      
+
     }
-  
+
  }
 
   toggleNav() {

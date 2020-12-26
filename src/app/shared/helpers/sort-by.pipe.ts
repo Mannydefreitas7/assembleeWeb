@@ -9,6 +9,7 @@ import { orderBy } from 'lodash';
 export class SortByPipe implements PipeTransform {
 
   transform(value: any[], order = '', column: string = ''): any[] {
+     console.log(value)
     if (!value || order === '' || !order) { return value; } // no array
     if (value.length <= 1) { return value; } // array with only one item
     if (!column || column === '') { 

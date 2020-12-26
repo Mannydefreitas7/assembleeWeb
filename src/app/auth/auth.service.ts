@@ -55,6 +55,7 @@ export class AuthService {
          this.router.navigate(['login'])
          .then(() => {
             this.storage.clear('user')
+            this.storage.clear('congregationref')
          })
       })
    }
@@ -63,16 +64,16 @@ export class AuthService {
    stateChanged(): any {
       return this.afAuth.onAuthStateChanged(user => {
          if (user) {
-
             this.storage.store('user', user);
-
             this.ngZone.run(() => this.router.navigate(['/home/dashboard'])).then(v => {
                this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`)
                .valueChanges()
                .subscribe((fireUser: User) => {
-                  if (fireUser) {
+                  if (fireUser && fireUser.congregation) {
                      console.log(fireUser)
                      this.storage.store('congregationRef', fireUser.congregation.path)
+                  } else {
+                     this.ngZone.run(() => this.router.navigate(['/setup']));
                   }
                })
             })
@@ -168,68 +169,24 @@ export class AuthService {
    //   }
 
 
-   //   googleLogin() {
-   //     const provider = new firebase.default.auth.GoogleAuthProvider();
-   //     return this.afAuth.signInWithPopup(provider)
-   //       .then((credential: firebase.default.auth.UserCredential) => {
-   //          if (credential.user)
-   //             this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
-   //       })
-   //    // .then(() => this.snackBar.open('You are logged-in with Google','', { duration: 3000}))
-   //   //  .catch(error => this.snackBar.open(error.message,'', { duration: 3000}));
-   //   }
 
    googleSignIn() {
       const provider = new firebase.default.auth.GoogleAuthProvider();
       this.socialLogin(provider)
-      // .then(() => this.snackBar.open('You are logged-in with Google','', { duration: 3000}))
-      //  .catch(error => this.snackBar.open(error.message,'', { duration: 3000}));
    }
 
-
-
-   //   facebookLogin() {
-   //     const provider = new firebase.auth.FacebookAuthProvider();
-   //     return this.afAuth.auth.signInWithPopup(provider)
-   //     .then(() => {
-   //       this.ngZone.run(() => this.router.navigate(['/home']));
-   //     })
-   //     .then(() => this.snackBar.open('You are logged-in with Facebook','', { duration: 3000}))
-   //     .catch(error =>
-   //       this.snackBar.open(error.message,'', { duration: 3000}));
-   //   }
-
-
-   //   facebookSignup() {
-   //     const provider = new firebase.auth.FacebookAuthProvider();
-   //     return this.afAuth.auth.signInWithPopup(provider)
-   //     .then((result: any) => {
-   //       return this.createUserData(result.user); })
-   //     .then(() => {
-   //       this.ngZone.run(() => this.router.navigate(['/home']));
-   //     })
-   //     .then(() => this.snackBar.open('You signed up with Facebook successfully','', { duration: 3000}))
-   //     .catch(error =>
-   //       this.snackBar.open(error.message,'', { duration: 3000}));
-   //   }
 
    private socialLogin(provider) {
       return this.afAuth.signInWithPopup(provider)
          .then((credential: firebase.default.auth.UserCredential) => {
 
-            let _users = this.fireStoreService.fireStore.collection<User>('users', ref => ref.where('uid', '==', credential.user.uid)).valueChanges()
+            let fireUserRef = this.fireStoreService.fireStore.doc<User>(`users/${credential.user.uid}`).valueChanges()
 
-            this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
-               .valueChanges()
-               .subscribe((fireUser:User) => {
-                  if (fireUser)
-                  this.storage.store('congregationRef', fireUser.congregation.path)
-            })
-
-            _users.subscribe(users => {
-               if (users.length > 0) {
+            fireUserRef.subscribe(fireUser => {
+               if (fireUser) {
                   // already exists
-                  if (users[0].congregation) {
+                  if (fireUser.congregation) {
+                     this.storage.store('congregationref', fireUser.congregation.path)
                      // already has congregation setup
                      this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
                   } else {
@@ -260,8 +217,8 @@ export class AuthService {
          loginProvider: credential.additionalUserInfo.providerId,
          isEmailVerified: credential.user.emailVerified
       };
-      return this.fireDBService.fireDBService.object(`users/${credential.user.uid}`).set(data)
-     // return this.fireStoreService.create('users', credential.user.uid, data);
+     // return this.fireDBService.fireDBService.object(`users/${credential.user.uid}`).set(data)
+      return this.fireStoreService.create('users', credential.user.uid, data);
    }
 
 

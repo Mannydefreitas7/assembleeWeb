@@ -1,4 +1,4 @@
-<div class="container-fluid px-4">
+<div class="container">
    
    <div class="row mt-3">
       <div class="p-0 mb-3 d-flex justify-content-end align-items-center">
@@ -10,11 +10,12 @@
          <select class="form-select me-2" style="width: 200px;" [(ngModel)]="monthData" >
             <option *ngFor="let month of storeService.months" [ngValue]="month" [selected]="month == monthData">{{ month.name }}</option>
           </select>
-
+          
          <button class="btn btn-primary d-inline-block" (click)="addMonthProgram()">
             <svg-icon src="assets/images/add-schedule.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
             <span class="ms-2 align-middle" >Add Program</span>
          </button>
+
       </div>
       <mat-drawer-container class="card p-0">
          <mat-drawer mode="side" opened style="width: 200px;">

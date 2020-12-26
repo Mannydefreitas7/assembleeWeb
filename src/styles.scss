@@ -2,12 +2,6 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
-@import '../node_modules/@spectrum-css/vars/dist/spectrum-dark.css';
-@import '../node_modules/@spectrum-css/vars/dist/spectrum-global.css';
-@import '../node_modules/@spectrum-css/vars/dist/spectrum-medium.css';
-@import '../node_modules/@spectrum-css/vars/dist/spectrum-light.css';
-@import '../node_modules/@spectrum-css/page/dist/index-vars.css';
-@import '../node_modules/@spectrum-css/button/dist/index-vars.css';
 
 // Plus imports for other components in your app.
 
@@ -45,9 +39,9 @@ $assembleeWeb-theme: mat-light-theme((
 @import '~bootstrap/scss/bootstrap';
 
 html, body { height: 100%; }
-body { 
-   margin: 0; 
-   font-family: "Segoe UI", sans-serif !important; 
+body {
+   margin: 0;
+   font-family: "Segoe UI", sans-serif !important;
    overflow-x: hidden;
    line-height: 1 !important;
 }
@@ -57,6 +51,10 @@ h1, h2, h3 {
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
    color: #fff;
    background-color: #001d3c !important;
+}
+
+a, .btn-link {
+   text-decoration: none;
 }
 
 .navbar-toggler {
@@ -108,7 +106,11 @@ h1, h2, h3 {
 }
 }
 .btn {
-   border-radius: 0 !important;
+   border-radius: 0;
+   &.btn-circle {
+      width: 44px;
+      height: 44px;
+   }
 }
 .dropdown-menu {
    border: 1px solid #000000 !important;
@@ -119,4 +121,7 @@ h1, h2, h3 {
 }
 .sr-only {
    display: none;
+}
+.dropdown-toggle::after {
+   border: none !important;
 }
