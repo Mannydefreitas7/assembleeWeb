@@ -1,4 +1,4 @@
- <nav class="navbar navbar-expand-lg navbar-light bg-dark sticky-top">
+ <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
    <div class="container">
       <button class="navbar-toggler btn btn-link" type="button" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation" (click)="storeService.toggleNav()">
          <svg-icon src="assets/images/menu.svg" *ngIf="!storeService.isNavToggled"></svg-icon>
@@ -20,7 +20,7 @@
             <span class="ml-1">Programs</span>
          </a>
           </li>
-          
+
           <li class="nav-item">
             <a class="nav-link d-inline-flex align-items-center" [routerLink]="['/home/publishers']" routerLinkActive="active" aria-current="page">
                <svg-icon src="assets/images/publishers.svg" [svgStyle]="{ 'height.px': 18 }"></svg-icon>
@@ -48,7 +48,7 @@
 
        </ul>
 
-       
+
      </div>
      <div class="nav-item d-inline-flex align-items-center">
       <a (click)="auth.signOut()" role="button">

@@ -3,24 +3,14 @@
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
 
-// Plus imports for other components in your app.
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
 @include mat-core();
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
 $assembleeWeb-primary: mat-palette($mat-indigo);
 $assembleeWeb-accent: mat-palette($mat-pink, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
 $assembleeWeb-warn: mat-palette($mat-red);
 
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
 $assembleeWeb-theme: mat-light-theme((
   color: (
     primary: $assembleeWeb-primary,
@@ -29,14 +19,26 @@ $assembleeWeb-theme: mat-light-theme((
   )
 ));
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
 @include angular-material-theme($assembleeWeb-theme);
 
-/* You can add global styles to this file, and also import other style files *
-/* Importing Bootstrap SCSS file. */
-@import '~bootstrap/scss/bootstrap';
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+
+
+$theme-colors: (
+  "primary":    $green-500,
+  "secondary":  $secondary,
+  "success":    $success,
+  "info":       $info,
+  "warning":    $warning,
+  "danger":     $danger,
+  "light":      $light,
+  "dark":       $dark
+);
+
+
+@import "../node_modules/bootstrap/scss/bootstrap";
 
 html, body { height: 100%; }
 body {
@@ -54,7 +56,11 @@ h1, h2, h3 {
 }
 
 a, .btn-link {
+  color: $green-500;
    text-decoration: none;
+   &:hover {
+     color: $green-800;
+   }
 }
 
 .navbar-toggler {
@@ -69,14 +75,20 @@ a, .btn-link {
 }
 .mat-step-header:hover {
    background-color: rgb(64 80 181 / 9%) !important;
-   border-radius: 0 !important;
+  //@at-root border-radius: 0 !important;
 }
 .form-control, .form-select {
    border: 1px solid #000000 !important;
-   border-radius: 0 !important;
+ //  border-radius: 0 !important;
    &:disabled {
       border: 1px solid #919191 !important;
    }
+}
+
+.btn-light:hover {
+  color: #000;
+  background-color: #ececec;
+  border-color: #ececec;
 }
 
 .input-group {
@@ -85,19 +97,25 @@ a, .btn-link {
          border-left: none !important;
       }
    .input-group-text {
-      border-radius: 0 !important;
+    //  border-radius: 0 !important;
       border: 1px solid #000000 !important;
       border-right: none !important;
       background-color: #ffffff !important;
       padding-right: 0 !important;
    }
 }
+.list-group-item-action:hover, .list-group-item-action:focus {
+  z-index: 1;
+  color: #495057;
+  text-decoration: none;
+  background-color: #19875412;
+}
 &.input-group-end {
    .form-control {
       border-right: none !important;
    }
 .input-group-text {
-   border-radius: 0 !important;
+  // border-radius: 0 !important;
    border: 1px solid #000000 !important;
    border-left: none !important;
    background-color: #ffffff !important;
@@ -106,7 +124,7 @@ a, .btn-link {
 }
 }
 .btn {
-   border-radius: 0;
+  // border-radius: 0;
    &.btn-circle {
       width: 44px;
       height: 44px;
@@ -114,7 +132,7 @@ a, .btn-link {
 }
 .dropdown-menu {
    border: 1px solid #000000 !important;
-   border-radius: 0 !important;
+  // border-radius: 0 !important;
 }
 .card-custom {
    border: none !important;
@@ -124,4 +142,34 @@ a, .btn-link {
 }
 .dropdown-toggle::after {
    border: none !important;
+}
+
+.treasures {
+  color:#5a6a70;
+}
+
+.apply {
+  color:#c18626;
+}
+
+.life {
+  color:#961526;
+}
+
+.weekend {
+  color:#919191;
+}
+.list-group-item.active {
+  z-index: 2;
+  color: #fff;
+  background-color: $green-500;
+  border-color: $green-500;
+}
+.nav-pills .nav-link {
+  // border-radius: 0;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color:$green-500 !important;
 }

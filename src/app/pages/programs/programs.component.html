@@ -1,34 +1,42 @@
-<div class="container">
-   
+<div class="container-lg pb-4 px-sm-4">
+
    <div class="row mt-3">
       <div class="p-0 mb-3 d-flex justify-content-end align-items-center">
-         
-         <select class="form-select me-2" [(ngModel)]="selectedYear" style="width: 120px;" [disabled]="!storeService.showNextYear" (change)="loadMonths()" >
+
+         <select class="form-select form-select-sm me-2" [(ngModel)]="selectedYear" style="width: 120px;" [disabled]="!storeService.showNextYear" (change)="loadMonths()" >
             <option *ngFor="let year of years" [selected]="year == selectedYear" [value]="year" >{{ year }}</option>
           </select>
 
-         <select class="form-select me-2" style="width: 200px;" [(ngModel)]="monthData" >
+         <select class="form-select form-select-sm me-2" style="width: 200px;" [(ngModel)]="monthData" (change)='checkCanExport()'>
             <option *ngFor="let month of storeService.months" [ngValue]="month" [selected]="month == monthData">{{ month.name }}</option>
           </select>
-          
-         <button class="btn btn-primary d-inline-block" (click)="addMonthProgram()">
+
+         <button class="btn btn-light btn-sm d-inline-block" (click)="addMonthProgram()" [disabled]="exportPDFisActive">
             <svg-icon src="assets/images/add-schedule.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
             <span class="ms-2 align-middle" >Add Program</span>
          </button>
 
+         <button *ngIf="$weekProgram | async as weekProgram" [disabled]="!exportPDFisActive" class="btn btn-light btn-sm" (click)="createMonthPDF(weekProgram)">
+          Export
+        </button>
+
+        <button *ngIf="$weekProgram | async as weekProgram" [disabled]="!exportPDFisActive" class="btn btn-light btn-sm" (click)="deleteMonth(weekProgram)">
+          Delete
+        </button>
+
       </div>
-      <mat-drawer-container class="card p-0">
+      <mat-drawer-container class="card p-0 border-0 shadow-sm">
          <mat-drawer mode="side" opened style="width: 200px;">
-            <div class="card-header">
+            <!-- <div class="card-header">
                Weeks
-             </div>
-             <div class="card-body">
-         
+             </div> -->
+             <div class="card-body p-0">
+
                <div class="d-flex">
-                  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills" orientation="vertical">
+                  <ul ngbNav #nav="ngbNav" [(activeId)]="active"  orientation="vertical" class="list-group list-group-flush w-100">
                      <ng-container *ngIf="$weekProgram | async as weekPrograms; else selectDate">
-                        <li [ngbNavItem]="week.id" *ngFor="let week of weekPrograms">
-                           <a ngbNavLink>{{ week.range }}</a>
+                        <li [ngbNavItem]="week.id" *ngFor="let week of weekPrograms" class="list-group-item list-group-item-action py-2" [ngClass]="{'active': week.id == active }">
+                           <a ngbNavLink [class]="week.id == active ? 'fw-bold text-white' : 'fw-bold text-dark'">{{ week.range }}</a>
                            <ng-template ngbNavContent>
                                 <ab-program-detail [weekProgram]="week"></ab-program-detail>
                            </ng-template>
@@ -41,16 +49,17 @@
                 </div>
              </div>
          </mat-drawer>
-         <mat-drawer-content> 
-            <div class="card-header">
+         <mat-drawer-content>
+            <!-- <div class="card-header">
                Programs
-             </div>
-             <div class="card-body" style="min-height: 600px;">
+             </div> -->
+             <div class="card-body py-4" style="min-height: 600px;">
                <div [ngbNavOutlet]="nav" class="mx-4" *ngIf="$weekProgram | async as weekPrograms; else selectDate"></div>
               <!-- <router-outlet name='program'></router-outlet> -->
              </div>
          </mat-drawer-content>
       </mat-drawer-container>
+      <ngx-spinner></ngx-spinner>
    </div>
 
 </div>

@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { NgxFileDropModule } from 'ngx-file-drop';
+import { NgxSpinnerModule } from 'ngx-spinner';
 @NgModule({
   imports: [
     CommonModule,
@@ -36,7 +37,8 @@ import { NgxFileDropModule } from 'ngx-file-drop';
     NgbCollapseModule,
     NgxSkeletonLoaderModule.forRoot(),
     NgxWebstorageModule.forRoot(),
-    NgxFileDropModule
+    NgxFileDropModule,
+    NgxSpinnerModule
   ],
   exports: [
    FormsModule,
@@ -56,7 +58,8 @@ import { NgxFileDropModule } from 'ngx-file-drop';
    MatIconModule,
    NgbAccordionModule,
    NgxSkeletonLoaderModule,
-   NgxFileDropModule
+   NgxFileDropModule,
+   NgxSpinnerModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

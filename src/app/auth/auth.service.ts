@@ -9,6 +9,7 @@ import { Privilege } from '../models/publisher.model';
 import { LocalStorageService } from 'ngx-webstorage';
 import { FireDBService } from '../services/fire-db.service';
 
+
 @Injectable({
    providedIn: 'root'
 })
@@ -56,6 +57,7 @@ export class AuthService {
          .then(() => {
             this.storage.clear('user')
             this.storage.clear('congregationref')
+            this.storage.clear('congregation')
          })
       })
    }
@@ -70,8 +72,13 @@ export class AuthService {
                .valueChanges()
                .subscribe((fireUser: User) => {
                   if (fireUser && fireUser.congregation) {
-                     console.log(fireUser)
+
                      this.storage.store('congregationRef', fireUser.congregation.path)
+                     this.fireStoreService.fireStore.doc(fireUser.congregation.path).get().subscribe(cong => {
+                       if (cong.exists)
+                      this.storage.store('congregation', cong.data())
+                     })
+
                   } else {
                      this.ngZone.run(() => this.router.navigate(['/setup']));
                   }
@@ -81,6 +88,7 @@ export class AuthService {
             // this.ngZone.run(() => this.router.navigate(['/login']));
             this.storage.clear('user')
             this.storage.clear('congregationRef')
+            this.storage.clear('congregation')
          }
       })
    }
@@ -107,7 +115,7 @@ export class AuthService {
             this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
                .valueChanges()
                .subscribe((fireUser:User) => {
-                  this.storage.store('congregationRef', fireUser.congregation.path)
+                  this.storage.store('congregationRef', fireUser.congregation)
             })
 
             let _users = this.fireStoreService.fireStore.collection<User>('users', ref => ref.where('uid', '==', credential.user.uid)).valueChanges()
@@ -138,7 +146,7 @@ export class AuthService {
             this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
                .valueChanges()
                .subscribe((fireUser: User) => {
-                  this.storage.store('congregationRef', fireUser.congregation.path)
+                  this.storage.store('congregationRef', fireUser.congregation)
             })
 
             _users.subscribe(users => {

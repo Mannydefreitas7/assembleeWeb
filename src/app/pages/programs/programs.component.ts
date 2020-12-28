@@ -11,7 +11,10 @@ import { User } from 'src/app/models/user.model';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Congregation } from 'src/app/models/congregation.model';
 import { LocalStorageService } from 'ngx-webstorage';
-
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ExportService } from 'src/app/services/export.service';
+import  firestore  from 'firebase/app';
+import Timestamp = firestore.firestore.Timestamp;
 @AutoUnsubscribe()
 @Component({
    selector: 'app-programs',
@@ -25,13 +28,17 @@ export class ProgramsComponent implements OnInit, OnDestroy {
    years: number[];
    monthData: MonthData;
    monday: Date;
+   exportPDFisActive: boolean;
+   isLoading: boolean = false;
    $weekProgram: Observable<WeekProgram[]>;
    constructor(
       private wolApiService: WolApiService,
       public storeService: StoreService,
       public storage: LocalStorageService,
       public fireStoreService: FireStoreService,
-      public authService: AuthService
+      public authService: AuthService,
+      private spinner: NgxSpinnerService,
+      private exportService: ExportService
    ) { }
    active = '';
    ngOnInit(): void {
@@ -43,68 +50,80 @@ export class ProgramsComponent implements OnInit, OnDestroy {
       this.loadWeeks();
    }
 
-   selectedMonth() {
-      //     this.monthData = this.storeService.months[0];
-   }
-
    ngOnDestroy() {
    }
 
-   loadMonths() {
+   createMonthPDF(weeks: WeekProgram[]) {
+       let filteredWeeks = weeks.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
+       if (filteredWeeks.length > 0) {
+         this.exportPDFisActive = true;
+        this.exportService.createMonthPDF(filteredWeeks)
+       } else {
+         this.exportPDFisActive = false;
+       }
+   }
 
+   loadMonths() {
       this.storeService.getMonths(this.selectedYear);
-      this.storeService.months;
       this.monthData = this.storeService.months[0];
+      this.checkCanExport()
    }
 
    addMonthProgram() {
+     this.spinner.show()
       let mondays = this.storeService.getMondays(this.monthData.date);
       // if has account, do fireStore
+      let congregation : Congregation = this.storage.retrieve('congregation')
+      let path : string = this.storage.retrieve('congregationref')
+          mondays.forEach(monday => {
 
-      this.authService.afAuth.user
-         .subscribe(user => {
+            this.wolApiService.getWeekProgram(this.selectedYear, moment(monday).month() + 1, monday.getDate(), congregation.fireLanguage.apiURL)
+                .toPromise()
+                .then(wolWeek => {
+                  if (this.wolApiService.parseWolContent(wolWeek, monday)) {
 
-            this.fireStoreService.read(`users/${user.uid}`)
-               .subscribe((fireUser: User) => {
+                      let wolContent = this.wolApiService.parseWolContent(wolWeek, monday);
 
-                  this.fireStoreService.read(fireUser.congregation.path).subscribe((congregation: Congregation) => {
-
-                     mondays.forEach(monday => {
-                        monday.getDate()
-                        this.wolApiService.getWeekProgram(this.selectedYear, moment(monday).month() + 1, monday.getDate(), congregation.fireLanguage.apiURL)
-                           .toPromise()
-                           .then(wolWeek => {
-                              if (this.wolApiService.parseWolContent(wolWeek, monday)) {
-                                 let wolContent = this.wolApiService.parseWolContent(wolWeek, monday);
-                                 this.fireStoreService.addWeekProgram(fireUser.congregation.path, monday, wolContent[0]).then(_ => {
-                                    wolContent[1].forEach(part => {
-                                       this.fireStoreService.fireStore.doc<Part>(`${fireUser.congregation.path}/weeks/${wolContent[0].id}/parts/${part.id}`).set(part)
-                                    })
-                                 })
-                              }
+                      this.fireStoreService.addWeekProgram(path, monday, wolContent[0]).then(_ => {
+                        wolContent[1].forEach(part => {
+                            this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${wolContent[0].id}/parts/${part.id}`).set(part)
                         })
-                     })
-                  })
-               })
-         })
-      // if not, use localStorage
+                      })
+                  }
+            }).finally(() => this.spinner.hide())
+          })
+   }
 
+   checkCanExport() {
+    this.$weekProgram.subscribe(data => {
+      let filteredWeeks = data.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
+      if (filteredWeeks.length > 0) {
+        this.exportPDFisActive = true;
+      } else {
+        this.exportPDFisActive = false;
+      }
+    })
+   }
+
+   deleteMonth(weeks: WeekProgram[]) {
+    let path : string = this.storage.retrieve('congregationref')
+
+      let filteredWeeks = weeks.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
+      if (filteredWeeks.length > 0) {
+        filteredWeeks.forEach(week => {
+          this.fireStoreService.fireStore.doc(`${path}/weeks/${week.id}`).delete()
+        })
+
+      }
    }
 
    loadWeeks() {
-
-      this.authService.afAuth.user
-         .subscribe(user => {
-            if (user)
-               this.fireStoreService.read(`users/${user.uid}`)
-                  .subscribe((user: User) => {
-                     this.$weekProgram = this.fireStoreService.fireStore.
-                        collection<WeekProgram>(`${user.congregation.path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges()
-
-                     this.$weekProgram.subscribe(data => {
-                        if (data.length > 0) this.active = data[0].id;
-                     })
-                  })
-         })
+     let path : string = this.storage.retrieve('congregationref')
+        this.$weekProgram = this.fireStoreService.fireStore.
+          collection<WeekProgram>(`${path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges()
+        this.$weekProgram.subscribe(data => {
+          if (data.length > 0) this.active = data[0].id;
+          this.checkCanExport()
+        }, console.log, () => {console.warn('FINISHED LOADING WEEKS')})
    }
 }

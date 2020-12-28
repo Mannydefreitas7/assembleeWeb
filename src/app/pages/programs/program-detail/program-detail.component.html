@@ -2,30 +2,27 @@
 
 <ng-container *ngIf="parts">
 
-   <ul ngbNav #nav="ngbNav" class="nav-tabs">
+   <ul ngbNav #nav="ngbNav" class="nav nav-pills">
 
-    <button type="button" class="btn btn-outline-primary" (click)="downloadAsPDF()">
-      Button
-    </button>
 
-      <li ngbNavItem >
+      <li ngbNavItem>
         <a ngbNavLink>Midweek</a>
         <ng-template ngbNavContent>
 
-         <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="chairmans.length > 0 && chairmans[0]">
+         <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngIf="chairmans.length > 0 && chairmans[0]">
             <label for="prayer1" class="form-label">Chairman</label>
               <part-actions [part]="chairmans[0]" [weekProgram]="weekProgram"></part-actions>
           </div>
 
 
-         <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[0]">
+         <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[0]">
             <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prayer</label>
                <part-actions [part]="prayers[0]" [weekProgram]="weekProgram"></part-actions>
           </div>
 
 
           <hr>
-          <h4 class="my-3">TREASURES FROM GOD’S WORD</h4>
+          <h4 class="my-3 fw-bold treasures">TREASURES FROM GOD’S WORD</h4>
           <div *ngIf="treasures.length > 0">
           <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of treasures">
 
@@ -34,7 +31,7 @@
             </div>
           </div>
 
-          <h4 class="my-3">APPLY YOURSELF TO THE FIELD MINISTRY</h4>
+          <h4 class="my-3 fw-bold apply">APPLY YOURSELF TO THE FIELD MINISTRY</h4>
           <div *ngIf="apply.length > 0">
           <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of apply">
             <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ part.title.split(')')[0] }})</label>
@@ -43,7 +40,7 @@
             </div>
          </div>
 
-          <h4 class="my-3">LIVING AS CHRISTIANS</h4>
+          <h4 class="my-3 fw-bold life">LIVING AS CHRISTIANS</h4>
           <div *ngIf="life.length > 0">
           <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of life">
             <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">{{ part.title.split(')')[0] }})</label>
@@ -73,7 +70,7 @@
           </div>
 
           <hr>
-          <h4 class="my-3">PUBLIC TALK</h4>
+          <h4 class="my-3 fw-bold weekend">PUBLIC TALK</h4>
 
           <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngIf="weekend.length > 0 && weekend[0]">
 
@@ -82,7 +79,7 @@
               <part-actions [part]="weekend[0]" [weekProgram]="weekProgram"></part-actions>
           </div>
           <hr>
-          <h4 class="my-3">WATCHTOWER STUDY</h4>
+          <h4 class="my-3 fw-bold weekend">WATCHTOWER STUDY</h4>
           <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngIf="weekend.length > 0 && weekend[1]">
             <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ weekend[1].subTitle ? weekend[1].subTitle : 'Theme' }}</label>
               <part-actions [part]="weekend[1]" [weekProgram]="weekProgram"></part-actions>

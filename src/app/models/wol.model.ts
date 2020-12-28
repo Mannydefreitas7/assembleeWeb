@@ -29,7 +29,7 @@ export interface Item {
 export interface WeekProgram {
    id?: string;
    range?: string;
-   date?: Date;
+   date?: any;
    isCOVisit?: boolean;
    parts?: Part[];
 }

@@ -41,7 +41,7 @@
       *ngIf="part.parent == parentApply || part.parent == parentWeekend"
       (click)="openSelectPublisherModal(part, 'assistant')"
     >
-      <span class="me-2">Assistant</span>
+      <span class="me-2">{{ part.parent == parentWeekend ? 'Reader' : 'Assistant' }}</span>
       <svg-icon src="assets/images/c-pub.svg"></svg-icon>
     </button>
   </ng-template>

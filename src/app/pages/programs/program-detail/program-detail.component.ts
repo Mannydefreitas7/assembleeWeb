@@ -56,7 +56,7 @@ prayers: Part[];
   }
 
   public downloadAsPDF() {
-    console.log(this.weekProgram.date)
+
     this.exportService.createSinglePDF(this.weekProgram, this.parts)
   }
 
