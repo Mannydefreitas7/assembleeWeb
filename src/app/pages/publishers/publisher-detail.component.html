@@ -1,0 +1,88 @@
+<div class="d-flex justify-content-between align-items-center">
+<h3 class="mb-0 lh-1">{{ publisher.lastName | titlecase }}, {{ publisher.firstName | titlecase }} <br>
+  <a [href]="'mailto:' + publisher.email" class="btn-link mt-0 fs-6 fw-normal">{{ publisher.email }}</a>
+</h3>
+<img [src]="publisher.photoURL ? publisher.photoURL : '../assets/images/placeholder-pub.jpg' " alt="" class="rounded-circle border border-success border-2 " style="width: 60px; height: 60px;">
+</div>
+<hr>
+<div class="p-0 mb-3 d-flex flex-wrap align-items-center justify-content-end" [ngClass]="{'justify-content-between': publisher.isInvited, 'justify-content-end': !publisher.isInvited}">
+
+  <a class="btn btn-link btn-sm d-inline-block me-2 text-dark">
+    <svg-icon src="assets/images/admin.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+    <span class="ms-2 align-middle">Admin</span>
+  </a>
+
+  <div>
+
+
+  <ng-container *ngIf="isEditing; else editActions">
+    <button class="btn btn-light btn-sm d-inline-block me-2" (click)="isEditing = false">
+      Cancel
+   </button>
+
+   <button class="btn btn-primary btn-sm" (click)="saveDetail()">Save</button>
+
+  </ng-container>
+  <ng-template #editActions>
+
+    <button class="btn btn-light btn-sm d-inline-block me-2" (click)="isEditing = true">
+      <svg-icon src="assets/images/key.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+      <span class="ms-2 align-middle">Invite</span>
+   </button>
+
+    <button class="btn btn-light btn-sm d-inline-block me-2" (click)="isEditing = true">
+      <svg-icon src="assets/images/edit.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+      <span class="ms-2 align-middle">Edit</span>
+   </button>
+
+   <button class="btn btn-light btn-sm btn-delete">
+     <svg-icon src="assets/images/trash.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+     <span class="ms-2 align-middle">Delete</span>
+   </button>
+  </ng-template>
+</div>
+
+</div>
+
+<div class="row g-2">
+  <div class="col-lg-4 col-md-6 col-sm-12">
+    <div class="form-floating">
+      <input type="text" class="form-control" [(ngModel)]="firstName" placeholder="Joe" [value]="firstName" [disabled]="!isEditing">
+      <label>First Name</label>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-12">
+    <div class="form-floating">
+      <input type="text" class="form-control" [(ngModel)]="lastName" placeholder="Publisher" [value]="lastName" [disabled]="!isEditing">
+      <label>Last Name</label>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-12">
+    <div class="form-floating">
+      <select class="form-select" [disabled]="!isEditing">
+        <option [value]="p" *ngFor="let p of privileges" [selected]="p == privilege">{{ p }}</option>
+      </select>
+      <label>Privilege</label>
+    </div>
+  </div>
+</div>
+
+
+<div class="row mt-4" *ngIf="publisher.isInvited && $user | async as user">
+  <h6 class="fw-bold">Permissions</h6>
+  <div class="d-inline-flex flex-wrap justify-content-start align-items-center">
+
+<ng-container *ngFor="let permission of permissions">
+  <input type="radio" [id]="permission" class="btn-check"  [checked]="user.permissions.includes(permission)" (click)="editPermissions(user, permission)" [disabled]="!user.permissions.includes('edit')">
+  <label class="btn btn-outline-secondary btn-sm me-2" [for]="permission" >{{ permission }}</label>
+</ng-container>
+
+</div>
+</div>
+
+<div class="row mt-4" *ngIf="$parts | async as parts">
+  <h6 class="fw-bold" *ngIf="parts.length > 0">Parts</h6>
+  <ul class="list-group list-group-flush" *ngIf="parts.length > 0">
+    <li class="list-group-item list-group-item-action" *ngFor="let part of parts">{{ part.title }}</li>
+  </ul>
+</div>

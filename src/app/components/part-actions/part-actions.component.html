@@ -38,10 +38,10 @@
   <ng-template #assist>
     <button
       class="btn btn-light ms-2 rounded-pill d-inline-flex align-items-center"
-      *ngIf="part.parent == parentApply || part.parent == parentWeekend"
+      *ngIf="part.parent == parentApply || part.parent == parentWt"
       (click)="openSelectPublisherModal(part, 'assistant')"
     >
-      <span class="me-2">{{ part.parent == parentWeekend ? 'Reader' : 'Assistant' }}</span>
+      <span class="me-2">{{ part.parent == parentWt ? 'Reader' : 'Assistant' }}</span>
       <svg-icon src="assets/images/c-pub.svg"></svg-icon>
     </button>
   </ng-template>

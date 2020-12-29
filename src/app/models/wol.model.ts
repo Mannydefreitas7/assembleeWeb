@@ -32,6 +32,7 @@ export interface WeekProgram {
    date?: any;
    isCOVisit?: boolean;
    parts?: Part[];
+   isSent?: boolean;
 }
 
 
@@ -68,6 +69,7 @@ export interface Part {
    isConfirmed?: boolean;
    index?: number;
    parent?: Parent;
+   path?: string;
 }
 
 
@@ -75,7 +77,8 @@ export enum Parent {
    treasures = 'treasures',
    apply = 'apply',
    life = 'life',
-   weekend = 'weekend',
+   talk = 'talk',
+   wt = 'watchtower',
    chairman = 'chairman',
    prayer = 'prayer'
 }

@@ -24,7 +24,8 @@ export class PartActionsComponent implements OnInit {
   assistantDocRef: AngularFirestoreDocument<Publisher>;
   partDocRef: AngularFirestoreDocument<Part>;
   parentApply = Parent.apply;
-  parentWeekend = Parent.weekend;
+  parentTalk = Parent.talk;
+  parentWt = Parent.wt;
   ngOnInit(): void {
     this.congregation = this.storage.retrieve('congregationref');
     Parent.apply;
@@ -57,7 +58,7 @@ export class PartActionsComponent implements OnInit {
                 if (document.exists) {
                   let parts = document
                     .data()
-                    .parts.filter((p) => p.split('/')[5] !== this.part.id);
+                    .parts.filter((p) => p.path.split('/')[5] !== this.part.id);
                   this.assigneeDocRef.update({ parts: parts });
                 }
               });
@@ -72,7 +73,7 @@ export class PartActionsComponent implements OnInit {
                 if (document.exists) {
                   let parts = document
                     .data()
-                    .parts.filter((p) => p.split('/')[5] !== this.part.id);
+                    .parts.filter((p) => p.path.split('/')[5] !== this.part.id);
                   this.assistantDocRef.update({ parts: parts });
                 }
               });
@@ -90,9 +91,10 @@ export class PartActionsComponent implements OnInit {
     });
     modalRef.componentInstance.part = part;
     modalRef.componentInstance.type = type;
-    if (part.assistant || part.assistant)
+    if (part.assignee || part.assistant) {
       modalRef.componentInstance.replacing =
-        type == 'assignee' ? part.assignee : part.assistant;
+      type == 'assignee' ? part.assignee : part.assistant;
+    }
     modalRef.componentInstance.weekProgram = this.weekProgram;
   }
 }

@@ -30,7 +30,7 @@ export class WolApiService {
       let midContent: Document = this.parse.parseFromString(wolWeek.items[1].content, "text/html");
       let endContent: Document = this.parse.parseFromString(wolWeek.items[2].content, "text/html");
       let parts : Part[] = [];
-      
+
 
       midContent.getElementById('section2')
       .querySelector('ul')
@@ -50,18 +50,19 @@ export class WolApiService {
             lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime(),
             index: i,
             isConfirmed: false,
-            parent: Parent.treasures
+            parent: Parent.treasures,
+            date: date
          })
       })
 
       parts[1].hasDiscussion = true;
-  
- 
+
+
     midContent.getElementById('section3')
     .querySelector('ul')
     .querySelectorAll('.so')
     .forEach((element, i) => {
-     
+
        parts.push({
           assignee: null,
           hasDiscussion: element.textContent.match(/\(([^)]+)\)/)[1].includes('15'),
@@ -76,10 +77,11 @@ export class WolApiService {
           lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime(),
           index: i,
           isConfirmed: false,
-          parent: Parent.apply
+          parent: Parent.apply,
+          date: date
        })
     })
-  
+
     let lifeParts : Part[] = [];
     midContent.getElementById('section4')
     .querySelector('ul')
@@ -100,10 +102,11 @@ export class WolApiService {
           title: element.textContent,
           index: i,
           isConfirmed: false,
-          parent: Parent.life
+          parent: Parent.life,
+          date: date
        })
     })
-  
+
     lifeParts.pop();
     lifeParts.pop();
     lifeParts.shift();
@@ -120,6 +123,7 @@ export class WolApiService {
          index: p,
          parent: Parent.prayer,
          title: 'Prayer',
+         date: date,
          privilege: [Privilege.elder, Privilege.ms, Privilege.pub]
       })
    }
@@ -135,10 +139,11 @@ export class WolApiService {
          index: c,
          parent: Parent.chairman,
          title: 'Chairman',
+         date: date,
          privilege: [Privilege.elder, Privilege.ms]
       })
    }
-   
+
 
        parts.push({
             assignee: null,
@@ -152,7 +157,8 @@ export class WolApiService {
             hasAssistant: false,
             index: 0,
             isConfirmed: false,
-            parent: Parent.weekend
+            date: date,
+            parent: Parent.talk
        },
        {
          assignee: null,
@@ -166,10 +172,11 @@ export class WolApiService {
          lengthTime: moment('01:00:00', 'hh:mm:ss').toDate().getTime(),
          privilege: [Privilege.elder],
          index: 1,
+         date: date,
          isConfirmed: false,
-         parent: Parent.weekend
-       })  
-  
+         parent: Parent.wt
+       })
+
       let weekProgram : WeekProgram = {
          date: date,
          range: midContent.querySelector('header').querySelector('#p1').textContent,

@@ -8,6 +8,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import {  QuerySnapshot } from '@angular/fire/firestore';
 import moment from 'moment';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { EmailService } from './email.service';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -37,7 +38,8 @@ docDefinition = {
   constructor(
       private storage: LocalStorageService,
       private fireStore: FireStoreService,
-      public spinner: NgxSpinnerService
+      public spinner: NgxSpinnerService,
+      public emailService: EmailService
   ) {
     this.congregation = this.storage.retrieve('congregation')
     this.congregationRef = this.storage.retrieve('congregationref')
@@ -102,7 +104,7 @@ docDefinition = {
     this.treasures = parts.filter(part => part.parent == Parent.treasures).sort((a, b) => a.index - b.index)
     this.apply = parts.filter(part => part.parent == Parent.apply).sort((a, b) => a.index - b.index)
     this.life = parts.filter(part => part.parent == Parent.life).sort((a, b) => a.index - b.index)
-    this.weekend = parts.filter(part => part.parent == Parent.weekend).sort((a, b) => a.index - b.index)
+    this.weekend = parts.filter(part => part.parent == Parent.talk).sort((a, b) => a.index - b.index)
     this.chairmans = parts.filter(part => part.parent == Parent.chairman).sort((a, b) => a.index - b.index)
     this.prayers = parts.filter(part => part.parent == Parent.prayer).sort((a, b) => a.index - b.index)
    }
@@ -112,7 +114,8 @@ docDefinition = {
     treasures: parts.docs.filter(part => part.data().parent == Parent.treasures).sort((a, b) => a.data().index - b.data().index),
     apply: parts.docs.filter(part => part.data().parent == Parent.apply).sort((a, b) => a.data().index - b.data().index),
     life: parts.docs.filter(part => part.data().parent == Parent.life).sort((a, b) => a.data().index - b.data().index),
-    weekend: parts.docs.filter(part => part.data().parent == Parent.weekend).sort((a, b) => a.data().index - b.data().index),
+    talk: parts.docs.filter(part => part.data().parent == Parent.talk).sort((a, b) => a.data().index - b.data().index),
+    wt: parts.docs.filter(part => part.data().parent == Parent.wt).sort((a, b) => a.data().index - b.data().index),
     chairmans: parts.docs.filter(part => part.data().parent == Parent.chairman).sort((a, b) => a.data().index - b.data().index),
     prayers: parts.docs.filter(part => part.data().parent == Parent.prayer).sort((a, b) => a.data().index - b.data().index)
     }
@@ -289,7 +292,7 @@ docDefinition = {
       margin: [0, 20, 0, 1]
     },
     {
-      text: filteredParts.weekend[0].data().title.length > 0 ? filteredParts.weekend[0].data().title : 'TALK OUTLINE',
+      text: filteredParts.talk[0].data().title.length > 0 ? filteredParts.talk[0].data().title : 'TALK OUTLINE',
       style: "weekend",
       margin: [0, 15]
     },
@@ -301,7 +304,8 @@ docDefinition = {
               style: "label"
             },
             {
-              text: filteredParts.weekend[0].data().assignee ? `${filteredParts.weekend[0].data().assignee.firstName} ${filteredParts.weekend[0].data().assignee.lastName}` : 'John Doe',
+              text: filteredParts.talk[0].data().assignee ? `${filteredParts.talk[0].data().assignee.firstName} ${filteredParts.
+                talk[0].data().assignee.lastName}` : 'John Doe',
               style: "value",
             }
           ],
@@ -330,7 +334,7 @@ docDefinition = {
               style: "label"
             },
             {
-              text: filteredParts.weekend[1].data().assignee ? `${filteredParts.weekend[1].data().assignee.firstName} ${filteredParts.weekend[1].data().assignee.lastName}` : '',
+              text: filteredParts.wt[0].data().assignee ? `${filteredParts.wt[0].data().assignee.firstName} ${filteredParts.wt[1].data().assignee.lastName}` : '',
               style: "value",
             }
           ],
@@ -340,7 +344,7 @@ docDefinition = {
               style: "label",
             },
             {
-              text: filteredParts.weekend[1].data().assistant ? `${filteredParts.weekend[1].data().assistant.firstName} ${filteredParts.weekend[1].data().assistant.lastName}` : '',
+              text: filteredParts.wt[0].data().assistant ? `${filteredParts.wt[0].data().assistant.firstName} ${filteredParts.wt[0].data().assistant.lastName}` : '',
               style: "value",
             }
           ],
@@ -379,9 +383,19 @@ docDefinition = {
      })
     })
     this.spinner.show()
+    const pdfDocGenerator = pdfMake.createPdf(this.docDefinition);
       setTimeout(() => {
         this.spinner.hide()
-        pdfMake.createPdf(this.docDefinition).open()
+
+      pdfDocGenerator.getBase64((data) => {
+        this.emailService.sendEmail({
+          email: 'manny.defreitas7@me.com', // Change to your recipient
+          subject: "meeting schedule",
+          title: 'meeting schedule',
+          data: data
+        })
+      });
+      // pdfMake.createPdf(this.docDefinition).open()
 
       }, 3000)
 
@@ -393,6 +407,7 @@ docDefinition = {
     let congregation = this.storage.retrieve('congregationref')
     this.fireStore.fireStore.doc<Congregation>(congregation).get().subscribe(data => {
       if (data.exists) {
+
         let congInfo = data.data();
         var docDefinition = {
           content: [

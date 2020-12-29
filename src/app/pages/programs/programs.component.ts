@@ -6,15 +6,13 @@ import { StoreService } from 'src/app/services/store.service';
 import { WolApiService } from 'src/app/services/wol-api.service';
 import moment from 'moment';
 import { Part, WeekProgram } from 'src/app/models/wol.model';
-import { Observable } from 'rxjs';
-import { User } from 'src/app/models/user.model';
+import { Observable, Subject } from 'rxjs';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Congregation } from 'src/app/models/congregation.model';
 import { LocalStorageService } from 'ngx-webstorage';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ExportService } from 'src/app/services/export.service';
-import  firestore  from 'firebase/app';
-import Timestamp = firestore.firestore.Timestamp;
+import { takeUntil } from 'rxjs/operators';
 @AutoUnsubscribe()
 @Component({
    selector: 'app-programs',
@@ -31,6 +29,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
    exportPDFisActive: boolean;
    isLoading: boolean = false;
    $weekProgram: Observable<WeekProgram[]>;
+   ngUnsubscribe = new Subject();
    constructor(
       private wolApiService: WolApiService,
       public storeService: StoreService,
@@ -40,7 +39,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
       private spinner: NgxSpinnerService,
       private exportService: ExportService
    ) { }
-   active = '';
+   active = 0;
    ngOnInit(): void {
       this.year = new Date().getFullYear();
       this.selectedYear = new Date().getFullYear();
@@ -51,7 +50,9 @@ export class ProgramsComponent implements OnInit, OnDestroy {
    }
 
    ngOnDestroy() {
-   }
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+}
 
    createMonthPDF(weeks: WeekProgram[]) {
        let filteredWeeks = weeks.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
@@ -72,7 +73,6 @@ export class ProgramsComponent implements OnInit, OnDestroy {
    addMonthProgram() {
      this.spinner.show()
       let mondays = this.storeService.getMondays(this.monthData.date);
-      // if has account, do fireStore
       let congregation : Congregation = this.storage.retrieve('congregation')
       let path : string = this.storage.retrieve('congregationref')
           mondays.forEach(monday => {
@@ -90,8 +90,9 @@ export class ProgramsComponent implements OnInit, OnDestroy {
                         })
                       })
                   }
-            }).finally(() => this.spinner.hide())
-          })
+            }).catch(console.log)
+            .finally(() => this.spinner.hide())
+        })
    }
 
    checkCanExport() {
@@ -111,9 +112,14 @@ export class ProgramsComponent implements OnInit, OnDestroy {
       let filteredWeeks = weeks.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
       if (filteredWeeks.length > 0) {
         filteredWeeks.forEach(week => {
-          this.fireStoreService.fireStore.doc(`${path}/weeks/${week.id}`).delete()
-        })
 
+          this.fireStoreService.fireStore.doc(`${path}/weeks/${week.id}`).collection('parts').get().pipe(
+            takeUntil(this.ngUnsubscribe)
+          ).subscribe(parts => {
+            parts.forEach(part => part.exists ? this.fireStoreService.delete(`${path}/weeks/${week.id}/parts/${part.id}`) : '')
+          },console.log, () => this.fireStoreService.fireStore.doc(`${path}/weeks/${week.id}`).delete())
+
+        })
       }
    }
 
@@ -121,9 +127,6 @@ export class ProgramsComponent implements OnInit, OnDestroy {
      let path : string = this.storage.retrieve('congregationref')
         this.$weekProgram = this.fireStoreService.fireStore.
           collection<WeekProgram>(`${path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges()
-        this.$weekProgram.subscribe(data => {
-          if (data.length > 0) this.active = data[0].id;
-          this.checkCanExport()
-        }, console.log, () => {console.warn('FINISHED LOADING WEEKS')})
+        this.checkCanExport()
    }
 }

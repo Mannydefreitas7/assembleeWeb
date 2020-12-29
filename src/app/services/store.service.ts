@@ -74,7 +74,6 @@ export class StoreService {
       let next = startMonth.add(1, 'week')
       mondays.push(next.toDate())
     }
-    console.log(mondays)
     return mondays;
   }
 

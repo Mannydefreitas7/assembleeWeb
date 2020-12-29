@@ -87,35 +87,42 @@ export class SelectPublisherComponent implements OnInit {
     let publisherRef = this.fireStoreService.fireStore.doc<Publisher>(
       `${this.congregationRef}/publishers/${publisher.uid}`
     );
-    if (this.replacing) replacingRef = this.fireStoreService.fireStore.doc<Publisher>(
-      `${this.congregationRef}/publishers/${this.replacing.uid}`
-    );
+
+    if (this.replacing) {
+      replacingRef = this.fireStoreService.fireStore.doc<Publisher>(
+      `${this.congregationRef}/publishers/${this.replacing.uid}`);
+    }
 
     if (this.type == 'assignee') {
+     // this.part.assignee = publisher
       documentRef.update({
         assignee: publisher,
       });
     } else {
+    //  this.part.assistant = publisher
       documentRef.update({
         assistant: publisher,
       });
     }
 
     this.isCollapsed = true;
+    this.part.path = documentRef.ref.path;
+
     publisherRef
       .get()
       .toPromise()
       .then((data) => {
         if (data.exists && data.data().parts) {
           let newParts = data.data().parts;
-          newParts.push(documentRef.ref.path);
+
+          newParts.push(this.part);
           publisherRef.update({
             parts: newParts,
           });
         } else {
           publisherRef.set(
             {
-              parts: [documentRef.ref.path],
+              parts: [this.part],
             },
             { merge: true }
           );
@@ -125,7 +132,7 @@ export class SelectPublisherComponent implements OnInit {
         if (this.replacing)
         replacingRef.get().toPromise().then(document => {
           if (document.exists) {
-            let parts = document.data().parts.filter(p => p.split('/')[5] !== this.part.id)
+            let parts = document.data().parts.filter(p => p.path.split('/')[5] !== this.part.id)
             replacingRef.update({parts: parts})
           }
         })
@@ -149,7 +156,7 @@ export class SelectPublisherComponent implements OnInit {
         uid: id,
         gender: this.gender.value,
         isInvited: false,
-        parts: [documentRef.ref.path],
+        parts: [this.part],
       };
       this.part.assignee = newPublisher;
       this.fireStoreService

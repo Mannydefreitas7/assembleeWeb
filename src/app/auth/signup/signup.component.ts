@@ -29,7 +29,7 @@ export class SignupComponent implements OnInit {
          email: ['', [Validators.email, Validators.required]],
          password: ['',
             [
-               Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
+              // Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
                Validators.minLength(6),
                Validators.maxLength(25)
             ],
@@ -54,6 +54,8 @@ export class SignupComponent implements OnInit {
    signUp() {
       if (this.signUpForm.valid) {
          this.auth.emailSignUp(this.email.value, this.password.value, this.firstName.value, this.lastName.value)
+      } else {
+        console.log(this.signUpForm.status)
       }
    }
 

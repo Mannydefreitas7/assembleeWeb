@@ -141,6 +141,7 @@ export class AuthService {
    emailSignUp(email: string, password: string, firstName: string, lastName: string) {
       return this.afAuth.createUserWithEmailAndPassword(email, password)
          .then((credential) => {
+           console.log(credential)
             let _users = this.fireStoreService.fireStore.collection<User>('users', ref => ref.where('uid', '==', credential.user.uid)).valueChanges()
 
             this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)

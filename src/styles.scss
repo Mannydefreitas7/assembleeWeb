@@ -1,4 +1,3 @@
-
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
@@ -11,13 +10,10 @@ $assembleeWeb-accent: mat-palette($mat-pink, A200, A100, A400);
 // The warn palette is optional (defaults to red).
 $assembleeWeb-warn: mat-palette($mat-red);
 
-$assembleeWeb-theme: mat-light-theme((
-  color: (
-    primary: $assembleeWeb-primary,
-    accent: $assembleeWeb-accent,
-    warn: $assembleeWeb-warn,
-  )
-));
+$assembleeWeb-theme: mat-light-theme((color: (primary: $assembleeWeb-primary,
+      accent: $assembleeWeb-accent,
+      warn: $assembleeWeb-warn,
+    )));
 
 @include angular-material-theme($assembleeWeb-theme);
 
@@ -26,63 +22,79 @@ $assembleeWeb-theme: mat-light-theme((
 @import "../node_modules/bootstrap/scss/mixins";
 
 
-$theme-colors: (
-  "primary":    $green-500,
-  "secondary":  $secondary,
-  "success":    $success,
-  "info":       $info,
-  "warning":    $warning,
-  "danger":     $danger,
-  "light":      $light,
-  "dark":       $dark
-);
+$theme-colors: ("primary": $green-500,
+  "secondary": $secondary,
+  "success": $success,
+  "info": $info,
+  "warning": $warning,
+  "danger": $danger,
+  "light": $light,
+  "dark": $dark);
 
 
 @import "../node_modules/bootstrap/scss/bootstrap";
 
-html, body { height: 100%; }
+html,
 body {
-   margin: 0;
-   font-family: "Segoe UI", sans-serif !important;
-   overflow-x: hidden;
-   line-height: 1 !important;
-}
-h1, h2, h3 {
-   font-weight: bold;
-}
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-   color: #fff;
-   background-color: #001d3c !important;
+  height: 100%;
 }
 
-a, .btn-link {
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif !important;
+  overflow-x: hidden;
+  line-height: 1 !important;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: bold;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
+  color: #fff;
+  background-color: #001d3c !important;
+}
+
+a,
+.btn-link {
   color: $green-500;
-   text-decoration: none;
-   &:hover {
-     color: $green-800;
-   }
+  text-decoration: none;
+
+  &:hover {
+    color: $green-800;
+  }
 }
 
 .navbar-toggler {
-   border: 0px !important;
-   &:focus {
-      box-shadow: none !important;
-   }
+  border: 0px !important;
+
+  &:focus {
+    box-shadow: none !important;
+  }
 }
-.mat-stepper-horizontal, .mat-stepper-vertical {
-   background-color: transparent !important;
-   font-family: inherit !important;
+
+.mat-stepper-horizontal,
+.mat-stepper-vertical {
+  background-color: transparent !important;
+  font-family: inherit !important;
 }
+
 .mat-step-header:hover {
-   background-color: rgb(64 80 181 / 9%) !important;
+  background-color: rgb(64 80 181 / 9%) !important;
   //@at-root border-radius: 0 !important;
 }
-.form-control, .form-select {
-   border: 1px solid #000000 !important;
- //  border-radius: 0 !important;
-   &:disabled {
-      border: 1px solid #919191 !important;
-   }
+
+.form-control,
+.form-select {
+  border: 1px solid #000000 !important;
+
+  //  border-radius: 0 !important;
+  &:disabled {
+    border: 1px solid #919191 !important;
+  }
 }
 
 .btn-light:hover {
@@ -92,84 +104,136 @@ a, .btn-link {
 }
 
 .input-group {
-   &.input-group-start {
-      .form-control {
-         border-left: none !important;
-      }
-   .input-group-text {
-    //  border-radius: 0 !important;
+  &.input-group-start {
+    .form-control {
+      border-left: none !important;
+    }
+
+    .input-group-text {
+      //  border-radius: 0 !important;
       border: 1px solid #000000 !important;
       border-right: none !important;
       background-color: #ffffff !important;
       padding-right: 0 !important;
-   }
-}
-.list-group-item-action:hover, .list-group-item-action:focus {
-  z-index: 1;
-  color: #495057;
-  text-decoration: none;
-  background-color: #19875412;
-}
-&.input-group-end {
-   .form-control {
+    }
+  }
+
+  .list-group-item-action:hover,
+  .list-group-item-action:focus {
+    z-index: 1;
+    color: #495057;
+    text-decoration: none;
+    background-color: #19875412;
+  }
+
+  &.input-group-end {
+    .form-control {
       border-right: none !important;
-   }
-.input-group-text {
-  // border-radius: 0 !important;
-   border: 1px solid #000000 !important;
-   border-left: none !important;
-   background-color: #ffffff !important;
-   padding-left: 0 !important;
+    }
+
+    .input-group-text {
+      // border-radius: 0 !important;
+      border: 1px solid #000000 !important;
+      border-left: none !important;
+      background-color: #ffffff !important;
+      padding-left: 0 !important;
+    }
+  }
 }
-}
-}
+
 .btn {
+
   // border-radius: 0;
-   &.btn-circle {
-      width: 44px;
-      height: 44px;
-   }
+  &.btn-circle {
+    width: 44px;
+    height: 44px;
+  }
 }
+
 .dropdown-menu {
-   border: 1px solid #000000 !important;
+  border: 1px solid #000000 !important;
   // border-radius: 0 !important;
 }
+
 .card-custom {
-   border: none !important;
+  border: none !important;
 }
+
 .sr-only {
-   display: none;
+  display: none;
 }
+
 .dropdown-toggle::after {
-   border: none !important;
+  border: none !important;
 }
 
 .treasures {
-  color:#5a6a70;
+  color: #5a6a70;
 }
 
 .apply {
-  color:#c18626;
+  color: #c18626;
 }
 
 .life {
-  color:#961526;
+  color: #961526;
 }
 
 .weekend {
-  color:#919191;
+  color: #919191;
 }
+
 .list-group-item.active {
   z-index: 2;
   color: #fff;
   background-color: $green-500;
   border-color: $green-500;
 }
-.nav-pills .nav-link {
-  // border-radius: 0;
+
+.dropdown-item.active,
+.dropdown-item:active {
+  color: #fff;
+  text-decoration: none;
+  background-color: $green-500;
+
+  svg {
+    path {
+      stroke: #ffffff;
+    }
+  }
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
   color: #fff;
-  background-color:$green-500 !important;
+  background-color: $green-500 !important;
 }
+
+.btn-delete {
+  color: #de1607;
+  &:disabled {
+    svg {
+      path, line, polyline {
+        stroke: #000000;
+        opacity: 0.65;
+      }
+    }
+  }
+  svg {
+    path, line, polyline {
+      stroke: #de1607
+    }
+  }
+  &:hover, &:active, &:focus {
+    color: #de1607;
+    background-color: #de160724;
+    border-color: transparent;
+  }
+}
+
+.form-control:disabled, .form-select:disabled {
+  border: 1px solid #fafafa !important;
+  color: #6c757d;
+  background-color: #fafafa !important;
+}
+

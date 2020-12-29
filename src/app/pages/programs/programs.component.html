@@ -17,26 +17,25 @@
          </button>
 
          <button *ngIf="$weekProgram | async as weekProgram" [disabled]="!exportPDFisActive" class="btn btn-light btn-sm" (click)="createMonthPDF(weekProgram)">
-          Export
+          <svg-icon src="assets/images/export.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+          <span class="ms-2 align-middle">Export</span>
         </button>
 
-        <button *ngIf="$weekProgram | async as weekProgram" [disabled]="!exportPDFisActive" class="btn btn-light btn-sm" (click)="deleteMonth(weekProgram)">
-          Delete
+        <button *ngIf="$weekProgram | async as weekProgram" [disabled]="!exportPDFisActive" class="btn btn-light btn-sm btn-delete" (click)="deleteMonth(weekProgram)">
+          <svg-icon src="assets/images/trash.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+          <span class="ms-2 align-middle">Delete</span>
         </button>
 
       </div>
-      <mat-drawer-container class="card p-0 border-0 shadow-sm">
-         <mat-drawer mode="side" opened style="width: 200px;">
-            <!-- <div class="card-header">
-               Weeks
-             </div> -->
+      <mat-drawer-container class="card p-0 border-0 shadow-sm rounded-3" *ngIf="$weekProgram | async as weekPrograms">
+         <mat-drawer mode="side" [opened]="weekPrograms.length > 0" style="width: 200px;">
              <div class="card-body p-0">
 
                <div class="d-flex">
                   <ul ngbNav #nav="ngbNav" [(activeId)]="active"  orientation="vertical" class="list-group list-group-flush w-100">
-                     <ng-container *ngIf="$weekProgram | async as weekPrograms; else selectDate">
-                        <li [ngbNavItem]="week.id" *ngFor="let week of weekPrograms" class="list-group-item list-group-item-action py-2" [ngClass]="{'active': week.id == active }">
-                           <a ngbNavLink [class]="week.id == active ? 'fw-bold text-white' : 'fw-bold text-dark'">{{ week.range }}</a>
+                     <ng-container *ngIf="weekPrograms; else selectDate">
+                        <li [ngbNavItem]="i" *ngFor="let week of weekPrograms;  index as i" class="list-group-item list-group-item-action py-2" [ngClass]="{'active': active == i }">
+                           <a ngbNavLink [class]="active == i ? 'fw-bold text-white' : 'fw-bold text-dark'">{{ week.range | titlecase }}</a>
                            <ng-template ngbNavContent>
                                 <ab-program-detail [weekProgram]="week"></ab-program-detail>
                            </ng-template>
@@ -50,12 +49,22 @@
              </div>
          </mat-drawer>
          <mat-drawer-content>
-            <!-- <div class="card-header">
-               Programs
-             </div> -->
-             <div class="card-body py-4" style="min-height: 600px;">
-               <div [ngbNavOutlet]="nav" class="mx-4" *ngIf="$weekProgram | async as weekPrograms; else selectDate"></div>
-              <!-- <router-outlet name='program'></router-outlet> -->
+             <div class="card-body py-4" style="min-height: 600px;" *ngIf="$weekProgram | async as weekPrograms;" [ngClass]="{ 'd-flex flex-wrap align-items-center justify-content-center': weekPrograms.length == 0  }">
+
+              <div *ngIf="weekPrograms.length == 0">
+              <div class="text-center fs-5 text-secondary" style="opacity: 50%;">
+                <svg-icon src="assets/images/empty.svg" [svgStyle]="{ 'width.px':100, 'height.px': 100 }"></svg-icon>
+                <p class="mt-2">No programs yet.</p>
+              </div>
+              <div class="w-100 d-inline-flex justify-content-center mt-4">
+              <button type="button" class="btn btn-primary btn-sm" (click)="addMonthProgram()">
+                Add Program
+              </button>
+            </div>
+          </div>
+               <div [ngbNavOutlet]="nav" class="mx-4" *ngIf="weekPrograms.length > 0">
+               </div>
+
              </div>
          </mat-drawer-content>
       </mat-drawer-container>

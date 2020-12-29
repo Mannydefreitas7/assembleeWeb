@@ -4,7 +4,7 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { AngularFireModule } from "@angular/fire";
 import { AngularFireDatabaseModule } from "@angular/fire/database";
-import { AngularFirestoreModule } from "@angular/fire/firestore";
+import { AngularFirestoreModule, SETTINGS } from "@angular/fire/firestore";
 import { environment } from 'src/environments/environment';
 import { NgbAlertModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AssembleeModule } from './assemblee/assemblee.module';
@@ -36,6 +36,14 @@ import { FilterPipe } from './shared/helpers/filter.pipe';
 import { SortByPipe } from './shared/helpers/sort-by.pipe';
 import { PartActionsComponent } from './components/part-actions/part-actions.component';
 import { ImportPubsComponent } from './components/import-pubs/import-pubs.component';
+import { PublisherRowComponent } from './components/publisher-row/publisher-row.component';
+import { PublisherDetailComponent } from './pages/publishers/publisher-detail.component';
+
+
+import { AngularFireAuthModule, USE_EMULATOR as AUTH_EMULATOR } from '@angular/fire/auth';
+import { USE_EMULATOR as FIRESTORE_EMULATOR } from '@angular/fire/firestore';
+import { USE_EMULATOR as DATABASE_EMULATOR } from '@angular/fire/database';
+import { USE_EMULATOR as FUNCTIONS_EMULATOR } from '@angular/fire/functions';
 
 registerLocaleData(en);
 
@@ -59,7 +67,9 @@ registerLocaleData(en);
       FilterPipe,
       SortByPipe,
       PartActionsComponent,
-      ImportPubsComponent
+      ImportPubsComponent,
+      PublisherRowComponent,
+      PublisherDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -70,6 +80,7 @@ registerLocaleData(en);
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
     AngularFireFunctionsModule,
+    AngularFireAuthModule,
     NgbModule,
     FormsModule,
     HttpClientModule,
@@ -87,9 +98,23 @@ registerLocaleData(en);
          showError: true
        }
     },
-    { provide: NEW_ORIGIN_BEHAVIOR, useValue: true },
-    { provide: ORIGIN, useValue: 'https://assemblee.web.app/' },
-    { provide: USE_EMULATOR, useValue: ['localhost', 4200] }
+    // { provide: NEW_ORIGIN_BEHAVIOR, useValue: true },
+    // { provide: ORIGIN, useValue: 'https://assemblee.web.app/' },
+    // { provide: USE_EMULATOR, useValue: ['localhost', 4200] }
+
+      // {
+      //   provide: AUTH_EMULATOR,
+      //   useValue: environment.production ? undefined : ['localhost', 9099],
+      // },
+      // {
+      //   provide: FIRESTORE_EMULATOR,
+      //   useValue: environment.production ? undefined : ['localhost', 8080],
+      // },
+      // {
+      //   provide: FUNCTIONS_EMULATOR,
+      //   useValue: environment.production ? undefined : ['localhost', 5001],
+      // }
+
    ],
    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

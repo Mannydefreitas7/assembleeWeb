@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgbAccordionModule, NgbAlertModule, NgbCollapseModule, NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionModule, NgbAlertModule, NgbCollapseModule, NgbModalModule, NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -34,6 +34,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     MatProgressSpinnerModule,
     MatIconModule,
     NgbAccordionModule,
+    NgbNavModule,
     NgbCollapseModule,
     NgxSkeletonLoaderModule.forRoot(),
     NgxWebstorageModule.forRoot(),
@@ -50,6 +51,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
    MatToolbarModule,
    NgbModalModule,
    MatListModule,
+   NgbNavModule,
    MatStepperModule,
    MatInputModule,
    MatAutocompleteModule,

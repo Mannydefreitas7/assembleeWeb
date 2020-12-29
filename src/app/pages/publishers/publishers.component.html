@@ -1,3 +1,69 @@
-<div class="container">
-  <!-- <import-pubs></import-pubs> -->
+<div class="container-lg pb-4 px-sm-4">
+
+  <div class="row mt-3">
+     <div class="p-0 mb-3 d-flex justify-content-end align-items-center">
+
+        <button class="btn btn-light btn-sm d-inline-block">
+           <svg-icon src="assets/images/add-schedule.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+           <span class="ms-2 align-middle" >New Publisher</span>
+        </button>
+
+        <button class="btn btn-light btn-sm">
+         <svg-icon src="assets/images/export.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+         <span class="ms-2 align-middle">Import</span>
+       </button>
+
+       <button class="btn btn-light btn-sm">
+        <svg-icon src="assets/images/export.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+        <span class="ms-2 align-middle">Export</span>
+      </button>
+     </div>
+
+     <mat-drawer-container class="card p-0 border-0 shadow-sm rounded-3" >
+
+        <mat-drawer mode="side" opened style="width: 300px;" >
+            <div class="card-body p-0">
+              <div class="d-flex">
+
+                 <ul ngbNav #nav="ngbNav" [(activeId)]="active"  orientation="vertical" class="list-group list-group-flush w-100">
+
+                    <ng-container *ngIf="$publishers | async as publishers; else selectDate">
+                       <li [ngbNavItem]="i" *ngFor="let publisher of publishers; index as i" class="list-group-item list-group-item-action py-2" [ngClass]="{'active': active == i }">
+                          <a ngbNavLink [class]="active == i ? 'fw-bold text-white' : 'fw-bold text-dark'">
+                            <publisher-row [publisher]="publisher"></publisher-row>
+                          </a>
+                          <ng-template ngbNavContent>
+                            <publisher-detail [publisher]="publisher"></publisher-detail>
+                          </ng-template>
+                        </li>
+                    </ng-container>
+                    <ng-template #selectDate>
+                       <mat-spinner></mat-spinner>
+                     </ng-template>
+                 </ul>
+               </div>
+            </div>
+        </mat-drawer>
+        <mat-drawer-content>
+            <div *ngIf="$publishers | async as publishers; else selectDate" class="card-body py-4" style="min-height: 600px;" [ngClass]="{ 'd-flex flex-wrap align-items-center justify-content-center': publishers.length == 0  }">
+
+             <div *ngIf="publishers.length == 0">
+             <div class="text-center fs-5 text-secondary" style="opacity: 50%;">
+               <svg-icon src="assets/images/empty.svg" [svgStyle]="{ 'width.px':100, 'height.px': 100 }"></svg-icon>
+               <p class="mt-2">No programs yet.</p>
+             </div>
+             <div class="w-100 d-inline-flex justify-content-center mt-4">
+             <button type="button" class="btn btn-primary btn-sm" >
+               Add Program
+             </button>
+           </div>
+         </div>
+              <div [ngbNavOutlet]="nav" class="mx-4" *ngIf="publishers.length > 0">
+              </div>
+            </div>
+        </mat-drawer-content>
+     </mat-drawer-container>
+     <ngx-spinner></ngx-spinner>
+  </div>
+
 </div>

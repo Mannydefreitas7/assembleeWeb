@@ -10,13 +10,14 @@ const firebaseConfig = {
    storageBucket: "assemblee-5ddb6.appspot.com",
    messagingSenderId: "98690802434",
    appId: "1:98690802434:web:160a4494153ad4d5cf581b",
-   measurementId: "G-8MT9491E7D"
+   measurementId: "G-8MT9491E7D",
  };
 
 export const environment = {
   production: false,
   firebaseConfig: firebaseConfig,
   wolApiUrl: 'http://localhost:4200/wol/',
+  SENDGRID_API_KEY: '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'
 };
 
 /*
