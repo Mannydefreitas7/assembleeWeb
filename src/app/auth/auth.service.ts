@@ -72,9 +72,9 @@ export class AuthService {
                .valueChanges()
                .subscribe((fireUser: User) => {
                   if (fireUser && fireUser.congregation) {
-
-                     this.storage.store('congregationRef', fireUser.congregation.path)
-                     this.fireStoreService.fireStore.doc(fireUser.congregation.path).get().subscribe(cong => {
+                    this.storage.store('fireUser', fireUser);
+                     this.storage.store('congregationRef', fireUser.congregation)
+                     this.fireStoreService.fireStore.doc(fireUser.congregation).get().subscribe(cong => {
                        if (cong.exists)
                       this.storage.store('congregation', cong.data())
                      })
@@ -86,9 +86,10 @@ export class AuthService {
             })
          } else {
             // this.ngZone.run(() => this.router.navigate(['/login']));
-            this.storage.clear('user')
-            this.storage.clear('congregationRef')
-            this.storage.clear('congregation')
+            this.storage.clear('user');
+            this.storage.clear('fireUser');
+            this.storage.clear('congregationRef');
+            this.storage.clear('congregation');
          }
       })
    }
@@ -115,6 +116,7 @@ export class AuthService {
             this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
                .valueChanges()
                .subscribe((fireUser:User) => {
+                  this.storage.store('fireUser', fireUser);
                   this.storage.store('congregationRef', fireUser.congregation)
             })
 
@@ -147,6 +149,7 @@ export class AuthService {
             this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
                .valueChanges()
                .subscribe((fireUser: User) => {
+                this.storage.store('fireUser', fireUser);
                   this.storage.store('congregationRef', fireUser.congregation)
             })
 
@@ -193,9 +196,10 @@ export class AuthService {
 
             fireUserRef.subscribe(fireUser => {
                if (fireUser) {
+                this.storage.store('fireUser', fireUser);
                   // already exists
                   if (fireUser.congregation) {
-                     this.storage.store('congregationref', fireUser.congregation.path)
+                     this.storage.store('congregationref', fireUser.congregation)
                      // already has congregation setup
                      this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
                   } else {

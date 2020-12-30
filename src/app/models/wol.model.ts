@@ -67,6 +67,7 @@ export interface Part {
    title?: string;
    subTitle?: string;
    isConfirmed?: boolean;
+   isEmailed?: boolean;
    index?: number;
    parent?: Parent;
    path?: string;

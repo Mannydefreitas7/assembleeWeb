@@ -59,6 +59,6 @@ export enum Permission {
    view = 'view',
    programs = 'programs',
    publishers = 'publishers',
-   settings = 'settings',
+   admin = 'admin',
    speakers = 'speakers'
 }

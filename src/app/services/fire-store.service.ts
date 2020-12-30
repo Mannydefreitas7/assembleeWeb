@@ -63,7 +63,7 @@ export class FireStoreService {
             Permission.view,
             Permission.programs,
             Permission.publishers,
-            Permission.settings,
+            Permission.admin,
             Permission.speakers,
          ]
       }

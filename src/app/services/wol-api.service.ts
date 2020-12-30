@@ -50,6 +50,7 @@ export class WolApiService {
             lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime(),
             index: i,
             isConfirmed: false,
+            isEmailed: false,
             parent: Parent.treasures,
             date: date
          })
@@ -72,6 +73,7 @@ export class WolApiService {
           id: this.fireStore.fireStore.createId(),
           length: element.textContent.match(/\(([^)]+)\)/)[1],
           privilege: element.textContent.match(/\(([^)]+)\)/)[1].includes('15') ? [Privilege.elder, Privilege.ms] : [Privilege.elder, Privilege.ms, Privilege.pub],
+          isEmailed: false,
           subTitle: "",
           title: element.textContent,
           lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime(),
@@ -101,6 +103,7 @@ export class WolApiService {
           subTitle: '',
           title: element.textContent,
           index: i,
+          isEmailed: false,
           isConfirmed: false,
           parent: Parent.life,
           date: date
@@ -121,6 +124,7 @@ export class WolApiService {
          gender: [Gender.brother],
          isConfirmed: false,
          index: p,
+         isEmailed: false,
          parent: Parent.prayer,
          title: 'Prayer',
          date: date,
@@ -139,6 +143,7 @@ export class WolApiService {
          index: c,
          parent: Parent.chairman,
          title: 'Chairman',
+         isEmailed: false,
          date: date,
          privilege: [Privilege.elder, Privilege.ms]
       })
@@ -156,6 +161,7 @@ export class WolApiService {
             subTitle: "",
             hasAssistant: false,
             index: 0,
+            isEmailed: false,
             isConfirmed: false,
             date: date,
             parent: Parent.talk
@@ -172,6 +178,7 @@ export class WolApiService {
          lengthTime: moment('01:00:00', 'hh:mm:ss').toDate().getTime(),
          privilege: [Privilege.elder],
          index: 1,
+         isEmailed: false,
          date: date,
          isConfirmed: false,
          parent: Parent.wt

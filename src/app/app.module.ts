@@ -38,12 +38,9 @@ import { PartActionsComponent } from './components/part-actions/part-actions.com
 import { ImportPubsComponent } from './components/import-pubs/import-pubs.component';
 import { PublisherRowComponent } from './components/publisher-row/publisher-row.component';
 import { PublisherDetailComponent } from './pages/publishers/publisher-detail.component';
-
-
 import { AngularFireAuthModule, USE_EMULATOR as AUTH_EMULATOR } from '@angular/fire/auth';
-import { USE_EMULATOR as FIRESTORE_EMULATOR } from '@angular/fire/firestore';
-import { USE_EMULATOR as DATABASE_EMULATOR } from '@angular/fire/database';
-import { USE_EMULATOR as FUNCTIONS_EMULATOR } from '@angular/fire/functions';
+
+import { PublisherComponent } from './components/skeletons/publisher/publisher.component';
 
 registerLocaleData(en);
 
@@ -69,7 +66,8 @@ registerLocaleData(en);
       PartActionsComponent,
       ImportPubsComponent,
       PublisherRowComponent,
-      PublisherDetailComponent
+      PublisherDetailComponent,
+      PublisherComponent
   ],
   imports: [
     BrowserModule,

@@ -25,9 +25,9 @@
             <div class="card-body p-0">
               <div class="d-flex">
 
-                 <ul ngbNav #nav="ngbNav" [(activeId)]="active"  orientation="vertical" class="list-group list-group-flush w-100">
+                 <ul ngbNav #nav="ngbNav" [(activeId)]="active" orientation="vertical" class="list-group list-group-flush w-100">
 
-                    <ng-container *ngIf="$publishers | async as publishers; else selectDate">
+                    <ng-container *ngIf="$publishers | async as publishers; else pubs">
                        <li [ngbNavItem]="i" *ngFor="let publisher of publishers; index as i" class="list-group-item list-group-item-action py-2" [ngClass]="{'active': active == i }">
                           <a ngbNavLink [class]="active == i ? 'fw-bold text-white' : 'fw-bold text-dark'">
                             <publisher-row [publisher]="publisher"></publisher-row>
@@ -37,9 +37,6 @@
                           </ng-template>
                         </li>
                     </ng-container>
-                    <ng-template #selectDate>
-                       <mat-spinner></mat-spinner>
-                     </ng-template>
                  </ul>
                </div>
             </div>
@@ -67,3 +64,14 @@
   </div>
 
 </div>
+<ng-template #selectDate>
+
+</ng-template>
+
+<ng-template #pubs>
+    <ul class="list-group list-group-flush w-100" *ngFor="let number of [0,1,2,3,4,5]; let i=index">
+      <li class="list-group-item py-2 d-flex align-items-center">
+          <publisher-skeleton></publisher-skeleton>
+      </li>
+    </ul>
+</ng-template>

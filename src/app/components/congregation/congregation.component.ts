@@ -200,7 +200,7 @@ ngOnDestroy() {
       congregationRef.set(_congregation).then((data) => {
          this.auth.afAuth.user.subscribe(user => {
             let updatedUser: User = {
-               congregation: congregationRef
+               congregation: congregationRef.path
             }
             this.fireStoreService.update(`users/${user.uid}`, updatedUser).then(() => {
 

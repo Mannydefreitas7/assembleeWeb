@@ -6,7 +6,7 @@ export class User {
 	uid?: string;
 	email?: string;
 	photoURL?: string;
-	congregation?: DocumentReference<Congregation>;
+	congregation?: string;
    displayName?: string;
    firstName?: string;
    lastName?: string;

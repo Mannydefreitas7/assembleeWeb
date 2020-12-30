@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { emit } from 'process';
 import { EmailService } from 'src/app/services/email.service';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'publisher-detail',
@@ -37,17 +38,19 @@ export class PublisherDetailComponent implements OnInit {
   lastName: string;
   privilege: Privilege;
   privileges: Privilege[] = [Privilege.elder, Privilege.ms, Privilege.pub, Privilege.talkCo]
-  permissions: Permission[] = [Permission.view, Permission.add, Permission.delete, Permission.edit, Permission.programs, Permission.publishers, Permission.settings, Permission.speakers]
+  permissions: Permission[] = [Permission.view, Permission.add, Permission.delete, Permission.edit, Permission.programs, Permission.publishers, Permission.admin, Permission.speakers]
   isEditing: boolean = false;
-  $user: Observable<User>;
+  user: firebase.default.User;
+  fireUser: User;
   $parts: Observable<Part[]>
-
+  $user: Observable<User>;
   ngOnInit(): void {
     this.firstName = this.publisher.firstName;
     this.lastName = this.publisher.lastName;
     this.privilege = this.publisher.privilege;
     this.path = this.storage.retrieve('congregationref');
-
+    this.user = this.storage.retrieve('user');
+    this.fireUser = this.storage.retrieve('fireUser');
     if (this.publisher.isInvited) this.$user = this.fireStoreService.fireStore.doc(`users/${this.publisher.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe))
 
     this.getPublisherParts()
@@ -60,7 +63,6 @@ export class PublisherDetailComponent implements OnInit {
       lastName: this.lastName,
       privilege:this.privilege
     })
-   // this.emailService.sendEmail();
   }
 
   editPermissions(user: User, permission: Permission) {
@@ -68,13 +70,15 @@ export class PublisherDetailComponent implements OnInit {
 
    if (_permissions.includes(permission)) {
     _permissions = _permissions.filter(p => p != permission)
+
    } else {
      _permissions.push(permission)
   }
-  console.log(_permissions)
   this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`).update({
     permissions: _permissions
 })
+this.fireUser.permissions = _permissions;
+    this.storage.store('fireUser', this.fireUser)
 }
 
 getPublisherParts() {

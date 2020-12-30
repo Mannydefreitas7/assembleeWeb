@@ -26,7 +26,7 @@ export class ClaimedCongregationComponent implements OnInit, OnDestroy {
      this.$users = this.fireStore.fireStore.collection<User>('users').valueChanges().pipe(map(data => {
         return data.filter(d => {
            if (d.congregation)
-            return d.congregation.path == `congregations/${this.congregation.properties.orgGuid}`
+            return d.congregation == `congregations/${this.congregation.properties.orgGuid}`
          })
      }))
   }
