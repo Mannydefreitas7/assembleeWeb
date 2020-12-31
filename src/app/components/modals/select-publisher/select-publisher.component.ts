@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal, NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
+import { NgForage } from 'ngforage';
 import { LocalStorageService } from 'ngx-webstorage';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -26,6 +27,7 @@ export class SelectPublisherComponent implements OnInit {
     public fb: FormBuilder,
     public fireStoreService: FireStoreService,
     public storage: LocalStorageService,
+    public forage: NgForage,
     public auth: AuthService,
     public modal: NgbActiveModal
   ) {}
@@ -51,16 +53,17 @@ export class SelectPublisherComponent implements OnInit {
       gender: [Gender.brother, [Validators.required, Validators.minLength(2)]],
       privilege: [Privilege.pub, [Validators.minLength(2)]],
     });
-
-    this.$publishers = this.fireStoreService.getCongregationPublishers().pipe(
-      map((data) => {
-        return data.filter(
-          (pubs) =>
-            this.part.privilege.includes(pubs.privilege) &&
-            this.part.gender.includes(pubs.gender)
-        );
-      })
-    );
+    this.forage.getItem<string>('congregationRef').then(path => {
+      this.$publishers = this.fireStoreService.fireStore.collection<Publisher>(`${path}/publishers`).valueChanges().pipe(
+        map((data) => {
+          return data.filter(
+            (pubs) =>
+              this.part.privilege.includes(pubs.privilege) &&
+              this.part.gender.includes(pubs.gender)
+          );
+        })
+      );
+    })
   }
 
   get fname() {
@@ -81,34 +84,31 @@ export class SelectPublisherComponent implements OnInit {
 
   selectPublisher(publisher: Publisher) {
     let replacingRef: AngularFirestoreDocument;
-    let documentRef = this.fireStoreService.fireStore.doc<Part>(
-      `${this.congregationRef}/weeks/${this.weekProgram.id}/parts/${this.part.id}`
-    );
-    let publisherRef = this.fireStoreService.fireStore.doc<Publisher>(
-      `${this.congregationRef}/publishers/${publisher.uid}`
-    );
+    this.forage.getItem<string>('congregationRef').then(path => {
+      let documentRef = this.fireStoreService.fireStore.doc<Part>(
+        `${path}/weeks/${this.weekProgram.id}/parts/${this.part.id}`
+      );
+      let publisherRef = this.fireStoreService.fireStore.doc<Publisher>(
+        `${path}/publishers/${publisher.uid}`
+      );
 
-    if (this.replacing) {
-      replacingRef = this.fireStoreService.fireStore.doc<Publisher>(
-      `${this.congregationRef}/publishers/${this.replacing.uid}`);
-    }
-
-    if (this.type == 'assignee') {
-     // this.part.assignee = publisher
-      documentRef.update({
-        assignee: publisher,
-      });
-    } else {
-    //  this.part.assistant = publisher
-      documentRef.update({
-        assistant: publisher,
-      });
-    }
-
-    this.isCollapsed = true;
-    this.part.path = documentRef.ref.path;
-
-    publisherRef
+      if (this.replacing) {
+        replacingRef = this.fireStoreService.fireStore.doc<Publisher>(
+        `${path}/publishers/${this.replacing.uid}`);
+      }
+      if (this.type == 'assignee') {
+        // this.part.assignee = publisher
+         documentRef.update({
+           assignee: publisher,
+         });
+       } else {
+       //  this.part.assistant = publisher
+         documentRef.update({
+           assistant: publisher,
+         });
+       }
+      this.part.path = documentRef.ref.path;
+      publisherRef
       .get()
       .toPromise()
       .then((data) => {
@@ -137,43 +137,7 @@ export class SelectPublisherComponent implements OnInit {
           }
         })
       })
-  }
+    })
 
-  addPublisher() {
-    let congregationRef = this.storage.retrieve('congregationref');
-    if (this.publisherForm.valid) {
-      let documentRef = this.fireStoreService.fireStore.doc<Part>(
-        `${congregationRef}/weeks/${this.weekProgram.id}/parts/${this.part.id}`
-      );
-
-      let id = this.fireStoreService.fireStore.createId();
-      let newPublisher: Publisher = {
-        email: this.email.value,
-        lastName: this.lname.value,
-        firstName: this.fname.value,
-        privilege: this.privilege.value,
-        photoURL: null,
-        uid: id,
-        gender: this.gender.value,
-        isInvited: false,
-        parts: [this.part],
-      };
-      this.part.assignee = newPublisher;
-      this.fireStoreService
-        .create(`${congregationRef}/publishers`, id, newPublisher)
-        .then(() => {
-          this.isCollapsed = true;
-          documentRef
-            .set(
-              {
-                assignee: newPublisher,
-              },
-              { merge: true }
-            )
-            .then(() => {
-              this.modal.close();
-            });
-        });
-    }
   }
 }

@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Congregation } from 'src/app/models/congregation.model';
 import { User } from 'src/app/models/user.model';
+import { FireStoreService } from 'src/app/services/fire-store.service';
 import { StoreService } from 'src/app/services/store.service';
 
 @Component({
@@ -15,7 +16,7 @@ import { StoreService } from 'src/app/services/store.service';
 })
 export class TopbarComponent implements OnInit {
 
-  fireUser: User;
+  $fireUser: Observable<User>;
   congregation: Congregation;
 
   constructor(
@@ -23,14 +24,19 @@ export class TopbarComponent implements OnInit {
      public activeRoute: ActivatedRoute,
      public router: Router,
      public storeService: StoreService,
+     public fireStore: FireStoreService,
      public storage: LocalStorageService,
      public forage: NgForage
      ) { }
 
   ngOnInit(): void {
-    this.forage.getItem('fireUser').then(user => this.fireUser = user)
-   // this.storage.observe('fireUser').subscribe(user => this.fireUser = user)
-    this.congregation = this.storage.retrieve('congregation');
-  }
+
+     this.forage.getItem<firebase.default.User>('user').then(user => {
+      this.$fireUser = this.fireStore.fireStore.doc<User>(`users/${user.uid}`).valueChanges()
+     })
+    }
+
+
+
 
 }

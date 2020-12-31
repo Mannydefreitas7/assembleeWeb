@@ -13,42 +13,7 @@
   </div>
   </div>
   <div class="modal-body bg-light">
-    <div [ngbCollapse]="isCollapsed" class="collapse">
-      <form [formGroup]="publisherForm">
-        <div class="row g-2">
-          <div class="col">
-            <input type="text" formControlName="fname" class="form-control" placeholder="First name">
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" formControlName="lname" placeholder="Last name">
-          </div>
-        </div>
-        <div class="row mt-2 g-2">
-          <div class="col-12">
-            <input type="email" class="form-control" formControlName="email" placeholder="Email">
-          </div>
-        </div>
-        <div class="row mt-2 g-2">
-          <div class="col-6">
-            <select class="form-select" formControlName="gender" required>
-              <option *ngFor="let g of genders" [value]="g">{{ g }}</option>
-            </select>
-          </div>
-          <div class="col-6">
-            <select class="form-select" formControlName="privilege" required>
-              <option *ngFor="let p of privileges" [value]="p">{{ p }}</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="d-flex justify-content-end align-items-center mt-2">
-          <button type="button" class="btn btn-light me-2" (click)="modal.close()">Cancel</button>
-          <button type="submit" class="btn btn-primary" (click)="addPublisher()">Save & Select</button>
-        </div>
-      </form>
-    </div>
-    <hr *ngIf="!isCollapsed">
-      <div *ngIf="$publishers | async as publishers" class=" ">
+      <div *ngIf="$publishers | async as publishers">
         <ul *ngIf="(publishers | filter: searchText).length > 0" class="list-group list-group-flush rounded shadow-sm">
           <li *ngFor="let publisher of publishers | filter: searchText" class="list-group-item list-group-item-action" type="button" (click)="selectPublisher(publisher)">
               <publisher-row [publisher]="publisher"></publisher-row>
