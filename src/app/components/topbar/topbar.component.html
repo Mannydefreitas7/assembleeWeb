@@ -1,5 +1,5 @@
- <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-   <div class="container">
+ <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+   <div class="container-lg">
       <button class="navbar-toggler btn btn-link" type="button" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation" (click)="storeService.toggleNav()">
          <svg-icon src="assets/images/menu.svg" *ngIf="!storeService.isNavToggled"></svg-icon>
          <svg-icon src="assets/images/remove.svg" *ngIf="storeService.isNavToggled"></svg-icon>
@@ -35,26 +35,23 @@
             </a>
           </li>
 
-         <!-- <li class="nav-item dropdown" ngbDropdown>
-           <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" aria-expanded="false" ngbDropdownToggle>
-             Export
-           </a>
-            <ul ngbDropdownMenu aria-labelledby="navbarDropdown">
-              <li><a ngbDropdownItem  role="button">.pdf</a></li>
-             <li><a ngbDropdownItem  role="button">.assemblee</a></li>
-             <li><a ngbDropdownItem  role="button">.doc</a></li>
-            </ul>
-         </li> -->
-
        </ul>
 
 
      </div>
-     <div class="nav-item d-inline-flex align-items-center">
-      <a (click)="auth.signOut()" role="button">
-         <svg-icon src="assets/images/leave.svg" [svgStyle]="{ 'height.px':18 }"></svg-icon>
-      </a>
-     </div>
+     <div ngbDropdown class="d-inline-block" display="dynamic" placement="bottom-right">
+      <button class="btn btn btn-white d-inline-flex align-items-center rounded-3" id="dropdownBasic2" ngbDropdownToggle>
+        <span class="fs-6 d-none d-lg-block d-xl-block d-xxl-block">{{ fireUser.firstName }} {{ fireUser.lastName }}</span>
+        <img class="ms-3 rounded-circle" style="width: 25px; height: 25px;" [src]="fireUser.photoURL ? fireUser.photoURL : 'assets/images/placeholder-pub.jpg'" alt="">
+      </button>
+      <div ngbDropdownMenu class="dropdown-menu shadow border-0">
+        <button ngbDropdownItem (click)="auth.signOut()" class="btn btn-white btn-sm">
+          <svg-icon src="assets/images/leave.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }">
+          </svg-icon>
+          <span class="ms-2 align-middle">Sign Out</span>
+        </button>
+      </div>
+    </div>
    </div>
  </nav>
 

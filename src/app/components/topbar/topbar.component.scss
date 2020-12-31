@@ -3,29 +3,29 @@
    svg-icon {
       svg {
          path, line, polyline, polygon {
-            stroke: #ffffff !important;
+            stroke: #000000 !important;
          }
       }
    }
 
    .nav-link {
 
-      color: #ffffff82 !important;
+      color: #000000 !important;
       svg-icon {
          svg {
             path, line, polyline, polygon {
-               stroke: #ffffff82 !important;
+               stroke: #000000 !important;
             }
          }
       }
 
       &.active {
-         color: #ffffff !important;
+         color: #198754 !important;
          svg-icon {
             svg {
 
                path, line, polyline, polygon {
-                  stroke: #ffffff !important;
+                  stroke: #198754 !important;
                }
             }
          }

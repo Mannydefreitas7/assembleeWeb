@@ -13,6 +13,9 @@ import { HttpClient } from '@angular/common/http';
 import { emit } from 'process';
 import { EmailService } from 'src/app/services/email.service';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { InvitePublisherComponent } from 'src/app/components/modals/invite-publisher/invite-publisher.component';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'publisher-detail',
@@ -25,13 +28,16 @@ export class PublisherDetailComponent implements OnInit {
     private storage: LocalStorageService,
     private http: HttpClient,
     private emailService: EmailService,
+    public modal: NgbModal,
+    private auth: AuthService,
     private fireStoreService: FireStoreService
   ) { }
  congregation: Congregation;
  path: string;
  $publishers: Observable<Publisher[]>;
  ngUnsubscribe = new Subject();
-
+ isPublisherAdmin: boolean = false;
+ amIAdmin: boolean = false;
   @Input('publisher') publisher: Publisher;
 
   firstName: string;
@@ -40,22 +46,41 @@ export class PublisherDetailComponent implements OnInit {
   privileges: Privilege[] = [Privilege.elder, Privilege.ms, Privilege.pub, Privilege.talkCo]
   permissions: Permission[] = [Permission.view, Permission.add, Permission.delete, Permission.edit, Permission.programs, Permission.publishers, Permission.admin, Permission.speakers]
   isEditing: boolean = false;
-  user: firebase.default.User;
+  authUser: firebase.default.User;
   fireUser: User;
   $parts: Observable<Part[]>
-  $user: Observable<User>;
+  user: User;
+  me: User;
   ngOnInit(): void {
     this.firstName = this.publisher.firstName;
     this.lastName = this.publisher.lastName;
     this.privilege = this.publisher.privilege;
     this.path = this.storage.retrieve('congregationref');
-    this.user = this.storage.retrieve('user');
+    this.authUser = this.storage.retrieve('user');
     this.fireUser = this.storage.retrieve('fireUser');
-    if (this.publisher.isInvited) this.$user = this.fireStoreService.fireStore.doc(`users/${this.publisher.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe))
-
+    if (this.publisher.isInvited) {
+      this.fireStoreService.fireStore.doc<User>(`users/${this.publisher.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe)).subscribe(d => {
+        this.user = d;
+        this.isPublisherAdmin = this.publisher.isInvited && d.permissions.includes(Permission.admin)
+      })
+      this.fireStoreService.fireStore.doc<User>(`users/${this.fireUser.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe)).subscribe(d => {
+        this.me = d;
+        this.amIAdmin = d.permissions.includes(Permission.admin)
+      })
+    }
     this.getPublisherParts()
+  }
+
+  revokeAccess() {
+
+    this.fireStoreService.fireStore.doc(`${this.path}/users/${this.publisher.uid}`).delete().then(() => {
+      this.fireStoreService.fireStore.doc<Publisher>(`${this.path}/publishers/${this.publisher.uid}`).update({
+        isInvited: false
+      })
+    })
 
   }
+
 
   saveDetail() {
     this.fireStoreService.fireStore.doc<Publisher>(`${this.path}/publishers/${this.publisher.uid}`).update({
@@ -81,6 +106,14 @@ this.fireUser.permissions = _permissions;
     this.storage.store('fireUser', this.fireUser)
 }
 
+openInviteModal() {
+  const modalRef = this.modal.open(InvitePublisherComponent, {
+    centered: true,
+    size: 'md',
+  })
+  modalRef.componentInstance.publisher = this.publisher;
+}
+
 getPublisherParts() {
   let _parts: string[] = [];
   if (this.publisher.parts && this.publisher.parts.length > 0) {
@@ -89,17 +122,6 @@ getPublisherParts() {
     })
       this.$parts = this.fireStoreService.fireStore.collectionGroup('parts', ref => ref.where('id', 'in', _parts)).valueChanges().pipe(takeUntil(this.ngUnsubscribe))
   }
-
-// email.setApiKey(environment.SENDGRID_API_KEY)
-// const msg = {
-//   to: 'manny.defreitas7@gmail.com', // Change to your recipient
-//   from: 'assemblee.app@gmail.com', // Change to your verified sender
-//   subject: 'Sending with SendGrid is Fun',
-//   text: 'and easy to do anywhere, even with Node.js',
-//   html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-// }
-// email.send(msg).then(res => {console.log(res)})
-
 
 }
 

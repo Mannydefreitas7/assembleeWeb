@@ -97,7 +97,7 @@ a,
   }
 }
 
-.btn-light:hover {
+.btn-light:hover, .btn-light:active, .btn-light:focus {
   color: #000;
   background-color: #ececec;
   border-color: #ececec;
@@ -232,7 +232,6 @@ a,
 }
 
 .form-control:disabled, .form-select:disabled {
-  border: 1px solid #fafafa !important;
   color: #6c757d;
   background-color: #fafafa !important;
 }

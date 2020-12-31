@@ -41,6 +41,8 @@ import { PublisherDetailComponent } from './pages/publishers/publisher-detail.co
 import { AngularFireAuthModule, USE_EMULATOR as AUTH_EMULATOR } from '@angular/fire/auth';
 
 import { PublisherComponent } from './components/skeletons/publisher/publisher.component';
+import { AddPublisherComponent } from './components/modals/add-publisher/add-publisher.component';
+import { InvitePublisherComponent } from './components/modals/invite-publisher/invite-publisher.component';
 
 registerLocaleData(en);
 
@@ -67,7 +69,9 @@ registerLocaleData(en);
       ImportPubsComponent,
       PublisherRowComponent,
       PublisherDetailComponent,
-      PublisherComponent
+      PublisherComponent,
+      AddPublisherComponent,
+      InvitePublisherComponent
   ],
   imports: [
     BrowserModule,

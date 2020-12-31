@@ -1,27 +1,31 @@
 <div class="container-lg pb-4 px-sm-4">
 
   <div class="row mt-3">
-     <div class="p-0 mb-3 d-flex justify-content-end align-items-center">
+     <div class="p-0 mb-3 d-flex justify-content-between align-items-center">
 
-        <button class="btn btn-light btn-sm d-inline-block">
-           <svg-icon src="assets/images/add-schedule.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
-           <span class="ms-2 align-middle" >New Publisher</span>
+      <div class="d-inline-flex align-items-center">
+        <button class="btn btn-light btn-sm d-inline-block" (click)="sidenav.opened ? sidenav.close() : sidenav.open()">
+          <svg-icon [src]="sidenav.opened ? 'assets/images/slide-left.svg' : 'assets/images/slide-right.svg'" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+       </button>
+      </div>
+
+      <div class="d-inline-flex align-items-center">
+        <button class="btn btn-light btn-sm d-inline-block" (click)="addPublisher()">
+           <svg-icon src="assets/images/add.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+           <span class="ms-2 align-middle" >Add Publisher</span>
         </button>
 
         <button class="btn btn-light btn-sm">
          <svg-icon src="assets/images/export.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
          <span class="ms-2 align-middle">Import</span>
        </button>
+    </div>
 
-       <button class="btn btn-light btn-sm">
-        <svg-icon src="assets/images/export.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
-        <span class="ms-2 align-middle">Export</span>
-      </button>
      </div>
 
      <mat-drawer-container class="card p-0 border-0 shadow-sm rounded-3" >
 
-        <mat-drawer mode="side" opened style="width: 300px;" >
+        <mat-drawer mode="side" opened #sidenav style="width: 300px;" >
             <div class="card-body p-0">
               <div class="d-flex">
 

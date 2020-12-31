@@ -18,21 +18,21 @@ const routes: Routes = [
    { path: 'home', component: DashboardComponent, canActivate: [AuthGuard],
    children: [
       { path: 'dashboard', component: HomeComponent },
-      { path: 'programs', component: ProgramsComponent, 
-      children: [
-         {
-            path: 'weeks/:id', component: ProgramDetailComponent, outlet: 'program'
-         }
-      ] 
+      { path: 'programs', component: ProgramsComponent,
+      // children: [
+      //    {
+      //       path: 'weeks/:id', component: ProgramDetailComponent, outlet: 'program'
+      //    }
+      // ]
    },
-    
+
       { path: 'publishers', component: PublishersComponent },
       { path: 'speakers', component: SpeakersComponent },
       { path: 'export', component: ExportComponent }
    ] }
  ];
- 
- 
+
+
 @NgModule({
   imports: [
      AuthModule,

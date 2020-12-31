@@ -14,3 +14,19 @@ export class User {
    loginProvider?: string;
    isEmailVerified?: boolean;
 };
+
+export interface Attachment {
+  content: string;
+  filename: string;
+  type?: string;
+}
+
+export class EmailMessage {
+    to: string;
+    from: string;
+    subject: string;
+    text?: string;
+    cc?: string;
+    html?: string;
+    attachments?: Attachment[]
+}

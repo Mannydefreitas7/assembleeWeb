@@ -9,6 +9,8 @@ import {  QuerySnapshot } from '@angular/fire/firestore';
 import moment from 'moment';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { EmailService } from './email.service';
+import { Gender, Publisher } from '../models/publisher.model';
+import { EmailMessage } from '../models/user.model';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -369,36 +371,67 @@ docDefinition = {
 
   }
 
-  createMonthPDF(weeks: WeekProgram[]) {
+  downloadMonthPDF(weeks: WeekProgram[]) {
     this.docDefinition.content = []
-    this.docDefinition.info.title = `Programme Vie et Ministere - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`;
+    this.docDefinition.info.title = `Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`;
     weeks.forEach(week => {
      this.fireStore.fireStore.collection<Part>(`${this.congregationRef}/weeks/${week.id}/parts`).get().toPromise().then(parts => {
        if (parts) {
           this.parseSinglePage(this.congregation, week, parts, weeks)
-         //  pdfMake.createPdf(this.docDefinition).open();
+       }
+     })
+    })
+    this.spinner.show()
+      setTimeout(() => {
 
+        pdfMake.createPdf(this.docDefinition).download(`Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`)
+        this.spinner.hide()
+      }, 3000)
+  }
 
+  emailMonthPDF(weeks: WeekProgram[]) {
+    this.docDefinition.content = []
+    this.docDefinition.info.title = `Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`;
+    weeks.forEach(week => {
+     this.fireStore.fireStore.collection<Part>(`${this.congregationRef}/weeks/${week.id}/parts`).get().toPromise().then(parts => {
+       if (parts) {
+          this.parseSinglePage(this.congregation, week, parts, weeks)
        }
      })
     })
     this.spinner.show()
     const pdfDocGenerator = pdfMake.createPdf(this.docDefinition);
+    this.fireStore.fireStore.collection<Publisher>(`${this.congregationRef}/publishers`, ref => ref.where('gender', '==', Gender.brother)).get().toPromise().then(publishers => {
+
       setTimeout(() => {
         this.spinner.hide()
+        pdfDocGenerator.getBase64((data) => {
+          publishers.docs.forEach(pub => {
+            if (pub.exists) {
+              let _pub: Publisher = pub.data()
+              if (_pub.email) {
 
-      pdfDocGenerator.getBase64((data) => {
-        this.emailService.sendEmail({
-          email: 'manny.defreitas7@me.com', // Change to your recipient
-          subject: "meeting schedule",
-          title: 'meeting schedule',
-          data: data
+                let msg: EmailMessage = {
+                    to: _pub.email,
+                    from: `${this.congregation.properties.orgName} <assemblee.app@gmail.com>`,
+                    subject: this.docDefinition.info.title,
+                    html: `<p>Hello ${_pub.lastName} ${_pub.firstName},</p><p>Please find attached the meeting schedule for <strong>${moment(weeks[0].date.toDate()).format('MMMM yyyy')}</strong>.</p><p>Sincerely,<br>${this.congregation.properties.orgName}</p>`,
+                    attachments: [
+                      {
+                        content: data,
+                        type: 'application/pdf',
+                        filename: this.docDefinition.info.title
+                      }
+                    ]
+                }
+                console.log(msg)
+                this.emailService.sendEmail(msg)
+              }
+            }
+          })
         })
-      });
-      // pdfMake.createPdf(this.docDefinition).open()
-
       }, 3000)
-
+    })
 
   }
 

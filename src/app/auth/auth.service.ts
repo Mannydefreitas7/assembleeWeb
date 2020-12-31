@@ -53,10 +53,11 @@ export class AuthService {
 
    signOut() {
       this.afAuth.signOut().then(value => {
-         this.router.navigate(['login'])
+         this.router.navigateByUrl('/login')
          .then(() => {
             this.storage.clear('user')
-            this.storage.clear('congregationref')
+            this.storage.clear('fireUser')
+            this.storage.clear('congregationRef')
             this.storage.clear('congregation')
          })
       })
@@ -79,9 +80,10 @@ export class AuthService {
                       this.storage.store('congregation', cong.data())
                      })
 
-                  } else {
-                     this.ngZone.run(() => this.router.navigate(['/setup']));
                   }
+                  // else {
+                  //    this.ngZone.run(() => this.router.navigate(['/setup']));
+                  // }
                })
             })
          } else {

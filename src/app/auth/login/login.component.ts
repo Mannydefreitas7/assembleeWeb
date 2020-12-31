@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
 
  signIn() {
     this.auth.emailSignIn(this.email.value, this.password.value).then((value) => {
-       this.router.navigate(['home'])
+       this.router.navigateByUrl('/home/dashboard')
     })
  }
 }

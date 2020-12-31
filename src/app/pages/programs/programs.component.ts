@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { MonthData } from 'src/app/models/month.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
@@ -13,12 +13,18 @@ import { LocalStorageService } from 'ngx-webstorage';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ExportService } from 'src/app/services/export.service';
 import { takeUntil } from 'rxjs/operators';
+import { MatDrawer } from '@angular/material/sidenav';
 @AutoUnsubscribe()
 @Component({
    selector: 'app-programs',
    templateUrl: './programs.component.html',
-   styleUrls: ['./programs.component.scss']
+   styleUrls: ['./programs.component.scss'],
+   host: {
+    '(window:resize)': 'onResize($event)',
+  },
 })
+
+
 export class ProgramsComponent implements OnInit, OnDestroy {
 
    year: number;
@@ -28,8 +34,12 @@ export class ProgramsComponent implements OnInit, OnDestroy {
    monday: Date;
    exportPDFisActive: boolean;
    isLoading: boolean = false;
-   $weekProgram: Observable<WeekProgram[]>;
+   weekProgram: WeekProgram[];
    ngUnsubscribe = new Subject();
+   innerWidth: number;
+   @ViewChild('sidenav') sidenav: MatDrawer;
+
+
    constructor(
       private wolApiService: WolApiService,
       public storeService: StoreService,
@@ -40,6 +50,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
       private exportService: ExportService
    ) { }
    active = 0;
+
    ngOnInit(): void {
       this.year = new Date().getFullYear();
       this.selectedYear = new Date().getFullYear();
@@ -54,15 +65,39 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
 }
 
-   createMonthPDF(weeks: WeekProgram[]) {
+
+onResize(event) {
+  this.innerWidth = event.target.innerWidth;
+  this.toggleSideBarOnResize()
+}
+
+toggleSideBarOnResize() {
+  if (this.innerWidth < 700) {
+    this.sidenav.close();
+  } else {
+    this.sidenav.open();
+  }
+}
+
+   downloadMonthPDF(weeks: WeekProgram[]) {
        let filteredWeeks = weeks.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
        if (filteredWeeks.length > 0) {
          this.exportPDFisActive = true;
-        this.exportService.createMonthPDF(filteredWeeks)
+        this.exportService.downloadMonthPDF(filteredWeeks)
        } else {
          this.exportPDFisActive = false;
        }
    }
+
+   emailMonthPDF(weeks: WeekProgram[]) {
+    let filteredWeeks = weeks.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
+    if (filteredWeeks.length > 0) {
+      this.exportPDFisActive = true;
+     this.exportService.emailMonthPDF(filteredWeeks)
+    } else {
+      this.exportPDFisActive = false;
+    }
+}
 
    loadMonths() {
       this.storeService.getMonths(this.selectedYear);
@@ -96,7 +131,9 @@ export class ProgramsComponent implements OnInit, OnDestroy {
    }
 
    checkCanExport() {
-    this.$weekProgram.subscribe(data => {
+    let path : string = this.storage.retrieve('congregationref')
+    this.fireStoreService.fireStore.
+          collection<WeekProgram>(`${path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges().subscribe(data => {
       let filteredWeeks = data.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
       if (filteredWeeks.length > 0) {
         this.exportPDFisActive = true;
@@ -125,8 +162,11 @@ export class ProgramsComponent implements OnInit, OnDestroy {
 
    loadWeeks() {
      let path : string = this.storage.retrieve('congregationref')
-        this.$weekProgram = this.fireStoreService.fireStore.
-          collection<WeekProgram>(`${path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges()
+         this.fireStoreService.fireStore.
+          collection<WeekProgram>(`${path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges().subscribe(data => {
+            this.weekProgram = data
+            if (data.length == 0) this.sidenav.close()
+          })
         this.checkCanExport()
    }
 }

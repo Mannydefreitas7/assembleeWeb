@@ -10,7 +10,7 @@
 
   <div>
     <a class="btn btn-link btn-sm d-inline-block me-2 text-dark"
-      *ngIf="fireUser && fireUser.permissions.includes('admin')">
+      *ngIf="isPublisherAdmin">
       <svg-icon src="assets/images/admin.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
       <span class="ms-2 align-middle">Admin</span>
     </a>
@@ -34,9 +34,10 @@
 
     <ng-template #editActions>
 
-      <button class="btn btn-light btn-sm d-inline-block me-2" (click)="isEditing = true" [disabled]="fireUser && fireUser.permissions.includes('admin')">
+
+      <button class="btn btn-light btn-sm d-inline-block me-2" (click)="publisher.isInvited ? revokeAccess() : openInviteModal()" [disabled]="publisher.uid == authUser.uid">
         <svg-icon [src]="publisher.isInvited ? 'assets/images/remove.svg' : 'assets/images/key.svg'" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
-        <span class="ms-2 align-middle">{{ publisher.isInvited ? 'Revoke access' : 'Invited' }}</span>
+        <span class="ms-2 align-middle">{{ publisher.isInvited ? 'Revoke access' : 'Invite' }}</span>
       </button>
 
       <button class="btn btn-light btn-sm d-inline-block me-2" (click)="isEditing = true">
@@ -44,7 +45,7 @@
         <span class="ms-2 align-middle">Edit</span>
       </button>
 
-      <button class="btn btn-light btn-sm btn-delete" [disabled]="publisher.uid == user.uid">
+      <button class="btn btn-light btn-sm btn-delete" [disabled]="publisher.uid == authUser.uid && amIAdmin">
         <svg-icon src="assets/images/trash.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
         <span class="ms-2 align-middle">Delete</span>
       </button>
@@ -80,14 +81,14 @@
 </div>
 
 
-<div class="row mt-4" *ngIf="publisher.isInvited && $user | async as user">
+<div class="row mt-4" *ngIf="publisher.isInvited && amIAdmin">
   <h6 class="fw-bold">Permissions</h6>
   <div class="d-inline-flex flex-wrap justify-content-start align-items-center">
 
     <ng-container *ngFor="let permission of permissions">
-      <input type="radio" [id]="permission" class="btn-check" [checked]="user.permissions.includes(permission)"
-        (click)="editPermissions(user, permission)" [disabled]="!user.permissions.includes('edit')">
-      <label class="btn btn-outline-secondary btn-sm me-2" [for]="permission">{{ permission }}</label>
+      <input type="radio" [id]="permission" class="btn-check" [checked]="user && user.permissions.includes(permission)"
+        (click)="editPermissions(user, permission)">
+      <label class="btn btn-outline-secondary btn-sm me-2 mt-2" [for]="permission">{{ permission }}</label>
     </ng-container>
 
   </div>

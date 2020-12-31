@@ -12,13 +12,13 @@
   },
   "browser": {
     "http": false,
-    "https":false,
-    "fs":false,
+    "https": false,
+    "fs": false,
     "net": false,
     "path": false,
     "stream": false,
     "tls": false
-},
+  },
   "private": true,
   "dependencies": {
     "@adobe/coral-spectrum": "^4.10.11",
@@ -36,6 +36,7 @@
     "@angular/router": "~9.1.6",
     "@ng-bootstrap/ng-bootstrap": "^6.2.0",
     "@sendgrid/mail": "^7.4.0",
+    "@types/js-base64": "^3.0.0",
     "angular-svg-icon": "^11.0.0",
     "angular7-csv": "^0.2.12",
     "body-parser": "^1.19.0",
