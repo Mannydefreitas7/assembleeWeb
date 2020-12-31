@@ -43,6 +43,7 @@ import { AngularFireAuthModule, USE_EMULATOR as AUTH_EMULATOR } from '@angular/f
 import { PublisherComponent } from './components/skeletons/publisher/publisher.component';
 import { AddPublisherComponent } from './components/modals/add-publisher/add-publisher.component';
 import { InvitePublisherComponent } from './components/modals/invite-publisher/invite-publisher.component';
+import { PartRowComponent } from './components/part-row/part-row.component';
 
 registerLocaleData(en);
 
@@ -71,7 +72,8 @@ registerLocaleData(en);
       PublisherDetailComponent,
       PublisherComponent,
       AddPublisherComponent,
-      InvitePublisherComponent
+      InvitePublisherComponent,
+      PartRowComponent
   ],
   imports: [
     BrowserModule,
@@ -80,7 +82,7 @@ registerLocaleData(en);
     AuthModule,
     CommonModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule,
+    AngularFirestoreModule.enablePersistence(),
     AngularFireFunctionsModule,
     AngularFireAuthModule,
     NgbModule,

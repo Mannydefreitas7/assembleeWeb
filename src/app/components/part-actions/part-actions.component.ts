@@ -86,7 +86,7 @@ export class PartActionsComponent implements OnInit {
       centered: false,
       keyboard: false,
       backdrop: true,
-      size: 'md',
+      size: 'xl',
       scrollable: true,
     });
     modalRef.componentInstance.part = part;

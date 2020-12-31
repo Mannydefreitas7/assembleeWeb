@@ -21,7 +21,7 @@ $assembleeWeb-theme: mat-light-theme((color: (primary: $assembleeWeb-primary,
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/mixins";
 
-
+$enable-negative-margins: true;
 $theme-colors: ("primary": $green-500,
   "secondary": $secondary,
   "success": $success,

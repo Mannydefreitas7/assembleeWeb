@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {AngularFireAuthGuard, AngularFireAuthGuardModule } from '@angular/fire/auth-guard';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from '../pages/home/home.component';
 import { ProgramsComponent } from '../pages/programs/programs.component';
@@ -15,7 +16,8 @@ import { CongregationComponent } from '../components/congregation/congregation.c
 
 
 const routes: Routes = [
-   { path: 'home', component: DashboardComponent, canActivate: [AuthGuard],
+
+   { path: 'home', component: DashboardComponent, canActivate: [AngularFireAuthGuard],
    children: [
       { path: 'dashboard', component: HomeComponent },
       { path: 'programs', component: ProgramsComponent,
@@ -28,8 +30,10 @@ const routes: Routes = [
 
       { path: 'publishers', component: PublishersComponent },
       { path: 'speakers', component: SpeakersComponent },
-      { path: 'export', component: ExportComponent }
-   ] }
+      { path: 'export', component: ExportComponent },
+
+   ] },
+   { path: 'setup', component: CongregationComponent, canActivate: [AngularFireAuthGuard] }
  ];
 
 
@@ -37,10 +41,12 @@ const routes: Routes = [
   imports: [
      AuthModule,
      SharedModule,
+     AngularFireAuthGuardModule,
     RouterModule.forChild(routes),
   ],
   exports: [
      RouterModule,
+     AngularFireAuthGuardModule,
      AuthModule
   ]
 })

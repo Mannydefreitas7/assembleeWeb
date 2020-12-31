@@ -7,15 +7,12 @@ import { Permission, Privilege, Publisher } from 'src/app/models/publisher.model
 import { User } from 'src/app/models/user.model';
 import { Part } from 'src/app/models/wol.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
-import * as email from '@sendgrid/mail'
-import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { emit } from 'process';
 import { EmailService } from 'src/app/services/email.service';
-import { AngularFireAuth } from '@angular/fire/auth';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { InvitePublisherComponent } from 'src/app/components/modals/invite-publisher/invite-publisher.component';
 import { AuthService } from 'src/app/auth/auth.service';
+import { NgForage } from 'ngforage';
 
 @Component({
   selector: 'publisher-detail',
@@ -30,6 +27,7 @@ export class PublisherDetailComponent implements OnInit {
     private emailService: EmailService,
     public modal: NgbModal,
     private auth: AuthService,
+    private forage: NgForage,
     private fireStoreService: FireStoreService
   ) { }
  congregation: Congregation;
@@ -56,26 +54,34 @@ export class PublisherDetailComponent implements OnInit {
     this.lastName = this.publisher.lastName;
     this.privilege = this.publisher.privilege;
     this.path = this.storage.retrieve('congregationref');
-    this.authUser = this.storage.retrieve('user');
+    this.forage.getItem<firebase.default.User>('user').then(authUser => {
+      this.authUser = authUser;
+    })
+
     this.fireUser = this.storage.retrieve('fireUser');
-    if (this.publisher.isInvited) {
-      this.fireStoreService.fireStore.doc<User>(`users/${this.publisher.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe)).subscribe(d => {
-        this.user = d;
-        this.isPublisherAdmin = this.publisher.isInvited && d.permissions.includes(Permission.admin)
-      })
-      this.fireStoreService.fireStore.doc<User>(`users/${this.fireUser.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe)).subscribe(d => {
-        this.me = d;
-        this.amIAdmin = d.permissions.includes(Permission.admin)
-      })
-    }
+
+    this.forage.getItem<User>('fireUser').then(fireUser => {
+      if (this.publisher.isInvited) {
+        this.fireStoreService.fireStore.doc<User>(`users/${this.publisher.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe)).subscribe(d => {
+          this.user = d;
+          this.isPublisherAdmin = this.publisher.isInvited && d.permissions.includes(Permission.admin)
+        })
+        this.fireStoreService.fireStore.doc<User>(`users/${fireUser.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe)).subscribe(d => {
+          this.me = d;
+          this.amIAdmin = d.permissions.includes(Permission.admin)
+        })
+      }
+    })
     this.getPublisherParts()
   }
 
   revokeAccess() {
 
-    this.fireStoreService.fireStore.doc(`${this.path}/users/${this.publisher.uid}`).delete().then(() => {
-      this.fireStoreService.fireStore.doc<Publisher>(`${this.path}/publishers/${this.publisher.uid}`).update({
-        isInvited: false
+    this.forage.getItem<string>('congregationRef').then(path => {
+      this.fireStoreService.fireStore.doc(`${path}/users/${this.publisher.uid}`).delete().then(() => {
+        this.fireStoreService.fireStore.doc<Publisher>(`${path}/publishers/${this.publisher.uid}`).update({
+          isInvited: false
+        })
       })
     })
 
@@ -83,11 +89,12 @@ export class PublisherDetailComponent implements OnInit {
 
 
   saveDetail() {
-    this.fireStoreService.fireStore.doc<Publisher>(`${this.path}/publishers/${this.publisher.uid}`).update({
+    this.forage.getItem<string>('congregationRef').then(path => {
+    this.fireStoreService.fireStore.doc<Publisher>(`${path}/publishers/${this.publisher.uid}`).update({
       firstName: this.firstName,
       lastName: this.lastName,
       privilege:this.privilege
-    })
+    })})
   }
 
   editPermissions(user: User, permission: Permission) {
@@ -103,7 +110,7 @@ export class PublisherDetailComponent implements OnInit {
     permissions: _permissions
 })
 this.fireUser.permissions = _permissions;
-    this.storage.store('fireUser', this.fireUser)
+    this.forage.setItem('fireUser', this.fireUser)
 }
 
 openInviteModal() {

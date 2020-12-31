@@ -12,25 +12,24 @@ import { CongregationComponent } from '../components/congregation/congregation.c
 
 const routes: Routes = [
 
-   { path: '', redirectTo: '/login', pathMatch: 'full' },
+   { path: '', redirectTo: 'login', pathMatch: 'full' },
    { path: 'signup', component: SignupComponent },
    { path: 'reset', component: ResetComponent },
-   { path: 'login', component: LoginComponent },
-   { path: 'setup', component: CongregationComponent }
+   { path: 'login', component: LoginComponent }
  ];
 
 
 @NgModule({
   declarations: [
-     EmailComponent, 
-     LoginComponent, 
-     SignupComponent, 
+     EmailComponent,
+     LoginComponent,
+     SignupComponent,
      ResetComponent
    ],
   imports: [
      AngularFireAuthModule,
      AngularFirestoreModule,
-     RouterModule.forRoot(routes), 
+     RouterModule.forRoot(routes, {useHash: true}),
      SharedModule
    ],
    providers: [

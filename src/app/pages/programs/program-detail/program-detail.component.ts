@@ -9,6 +9,7 @@ import { LocalStorageService } from 'ngx-webstorage';
 import { ExportService } from 'src/app/services/export.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { NgForage } from 'ngforage';
 
 
 @AutoUnsubscribe()
@@ -25,6 +26,7 @@ export class ProgramDetailComponent implements OnInit, OnDestroy {
      private fireStoreService: FireStoreService,
      public modalService: NgbModal,
      private storage: LocalStorageService,
+     private forage: NgForage,
      private exportService: ExportService
      ) { }
 id: string
@@ -42,7 +44,9 @@ ngUnsubscribe = new Subject();
 @Input('weekProgram') public weekProgram: WeekProgram;
   ngOnInit(): void {
     let path : string = this.storage.retrieve('congregationref');
-    if (!this.parts)
+
+    this.forage.getItem<string>('congregationRef').then(path => {
+      if (!this.parts)
       this.fireStoreService.fireStore.collection<Part>(`${path}/weeks/${this.weekProgram.id}/parts`).valueChanges()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(parts => {
@@ -55,6 +59,8 @@ ngUnsubscribe = new Subject();
          this.chairmans = this.parts.filter(part => part.parent == Parent.chairman).sort((a, b) => a.index - b.index)
          this.prayers = this.parts.filter(part => part.parent == Parent.prayer).sort((a, b) => a.index - b.index)
       })
+    })
+
   }
 
   ngOnDestroy() {

@@ -4,7 +4,7 @@
          <svg-icon src="assets/images/menu.svg" *ngIf="!storeService.isNavToggled"></svg-icon>
          <svg-icon src="assets/images/remove.svg" *ngIf="storeService.isNavToggled"></svg-icon>
        </button>
-     <a class="navbar-brand pl-2">Assemblee</a>
+     <a class="navbar-brand my-n2" type="button" [routerLink]="['/home/dashboard']"><img class="rounded-circle" src="assets/images/logo.jpg" style="width: 45px; height: 45px;"></a>
      <div class="collapse navbar-collapse" id="navbarNavDropdown">
 
        <ul class="navbar-nav">
@@ -41,8 +41,8 @@
      </div>
      <div ngbDropdown class="d-inline-block" display="dynamic" placement="bottom-right">
       <button class="btn btn btn-white d-inline-flex align-items-center rounded-3" id="dropdownBasic2" ngbDropdownToggle>
-        <span class="fs-6 d-none d-lg-block d-xl-block d-xxl-block">{{ fireUser.firstName }} {{ fireUser.lastName }}</span>
-        <img class="ms-3 rounded-circle" style="width: 25px; height: 25px;" [src]="fireUser.photoURL ? fireUser.photoURL : 'assets/images/placeholder-pub.jpg'" alt="">
+        <span class="fs-6 d-none d-lg-block d-xl-block d-xxl-block" *ngIf="fireUser">{{ fireUser.firstName }} {{ fireUser.lastName }}</span>
+        <img class="ms-3 rounded-circle" style="width: 25px; height: 25px;" [src]="fireUser && fireUser.photoURL ? fireUser.photoURL : 'assets/images/placeholder-pub.jpg'" alt="">
       </button>
       <div ngbDropdownMenu class="dropdown-menu shadow border-0">
         <button ngbDropdownItem (click)="auth.signOut()" class="btn btn-white btn-sm">

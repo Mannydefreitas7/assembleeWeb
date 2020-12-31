@@ -35,7 +35,7 @@
     <ng-template #editActions>
 
 
-      <button class="btn btn-light btn-sm d-inline-block me-2" (click)="publisher.isInvited ? revokeAccess() : openInviteModal()" [disabled]="publisher.uid == authUser.uid">
+      <button class="btn btn-light btn-sm d-inline-block me-2" (click)="publisher.isInvited ? revokeAccess() : openInviteModal()" [disabled]="authUser && publisher.uid == authUser.uid">
         <svg-icon [src]="publisher.isInvited ? 'assets/images/remove.svg' : 'assets/images/key.svg'" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
         <span class="ms-2 align-middle">{{ publisher.isInvited ? 'Revoke access' : 'Invite' }}</span>
       </button>
@@ -45,7 +45,7 @@
         <span class="ms-2 align-middle">Edit</span>
       </button>
 
-      <button class="btn btn-light btn-sm btn-delete" [disabled]="publisher.uid == authUser.uid && amIAdmin">
+      <button class="btn btn-light btn-sm btn-delete" [disabled]="authUser && publisher.uid == authUser.uid && amIAdmin">
         <svg-icon src="assets/images/trash.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
         <span class="ms-2 align-middle">Delete</span>
       </button>

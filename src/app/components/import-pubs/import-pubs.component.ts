@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForage } from 'ngforage';
 import { NgxCsvParser, NgxCSVParserError } from 'ngx-csv-parser';
 import { FileSystemDirectoryEntry, FileSystemFileEntry, NgxFileDropEntry } from 'ngx-file-drop';
 import { LocalStorageService } from 'ngx-webstorage';
+import { Congregation } from 'src/app/models/congregation.model';
 import { HourglassModel } from 'src/app/models/hourglass.model';
 import { Gender, Privilege, Publisher } from 'src/app/models/publisher.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
@@ -24,12 +26,13 @@ export class ImportPubsComponent implements OnInit {
   constructor(
     private ngxCsvParser: NgxCsvParser,
     private storage: LocalStorageService,
+    private forage: NgForage,
     private fireStoreService: FireStoreService
     ) { }
 
   ngOnInit(): void {
     this.isEmpty = true
-    this.congregation = this.storage.retrieve('congregationref')
+    this.forage.getItem<string>('congregationref').then(item => this.congregation = item)
   }
 
   onFileLoad(fileLoadedEvent) {

@@ -8,6 +8,7 @@ import { FireStoreService } from '../services/fire-store.service';
 import { Privilege } from '../models/publisher.model';
 import { LocalStorageService } from 'ngx-webstorage';
 import { FireDBService } from '../services/fire-db.service';
+import { NgForage } from 'ngforage';
 
 
 @Injectable({
@@ -24,6 +25,7 @@ export class AuthService {
       private fireDBService: FireDBService,
       private router: Router,
       private ngZone: NgZone,
+      public forage: NgForage,
       public storage: LocalStorageService,
    ) {
       this.authState = this.afAuth.authState;
@@ -52,46 +54,62 @@ export class AuthService {
 
 
    signOut() {
-      this.afAuth.signOut().then(value => {
-         this.router.navigateByUrl('/login')
-         .then(() => {
-            this.storage.clear('user')
-            this.storage.clear('fireUser')
-            this.storage.clear('congregationRef')
-            this.storage.clear('congregation')
-         })
-      })
+    this.forage.clear()
+    .then(() => this.afAuth.signOut().then(() => {
+      this.router.navigateByUrl('/login')
+    }))
+
+      // this.afAuth.signOut().then(value => {
+      //    this.router.navigateByUrl('/login')
+      //    .then(() => {
+
+      //      this.removeAllStoredKeys()
+      //    })
+      // })
+   }
+
+   removeAllStoredKeys() {
+
+    setTimeout(() => this.storage.clear('user'), 1000)
+    setTimeout(() => this.storage.clear('fireUser'), 2000)
+    setTimeout(() => this.storage.clear('congregationRef'), 3000)
+    setTimeout(() => this.storage.clear('congregation'), 4000)
+
+    this.forage.clear()
+
    }
 
 
    stateChanged(): any {
       return this.afAuth.onAuthStateChanged(user => {
-         if (user) {
-            this.storage.store('user', user);
-            this.ngZone.run(() => this.router.navigate(['/home/dashboard'])).then(v => {
-               this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`)
-               .valueChanges()
-               .subscribe((fireUser: User) => {
-                  if (fireUser && fireUser.congregation) {
-                    this.storage.store('fireUser', fireUser);
-                     this.storage.store('congregationRef', fireUser.congregation)
-                     this.fireStoreService.fireStore.doc(fireUser.congregation).get().subscribe(cong => {
-                       if (cong.exists)
-                      this.storage.store('congregation', cong.data())
-                     })
 
-                  }
-                  // else {
-                  //    this.ngZone.run(() => this.router.navigate(['/setup']));
-                  // }
-               })
+         if (user) {
+           // this.storage.store('user', user);
+            this.forage.setItem('user', user).then(() => {
+              this.ngZone.run(() => this.router.navigate(['/home/dashboard'])).then(v => {
+                this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`)
+                .get()
+                .subscribe((fireUser) => {
+                   if (fireUser.exists && fireUser.data().congregation) {
+                    // if (!this.storage.retrieve('fireUser')) {
+                      this.forage.setItem('fireUser', fireUser.data()).then(() => this.forage.setItem('congregationRef', fireUser.data().congregation))
+                     //  this.storage.store('fireUser', fireUser);
+                     //  this.storage.store('congregationRef', fireUser.data().congregation);
+                   //  }
+                      this.fireStoreService.fireStore.doc(fireUser.data().congregation).get().subscribe(cong => {
+                        if (cong.exists) {
+                         // this.forage.setItem('congregation', cong.data())
+                           this.storage.store('congregation', cong.data())
+                        }
+                      })
+
+                   }
+                })
+             })
             })
+
          } else {
-            // this.ngZone.run(() => this.router.navigate(['/login']));
-            this.storage.clear('user');
-            this.storage.clear('fireUser');
-            this.storage.clear('congregationRef');
-            this.storage.clear('congregation');
+          this.forage.clear()
          }
       })
    }
@@ -113,14 +131,14 @@ export class AuthService {
       return this.afAuth.signInWithEmailAndPassword(email, password)
          .then((credential) => {
 
-            this.storage.store('user', credential.user)
+            // this.storage.store('user', credential.user)
 
-            this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
-               .valueChanges()
-               .subscribe((fireUser:User) => {
-                  this.storage.store('fireUser', fireUser);
-                  this.storage.store('congregationRef', fireUser.congregation)
-            })
+            // this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
+            //    .valueChanges()
+            //    .subscribe((fireUser:User) => {
+            //       this.storage.store('fireUser', fireUser);
+            //       this.storage.store('congregationRef', fireUser.congregation)
+            // })
 
             let _users = this.fireStoreService.fireStore.collection<User>('users', ref => ref.where('uid', '==', credential.user.uid)).valueChanges()
 
@@ -145,15 +163,15 @@ export class AuthService {
    emailSignUp(email: string, password: string, firstName: string, lastName: string) {
       return this.afAuth.createUserWithEmailAndPassword(email, password)
          .then((credential) => {
-           console.log(credential)
+
             let _users = this.fireStoreService.fireStore.collection<User>('users', ref => ref.where('uid', '==', credential.user.uid)).valueChanges()
 
-            this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
-               .valueChanges()
-               .subscribe((fireUser: User) => {
-                this.storage.store('fireUser', fireUser);
-                  this.storage.store('congregationRef', fireUser.congregation)
-            })
+            // this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
+            //    .valueChanges()
+            //    .subscribe((fireUser: User) => {
+            //     this.storage.store('fireUser', fireUser);
+            //       this.storage.store('congregationRef', fireUser.congregation)
+            // })
 
             _users.subscribe(users => {
                if (users.length > 0) {
@@ -198,10 +216,10 @@ export class AuthService {
 
             fireUserRef.subscribe(fireUser => {
                if (fireUser) {
-                this.storage.store('fireUser', fireUser);
+              //  this.storage.store('fireUser', fireUser);
                   // already exists
                   if (fireUser.congregation) {
-                     this.storage.store('congregationref', fireUser.congregation)
+                   //  this.storage.store('congregationref', fireUser.congregation)
                      // already has congregation setup
                      this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
                   } else {

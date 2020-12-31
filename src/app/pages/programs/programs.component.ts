@@ -14,6 +14,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ExportService } from 'src/app/services/export.service';
 import { takeUntil } from 'rxjs/operators';
 import { MatDrawer } from '@angular/material/sidenav';
+import { NgForage } from 'ngforage';
 @AutoUnsubscribe()
 @Component({
    selector: 'app-programs',
@@ -44,6 +45,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
       private wolApiService: WolApiService,
       public storeService: StoreService,
       public storage: LocalStorageService,
+      public forage: NgForage,
       public fireStoreService: FireStoreService,
       public authService: AuthService,
       private spinner: NgxSpinnerService,
@@ -108,10 +110,9 @@ toggleSideBarOnResize() {
    addMonthProgram() {
      this.spinner.show()
       let mondays = this.storeService.getMondays(this.monthData.date);
-      let congregation : Congregation = this.storage.retrieve('congregation')
-      let path : string = this.storage.retrieve('congregationref')
+      this.forage.getItem<Congregation>('congregation').then(congregation => {
+        this.forage.getItem<string>('congregationRef').then(path => {
           mondays.forEach(monday => {
-
             this.wolApiService.getWeekProgram(this.selectedYear, moment(monday).month() + 1, monday.getDate(), congregation.fireLanguage.apiURL)
                 .toPromise()
                 .then(wolWeek => {
@@ -128,24 +129,26 @@ toggleSideBarOnResize() {
             }).catch(console.log)
             .finally(() => this.spinner.hide())
         })
+        })
+    })
    }
 
    checkCanExport() {
-    let path : string = this.storage.retrieve('congregationref')
-    this.fireStoreService.fireStore.
-          collection<WeekProgram>(`${path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges().subscribe(data => {
-      let filteredWeeks = data.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
-      if (filteredWeeks.length > 0) {
-        this.exportPDFisActive = true;
-      } else {
-        this.exportPDFisActive = false;
-      }
+    this.forage.getItem('congregationRef').then(path => {
+      this.fireStoreService.fireStore.
+      collection<WeekProgram>(`${path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges().subscribe(data => {
+  let filteredWeeks = data.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
+  if (filteredWeeks.length > 0) {
+    this.exportPDFisActive = true;
+  } else {
+    this.exportPDFisActive = false;
+  }
+})
     })
    }
 
    deleteMonth(weeks: WeekProgram[]) {
-    let path : string = this.storage.retrieve('congregationref')
-
+    this.forage.getItem('congregationRef').then(path => {
       let filteredWeeks = weeks.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
       if (filteredWeeks.length > 0) {
         filteredWeeks.forEach(week => {
@@ -158,15 +161,18 @@ toggleSideBarOnResize() {
 
         })
       }
+    })
+
    }
 
    loadWeeks() {
-     let path : string = this.storage.retrieve('congregationref')
-         this.fireStoreService.fireStore.
-          collection<WeekProgram>(`${path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges().subscribe(data => {
-            this.weekProgram = data
-            if (data.length == 0) this.sidenav.close()
-          })
-        this.checkCanExport()
+    this.forage.getItem('congregationRef').then(path => {
+      this.fireStoreService.fireStore.
+      collection<WeekProgram>(`${path}/weeks`, ref => ref.orderBy('date', 'asc')).valueChanges().subscribe(data => {
+        this.weekProgram = data
+        if (data.length == 0) this.sidenav.close()
+      })
+    this.checkCanExport()
+    })
    }
 }

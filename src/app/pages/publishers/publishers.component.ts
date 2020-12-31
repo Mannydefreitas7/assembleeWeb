@@ -10,6 +10,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddPublisherComponent } from 'src/app/components/modals/add-publisher/add-publisher.component';
 import { MatDrawer } from '@angular/material/sidenav';
 import { StoreService } from 'src/app/services/store.service';
+import { NgForage } from 'ngforage';
 
 @AutoUnsubscribe()
 @Component({
@@ -24,7 +25,8 @@ export class PublishersComponent implements OnInit, OnDestroy {
   constructor(
     private storage: LocalStorageService,
     private fireStoreService: FireStoreService,
-    public modal: NgbModal
+    public modal: NgbModal,
+    private forage: NgForage
   ) {}
   congregation: Congregation;
   path: string;
@@ -35,13 +37,15 @@ export class PublishersComponent implements OnInit, OnDestroy {
   @ViewChild('sidenav') sidenav: MatDrawer;
 
   ngOnInit(): void {
-    this.congregation = this.storage.retrieve('congregation');
     this.path = this.storage.retrieve('congregationref');
-    this.$publishers = this.fireStoreService.fireStore
-      .collection(`${this.path}/publishers`)
+
+    this.forage.getItem<string>('congregationRef').then(path => {
+      this.$publishers = this.fireStoreService.fireStore
+      .collection(`${path}/publishers`)
       .valueChanges()
       .pipe(takeUntil(this.ngUnsubscribe));
 
+    })
   }
 
   onResize(event) {
