@@ -5,12 +5,14 @@ import { Parent, Part, WeekProgram } from '../models/wol.model';
 import { FireStoreService } from './fire-store.service';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import {  QuerySnapshot } from '@angular/fire/firestore';
+import {  QueryDocumentSnapshot, QuerySnapshot } from '@angular/fire/firestore';
 import moment from 'moment';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { EmailService } from './email.service';
 import { Gender, Publisher } from '../models/publisher.model';
 import { EmailMessage } from '../models/user.model';
+import { NgForage } from 'ngforage';
+import { map, take } from 'rxjs/operators';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -41,10 +43,9 @@ docDefinition = {
       private storage: LocalStorageService,
       private fireStore: FireStoreService,
       public spinner: NgxSpinnerService,
-      public emailService: EmailService
+      public emailService: EmailService,
+      public forage: NgForage
   ) {
-    this.congregation = this.storage.retrieve('congregation')
-    this.congregationRef = this.storage.retrieve('congregationref')
     this.docDefinition.styles = {
         header: {
           fontSize: 18,
@@ -102,24 +103,16 @@ docDefinition = {
 
    }
 
-   filterParts(parts: Part[]) {
-    this.treasures = parts.filter(part => part.parent == Parent.treasures).sort((a, b) => a.index - b.index)
-    this.apply = parts.filter(part => part.parent == Parent.apply).sort((a, b) => a.index - b.index)
-    this.life = parts.filter(part => part.parent == Parent.life).sort((a, b) => a.index - b.index)
-    this.weekend = parts.filter(part => part.parent == Parent.talk).sort((a, b) => a.index - b.index)
-    this.chairmans = parts.filter(part => part.parent == Parent.chairman).sort((a, b) => a.index - b.index)
-    this.prayers = parts.filter(part => part.parent == Parent.prayer).sort((a, b) => a.index - b.index)
-   }
 
-   filterPart(parts: QuerySnapshot<Part>) {
+   filterPart(parts: Part[]) {
    let part = {
-    treasures: parts.docs.filter(part => part.data().parent == Parent.treasures).sort((a, b) => a.data().index - b.data().index),
-    apply: parts.docs.filter(part => part.data().parent == Parent.apply).sort((a, b) => a.data().index - b.data().index),
-    life: parts.docs.filter(part => part.data().parent == Parent.life).sort((a, b) => a.data().index - b.data().index),
-    talk: parts.docs.filter(part => part.data().parent == Parent.talk).sort((a, b) => a.data().index - b.data().index),
-    wt: parts.docs.filter(part => part.data().parent == Parent.wt).sort((a, b) => a.data().index - b.data().index),
-    chairmans: parts.docs.filter(part => part.data().parent == Parent.chairman).sort((a, b) => a.data().index - b.data().index),
-    prayers: parts.docs.filter(part => part.data().parent == Parent.prayer).sort((a, b) => a.data().index - b.data().index)
+    treasures: parts.filter(part => part.parent == Parent.treasures).sort((a, b) => a.index - b.index),
+    apply: parts.filter(part => part.parent == Parent.apply).sort((a, b) => a.index - b.index),
+    life: parts.filter(part => part.parent == Parent.life).sort((a, b) => a.index - b.index),
+    talk: parts.filter(part => part.parent == Parent.talk).sort((a, b) => a.index - b.index),
+    wt: parts.filter(part => part.parent == Parent.wt).sort((a, b) => a.index - b.index),
+    chairmans: parts.filter(part => part.parent == Parent.chairman).sort((a, b) => a.index - b.index),
+    prayers: parts.filter(part => part.parent == Parent.prayer).sort((a, b) => a.index - b.index)
     }
     return part;
    }
@@ -130,278 +123,320 @@ docDefinition = {
    }
 
 
-  parseSinglePage(congInfo: Congregation, weekProgram: WeekProgram, parts: QuerySnapshot<Part>, weeks: WeekProgram[]) {
+  parseSinglePage(congInfo: Congregation, weekProgram: WeekProgram, parts: Part[], weeks: WeekProgram[]) {
     let filteredParts = this.filterPart(parts)
-    this.docDefinition.content.push({
-      columns: [
-        [
-          {
-            text: congInfo.properties.orgName,
-            style: 'subheader'
-          },
-          {
-            text: 'Meeting Schedule',
-            style: 'header'
-          }
-        ],
-        {
-          text: weekProgram.range,
-          alignment: 'right',
-          margin: [0, 7],
-          fontSize: 22,
-          bold: true
-        }
-      ]
-    },
-    {
-      svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
-      width: 520,
-      margin: [0, 3, 0, 10],
-    },
-    {
-      columns: [
-        [
-          {
-            text: 'Chairman',
-            style: 'label'
-          },
-          {
-            text: filteredParts.chairmans[0].data().assignee ? `${filteredParts.chairmans[0].data().assignee.firstName} ${filteredParts.chairmans[0].data().assignee.lastName}` : '',
-            style: 'value'
-          }
-        ],
-        [
-          {
-            text: 'Prayer',
-            style: 'label'
-          },
-          {
-            text: filteredParts.prayers[0].data().assignee ? `${filteredParts.prayers[0].data().assignee.firstName} ${filteredParts.prayers[0].data().assignee.lastName}` : '',
-            style: 'value'
-          }
-        ]
-      ]
-    },
-    {
-      text: "JOYAUX DE LA PAROLE DE DIEU",
-      style: "treasures",
-      margin: [0, 15, 0 , 0]
-    },
-    {
-      markerColor: '#808080',
-      ul: filteredParts.treasures.map(part => {
-        return {
-          columns: [
-            {
 
-              text: part.data().title,
-              style: "part",
-            },
-            {
-              text: part.data().assignee ? `${part.data().assignee.firstName} ${part.data().assignee.lastName}` : '',
-              style: 'partValue'
-            }
-          ],
-          margin: [0, 10, 0, 0]
-        }
-      }),
-    },
-    {
-      text: "APPLIQUE-TOI AU MINISTÈRE",
-      style: "apply",
-      margin: [0, 15, 0 , 0]
-    },
-    {
-      markerColor: '#808080',
-      ul: filteredParts.apply.map(part => {
-        return {
-          columns: [
-            {
-
-              text: `${part.data().title.split(')')[0]})`,
-              style: "part",
-            },
-            {
-              text:part.data().assignee ? `${part.data().assignee.firstName} ${part.data().assignee.lastName}` : '',
-              style: 'partValue'
-            }
-          ],
-          margin: [0, 10, 0, 0]
-        }
-      }),
-    },
-    {
-      text: "VIE CHRÉTIENNE",
-      style: "life",
-      margin: [0, 15, 0 , 0]
-    },
-    {
-      markerColor: '#808080',
-      ul: filteredParts.life.map(part => {
-        return {
-          columns: [
-            {
-
-              text: `${part.data().title.split(')')[0]})`,
-              style: "part",
-            },
-            {
-              text:part.data().assignee ? `${part.data().assignee.firstName} ${part.data().assignee.lastName}` : '',
-              style: 'partValue'
-            }
-          ],
-          margin: [0, 10, 0, 0]
-        }
-      }),
-    },
-    {
-      text: 'Prayer',
-      style: 'label',
-      margin: [0, 10, 0, 0]
-    },
-    {
-      text:filteredParts.prayers[1].data().assignee ? `${filteredParts.prayers[1].data().assignee.firstName} ${filteredParts.prayers[1].data().assignee.lastName}` : '',
-      style: 'value'
-    },
-    {
-      svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
-      width: 520,
-      margin: [0, 10, 0, 1],
-    },
-    {
-      columns: [
-        [
-          {
-            text: 'Chairman',
-            style: 'label'
-          },
-          {
-            text:filteredParts.chairmans[1].data().assignee ? `${filteredParts.chairmans[1].data().assignee.firstName} ${filteredParts.chairmans[1].data().assignee.lastName}` : '',
-            style: 'value'
-          }
-        ],
-        [
-          {
-            text: 'Prayer',
-            style: 'label'
-          },
-          {
-            text:filteredParts.prayers[2].data().assignee ? `${filteredParts.prayers[2].data().assignee.firstName} ${filteredParts.prayers[2].data().assignee.lastName}` : '',
-            style: 'value'
-          }
-        ]
-      ],
-      margin: [0, 20, 0, 1]
-    },
-    {
-      text: filteredParts.talk[0].data().title.length > 0 ? filteredParts.talk[0].data().title : 'TALK OUTLINE',
-      style: "weekend",
-      margin: [0, 15]
-    },
-    {
-      columns: [
+      this.docDefinition.content.push({
+        columns: [
           [
             {
-              text: 'Speaker',
-              style: "label"
+              text: congInfo.properties.orgName,
+              style: 'subheader'
             },
             {
-              text: filteredParts.talk[0].data().assignee ? `${filteredParts.talk[0].data().assignee.firstName} ${filteredParts.
-                talk[0].data().assignee.lastName}` : 'John Doe',
-              style: "value",
+              text: 'Programme de la Réunion',
+              style: 'header'
+            }
+          ],
+          {
+            text: weekProgram.range,
+            alignment: 'right',
+            margin: [0, 7],
+            fontSize: 22,
+            bold: true
+          }
+        ],
+        margin: [0, 20, 0, 0]
+      },
+      {
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
+        width: 520,
+        margin: [0, 3, 0, 10],
+      },
+      {
+        columns: [
+          [
+            {
+              text: 'Président',
+              style: 'label'
+            },
+            {
+              text: filteredParts.chairmans[0] && filteredParts.chairmans[0].assignee ? `${filteredParts.chairmans[0].assignee.firstName} ${filteredParts.chairmans[0].assignee.lastName}` : '',
+              style: 'value'
             }
           ],
           [
             {
-              text: 'Congregation',
-              style: "label",
+              text: 'Priere',
+              style: 'label'
             },
             {
-              text: 'Burbank French',
-              style: "value",
+              text:filteredParts.prayers[0] && filteredParts.prayers[0].assignee ? `${filteredParts.prayers[0].assignee.firstName} ${filteredParts.prayers[0].assignee.lastName}` : '',
+              style: 'value'
             }
           ]
-      ]
-    },
-    {
-      text: 'WATCHTOWER STUDY',
-      style: "weekend",
-      margin: [0, 15]
-    },
-    {
-      columns: [
-          [
-            {
-              text: 'Conductor',
-              style: "label"
-            },
-            {
-              text: filteredParts.wt[0].data().assignee ? `${filteredParts.wt[0].data().assignee.firstName} ${filteredParts.wt[1].data().assignee.lastName}` : '',
-              style: "value",
-            }
-          ],
-          [
-            {
-              text: 'Reader',
-              style: "label",
-            },
-            {
-              text: filteredParts.wt[0].data().assistant ? `${filteredParts.wt[0].data().assistant.firstName} ${filteredParts.wt[0].data().assistant.lastName}` : '',
-              style: "value",
-            }
-          ],
-      ]
-    },
-    [
-      {
-        text: 'Prayer',
-        style: 'label'
+        ]
       },
       {
-        text: filteredParts.prayers[3].data().assignee ? `${filteredParts.prayers[3].data().assignee.firstName} ${filteredParts.prayers[3].data().assignee.lastName}` : "",
-        style: 'value',
-
+        text: "JOYAUX DE LA PAROLE DE DIEU",
+        style: "treasures",
+        margin: [0, 15, 0 , 0]
       },
-    ],{
-      text: '',
-      pageBreak: weekProgram.id == weeks[weeks.length - 1].id ? '' : 'after',
-      margin: [0, 0, 0, 50]
-    })
+      {
+        markerColor: '#808080',
+        ul: filteredParts.treasures.map(part => {
+          return {
+            columns: [
+              {
 
+                text: part.title,
+                style: "part",
+              },
+              {
+                text: part && part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
+                style: 'partValue'
+              }
+            ],
+            margin: [0, 10, 0, 0]
+          }
+        }),
+      },
+      {
+        text: "APPLIQUE-TOI AU MINISTÈRE",
+        style: "apply",
+        margin: [0, 15, 0 , 0]
+      },
+      {
+        markerColor: '#808080',
+        ul: filteredParts.apply.map(part => {
+          return {
+            columns: [
+              [
+                {
 
+                  text: `${part.title.split(')')[0]})`,
+                  style: "part",
+                },
+                {
+                  text: part && part.assistant ? `Interlocuteur` : '',
+                  style: 'part'
+                }
+              ],
+              [
+                {
+
+                  text: part && part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
+                  style: "partValue",
+                },
+                {
+                  text: part && part.assistant ? `${part.assistant.firstName} ${part.assistant.lastName}` : '',
+                  style: 'partValue'
+                }
+              ]
+            ],
+            margin: [0, 10, 0, 0]
+          }
+        }),
+      },
+      {
+        text: "VIE CHRÉTIENNE",
+        style: "life",
+        margin: [0, 15, 0 , 0]
+      },
+      {
+        markerColor: '#808080',
+        ul: filteredParts.life.map(part => {
+          return {
+            columns: [
+              [
+                {
+                  text: `${part.title.split(')')[0]})`,
+                  style: "part",
+                },
+                {
+                  text: part && part.assistant ? `Lecteur` : '',
+                  style: 'part'
+                }
+              ],
+              [
+                {
+
+                  text: part && part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
+                  style: "partValue",
+                },
+                {
+                  text: part && part.assistant ? `${part.assistant.firstName} ${part.assistant.lastName}` : '',
+                  style: 'partValue'
+                }
+              ]
+            ],
+            margin: [0, 10, 0, 0]
+          }
+        }),
+      },
+      {
+        text: 'Priere',
+        style: 'label',
+        margin: [0, 10, 0, 0]
+      },
+      {
+        text: filteredParts.prayers[1] && filteredParts.prayers[1].assignee ? `${filteredParts.prayers[1].assignee.firstName} ${filteredParts.prayers[1].assignee.lastName}` : '',
+        style: 'value'
+      },
+      // {
+      //   svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
+      //   width: 520,
+      //   margin: [0, 10, 0, 1],
+      // },
+      // {
+      //   columns: [
+      //     [
+      //       {
+      //         text: 'Président',
+      //         style: 'label'
+      //       },
+      //       {
+      //         text:filteredParts.chairmans[1] && filteredParts.chairmans[1].assignee ? `${filteredParts.chairmans[1].assignee.firstName} ${filteredParts.chairmans[1].assignee.lastName}` : '',
+      //         style: 'value'
+      //       }
+      //     ],
+      //     [
+      //       {
+      //         text: 'Priere',
+      //         style: 'label'
+      //       },
+      //       {
+      //         text:filteredParts.prayers[2] && filteredParts.prayers[2].assignee ? `${filteredParts.prayers[2].assignee.firstName} ${filteredParts.prayers[2].assignee.lastName}` : '',
+      //         style: 'value'
+      //       }
+      //     ]
+      //   ],
+      //   margin: [0, 20, 0, 1]
+      // },
+      // {
+      //   text:filteredParts.talk[0] && filteredParts.talk[0].title.length > 0 ? filteredParts.talk[0].title : 'Plan Du Discours',
+      //   style: "weekend",
+      //   margin: [0, 15]
+      // },
+      // {
+      //   columns: [
+      //       [
+      //         {
+      //           text: 'Orateur',
+      //           style: "label"
+      //         },
+      //         {
+      //           text:filteredParts.talk[0] && filteredParts.talk[0].assignee ? `${filteredParts.talk[0].assignee.firstName} ${filteredParts.
+      //             talk[0].assignee.lastName}` : '',
+      //           style: "value",
+      //         }
+      //       ],
+      //       [
+      //         {
+      //           text: 'Congrégation',
+      //           style: "label",
+      //         },
+      //         {
+      //           text: '',
+      //           style: "value",
+      //         }
+      //       ]
+      //   ]
+      // },
+      // {
+      //   text: 'Etude de la Tour de Garde',
+      //   style: "weekend",
+      //   margin: [0, 15]
+      // },
+      // {
+      //   columns: [
+      //       [
+      //         {
+      //           text: 'Conducteur',
+      //           style: "label"
+      //         },
+      //         {
+      //           text:filteredParts.wt[0] && filteredParts.wt[0].assignee ? `${filteredParts.wt[0].assignee.firstName} ${filteredParts.wt[1].assignee.lastName}` : '',
+      //           style: "value",
+      //         }
+      //       ],
+      //       [
+      //         {
+      //           text: 'Lecteur',
+      //           style: "label",
+      //         },
+      //         {
+      //           text:filteredParts.wt[0] && filteredParts.wt[0].assistant ? `${filteredParts.wt[0].assistant.firstName} ${filteredParts.wt[0].assistant.lastName}` : '',
+      //           style: "value",
+      //         }
+      //       ],
+      //   ]
+      // },
+      // [
+      //   {
+      //     text: 'Priere',
+      //     style: 'label'
+      //   },
+      //   {
+      //     text:filteredParts.prayers[3] && filteredParts.prayers[3].assignee ? `${filteredParts.prayers[3].assignee.firstName} ${filteredParts.prayers[3].assignee.lastName}` : "",
+      //     style: 'value',
+
+      //   },
+      // ],
+      {
+        text: '',
+        pageBreak: weekProgram.id == weeks[weeks.length - 1].id ? '' : 'after',
+        margin: [0, 0, 0, 50]
+      })
   }
 
   downloadMonthPDF(weeks: WeekProgram[]) {
     this.docDefinition.content = []
-    this.docDefinition.info.title = `Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`;
-    weeks.forEach(week => {
-     this.fireStore.fireStore.collection<Part>(`${this.congregationRef}/weeks/${week.id}/parts`).get().toPromise().then(parts => {
-       if (parts) {
-          this.parseSinglePage(this.congregation, week, parts, weeks)
-       }
-     })
-    })
-    this.spinner.show()
-      setTimeout(() => {
 
+    this.docDefinition.info.title = `Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`;
+    this.forage.getItem('congregationRef').then(path => {
+      this.forage.getItem('congregation').then(congregation => {
+
+      weeks.forEach(week => {
+        this.fireStore.fireStore.collection<Part>(`${path}/parts`)
+        .valueChanges()
+        .pipe(
+          map(data => data.filter(p => p.week == week.id)),
+          take(1))
+        .subscribe(parts => {
+          if (parts) {
+             this.parseSinglePage(congregation, week, parts, weeks)
+          }
+        })
+       })
+
+      setTimeout(() => {
         pdfMake.createPdf(this.docDefinition).download(`Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`)
-        this.spinner.hide()
       }, 3000)
+    })
+  })
+
   }
 
   emailMonthPDF(weeks: WeekProgram[]) {
     this.docDefinition.content = []
     this.docDefinition.info.title = `Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`;
+    this.forage.getItem('congregationRef').then(path => {
+      this.forage.getItem<Congregation>('congregation').then(congregation => {
     weeks.forEach(week => {
-     this.fireStore.fireStore.collection<Part>(`${this.congregationRef}/weeks/${week.id}/parts`).get().toPromise().then(parts => {
-       if (parts) {
-          this.parseSinglePage(this.congregation, week, parts, weeks)
-       }
-     })
+      this.fireStore.fireStore.collection<Part>(`${path}/parts`)
+      .valueChanges()
+      .pipe(
+        map(data => data.filter(p => p.week == week.id)),
+        take(1))
+      .subscribe(parts => {
+        if (parts) {
+           this.parseSinglePage(congregation, week, parts, weeks)
+        }
+      })
     })
-    this.spinner.show()
     const pdfDocGenerator = pdfMake.createPdf(this.docDefinition);
-    this.fireStore.fireStore.collection<Publisher>(`${this.congregationRef}/publishers`, ref => ref.where('gender', '==', Gender.brother)).get().toPromise().then(publishers => {
+    this.fireStore.fireStore.collection<Publisher>(`${path}/publishers`, ref => ref.where('gender', '==', Gender.brother)).get().toPromise().then(publishers => {
 
       setTimeout(() => {
         this.spinner.hide()
@@ -413,9 +448,9 @@ docDefinition = {
 
                 let msg: EmailMessage = {
                     to: _pub.email,
-                    from: `${this.congregation.properties.orgName} <assemblee.app@gmail.com>`,
+                    from: `${congregation.properties.orgName} <assemblee.app@gmail.com>`,
                     subject: this.docDefinition.info.title,
-                    html: `<p>Hello ${_pub.lastName} ${_pub.firstName},</p><p>Please find attached the meeting schedule for <strong>${moment(weeks[0].date.toDate()).format('MMMM yyyy')}</strong>.</p><p>Sincerely,<br>${this.congregation.properties.orgName}</p>`,
+                    html: `<p>Hello ${_pub.lastName} ${_pub.firstName},</p><p>Please find attached the meeting schedule for <strong>${moment(weeks[0].date.toDate()).format('MMMM yyyy')}</strong>.</p><p>Sincerely,<br>${congregation.properties.orgName}</p>`,
                     attachments: [
                       {
                         content: data,
@@ -424,7 +459,6 @@ docDefinition = {
                       }
                     ]
                 }
-                console.log(msg)
                 this.emailService.sendEmail(msg)
               }
             }
@@ -432,312 +466,7 @@ docDefinition = {
         })
       }, 3000)
     })
-
-  }
-
-  createSinglePDF(weekProgram: WeekProgram, parts: Part[]) {
-    this.filterParts(parts)
-    let congregation = this.storage.retrieve('congregationref')
-    this.fireStore.fireStore.doc<Congregation>(congregation).get().subscribe(data => {
-      if (data.exists) {
-
-        let congInfo = data.data();
-        var docDefinition = {
-          content: [
-            {
-              columns: [
-                [
-                  {
-                    text: congInfo.properties.orgName,
-                    style: 'subheader'
-                  },
-                  {
-                    text: 'Meeting Schedule',
-                    style: 'header'
-                  }
-                ],
-                {
-                  text: weekProgram.range,
-                  alignment: 'right',
-                  margin: [0, 7],
-                  fontSize: 22,
-                  bold: true
-                }
-              ]
-            },
-            {
-              svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
-              width: 520,
-              margin: [0, 3, 0, 10],
-            },
-            {
-              columns: [
-                [
-                  {
-                    text: 'Chairman',
-                    style: 'label'
-                  },
-                  {
-                    text: this.chairmans[0].assignee ? `${this.chairmans[0].assignee.firstName} ${this.chairmans[0].assignee.lastName}` : '',
-                    style: 'value'
-                  }
-                ],
-                [
-                  {
-                    text: 'Prayer',
-                    style: 'label'
-                  },
-                  {
-                    text: this.prayers[0].assignee ? `${this.prayers[0].assignee.firstName} ${this.prayers[0].assignee.lastName}` : '',
-                    style: 'value'
-                  }
-                ]
-              ]
-            },
-            {
-              text: "JOYAUX DE LA PAROLE DE DIEU",
-              style: "treasures",
-              margin: [0, 15, 0 , 0]
-            },
-            {
-              markerColor: '#808080',
-              ul: this.treasures.map(part => {
-                return {
-                  columns: [
-                    {
-
-                      text: part.title,
-                      style: "part",
-                    },
-                    {
-                      text: part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
-                      style: 'partValue'
-                    }
-                  ],
-                  margin: [0, 10, 0, 0]
-                }
-              }),
-            },
-            {
-              text: "APPLIQUE-TOI AU MINISTÈRE",
-              style: "apply",
-              margin: [0, 15, 0 , 0]
-            },
-            {
-              markerColor: '#808080',
-              ul: this.apply.map(part => {
-                return {
-                  columns: [
-                    {
-
-                      text: `${part.title.split(')')[0]})`,
-                      style: "part",
-                    },
-                    {
-                      text:part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
-                      style: 'partValue'
-                    }
-                  ],
-                  margin: [0, 10, 0, 0]
-                }
-              }),
-            },
-            {
-              text: "VIE CHRÉTIENNE",
-              style: "life",
-              margin: [0, 15, 0 , 0]
-            },
-            {
-              markerColor: '#808080',
-              ul: this.life.map(part => {
-                return {
-                  columns: [
-                    {
-
-                      text: `${part.title.split(')')[0]})`,
-                      style: "part",
-                    },
-                    {
-                      text:part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
-                      style: 'partValue'
-                    }
-                  ],
-                  margin: [0, 10, 0, 0]
-                }
-              }),
-            },
-            {
-              text: 'Prayer',
-              style: 'label',
-              margin: [0, 10, 0, 0]
-            },
-            {
-              text:this.prayers[1].assignee ? `${this.prayers[1].assignee.firstName} ${this.prayers[1].assignee.lastName}` : '',
-              style: 'value'
-            },
-            {
-              svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
-              width: 520,
-              margin: [0, 10, 0, 1],
-            },
-            {
-              columns: [
-                [
-                  {
-                    text: 'Chairman',
-                    style: 'label'
-                  },
-                  {
-                    text:this.chairmans[1].assignee ? `${this.chairmans[1].assignee.firstName} ${this.chairmans[1].assignee.lastName}` : '',
-                    style: 'value'
-                  }
-                ],
-                [
-                  {
-                    text: 'Prayer',
-                    style: 'label'
-                  },
-                  {
-                    text:this.prayers[2].assignee ? `${this.prayers[2].assignee.firstName} ${this.prayers[2].assignee.lastName}` : '',
-                    style: 'value'
-                  }
-                ]
-              ],
-              margin: [0, 10, 0, 1]
-            },
-            {
-              text: this.weekend[0].title.length > 0 ? this.weekend[0].title : 'TALK OUTLINE',
-              style: "weekend",
-              margin: [0, 15]
-            },
-            {
-              columns: [
-                  [
-                    {
-                      text: 'Speaker',
-                      style: "label"
-                    },
-                    {
-                      text: this.weekend[0].assignee ? `${this.weekend[0].assignee.firstName} ${this.weekend[0].assignee.lastName}` : 'John Doe',
-                      style: "value",
-                    }
-                  ],
-                  [
-                    {
-                      text: 'Congregation',
-                      style: "label",
-                    },
-                    {
-                      text: 'Burbank French',
-                      style: "value",
-                    }
-                  ]
-              ]
-            },
-            {
-              text: 'WATCHTOWER STUDY',
-              style: "weekend",
-              margin: [0, 15]
-            },
-            {
-              columns: [
-                  [
-                    {
-                      text: 'Conductor',
-                      style: "label"
-                    },
-                    {
-                      text: this.weekend[1].assignee ? `${this.weekend[1].assignee.firstName} ${this.weekend[1].assignee.lastName}` : '',
-                      style: "value",
-                    }
-                  ],
-                  [
-                    {
-                      text: 'Reader',
-                      style: "label",
-                    },
-                    {
-                      text: this.weekend[1].assistant ? `${this.weekend[1].assistant.firstName} ${this.weekend[1].assistant.lastName}` : '',
-                      style: "value",
-                    }
-                  ],
-              ]
-            },
-            [
-              {
-                text: 'Prayer',
-                style: 'label'
-              },
-              {
-                text: this.prayers[3].assignee ? `${this.prayers[3].assignee.firstName} ${this.prayers[3].assignee.lastName}` : "",
-                style: 'value'
-              }
-            ]
-          ],
-	styles: {
-		header: {
-			fontSize: 18,
-      bold: true,
-      color: '#000000',
-		},
-		subheader: {
-			fontSize: 12,
-      bold: false,
-      color: '#C0C0C0'
-    },
-    treasures: {
-			fontSize: 16,
-      bold: true,
-      color: '#656164'
-    },
-    apply: {
-			fontSize: 16,
-      bold: true,
-      color: '#a56803'
-    },
-    life: {
-			fontSize: 16,
-      bold: true,
-      color: '#99131e'
-    },
-    weekend: {
-      fontSize: 16,
-      bold: true,
-      color: '#808080'
-    },
-    label: {
-      fontSize: 12,
-      bold: false,
-      color: '#808080'
-    },
-    part: {
-      fontSize: 12,
-      bold: false,
-      color: '#000000'
-    },
-    partValue: {
-      fontSize: 12,
-      bold: true,
-      color: '#000000',
-      alignment: 'right'
-    },
-    value: {
-      fontSize: 12,
-      bold: true,
-      color: '#000000',
-      margin: [0, 2]
-    }
-	}
-        };
-
-        pdfMake.createPdf(docDefinition).open();
-      }
-    })
-
-
-    // horizontal line
-
-
-
+  })
+  })
   }
 }

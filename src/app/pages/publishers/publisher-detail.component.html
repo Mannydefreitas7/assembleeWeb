@@ -94,9 +94,22 @@
   </div>
 </div>
 
-<div class="row mt-4" *ngIf="$parts | async as parts">
-  <h6 class="fw-bold" *ngIf="parts.length > 0">Parts</h6>
-  <ul class="list-group list-group-flush" *ngIf="parts.length > 0">
-    <li class="list-group-item list-group-item-action" *ngFor="let part of parts">{{ part.title }}</li>
-  </ul>
-</div>
+<ng-container *ngIf="$parts | async as parts; else loading">
+  <div class="row mt-4">
+    <h6 class="fw-bold" *ngIf="parts.length > 0">Parts</h6>
+    <ul class="list-group list-group-flush" *ngIf="parts.length > 0">
+      <li class="list-group-item list-group-item-action p-3" *ngFor="let part of parts">
+        <part-row [part]="part"></part-row>
+      </li>
+    </ul>
+  </div>
+</ng-container>
+
+
+
+<ng-template #loading>
+  <div class="d-flex justify-content-center align-items-center" style="min-height: 500px;">
+    <div class="spinner-border text-success" style="width: 3rem; height: 3rem;" role="status">
+    </div>
+  </div>
+</ng-template>

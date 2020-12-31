@@ -71,6 +71,7 @@ export interface Part {
    index?: number;
    parent?: Parent;
    path?: string;
+   week?: string;
 }
 
 

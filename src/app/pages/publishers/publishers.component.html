@@ -16,7 +16,7 @@
         </button>
 
         <button class="btn btn-light btn-sm">
-         <svg-icon src="assets/images/export.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+         <svg-icon src="assets/images/import.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
          <span class="ms-2 align-middle">Import</span>
        </button>
     </div>
@@ -46,7 +46,7 @@
             </div>
         </mat-drawer>
         <mat-drawer-content>
-            <div *ngIf="$publishers | async as publishers; else selectDate" class="card-body py-4" style="min-height: 600px;" [ngClass]="{ 'd-flex flex-wrap align-items-center justify-content-center': publishers.length == 0  }">
+            <div *ngIf="$publishers | async as publishers; else loading" class="card-body py-4" style="min-height: 600px;" [ngClass]="{ 'd-flex flex-wrap align-items-center justify-content-center': publishers.length == 0  }">
 
              <div *ngIf="publishers.length == 0">
              <div class="text-center fs-5 text-secondary" style="opacity: 50%;">
@@ -59,7 +59,7 @@
              </button>
            </div>
          </div>
-              <div [ngbNavOutlet]="nav" class="mx-4" *ngIf="publishers.length > 0">
+              <div [ngbNavOutlet]="nav" class="mx-4" *ngIf="publishers.length > 0; else loading">
               </div>
             </div>
         </mat-drawer-content>
@@ -68,9 +68,13 @@
   </div>
 
 </div>
-<ng-template #selectDate>
-
+<ng-template #loading>
+  <div class="d-flex justify-content-center align-items-center" style="min-height: 500px;">
+    <div class="spinner-border text-success" style="width: 3rem; height: 3rem;" role="status">
+    </div>
+  </div>
 </ng-template>
+
 
 <ng-template #pubs>
     <ul class="list-group list-group-flush w-100" *ngFor="let number of [0,1,2,3,4,5]; let i=index">

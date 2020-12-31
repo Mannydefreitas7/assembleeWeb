@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgForage } from 'ngforage';
 import { LocalStorageService } from 'ngx-webstorage';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Congregation } from 'src/app/models/congregation.model';
@@ -21,6 +22,7 @@ export class InvitePublisherComponent implements OnInit {
     private fireStore: FireStoreService,
     private storage: LocalStorageService,
     public fb: FormBuilder,
+    private forage: NgForage,
     private email: EmailService,
     public modal: NgbActiveModal
   ) { }
@@ -42,11 +44,12 @@ export class InvitePublisherComponent implements OnInit {
   get password() { return this.inviteForm.get('password') }
 
   invite() {
-    let path = this.storage.retrieve('congregationref')
+
     // create user with email and pass
     if (this.inviteForm.valid) {
 
-      this.auth.afAuth.createUserWithEmailAndPassword(this.publisher.email, this.password.value).then(credential => {
+      this.forage.getItem<string>('congregationRef').then(path => {
+        this.auth.afAuth.createUserWithEmailAndPassword(this.publisher.email, this.password.value).then(credential => {
           if (credential) {
             // create fireUser
             let user: User = {
@@ -93,9 +96,8 @@ export class InvitePublisherComponent implements OnInit {
             })
           }
       })
+      })
     }
-
-
   }
 
 }

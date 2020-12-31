@@ -23,8 +23,11 @@
         </select>
 
         <button class="btn btn-light btn-sm d-inline-block" (click)="addMonthProgram()" [disabled]="exportPDFisActive">
-          <svg-icon src="assets/images/add-schedule.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }">
+          <svg-icon  *ngIf="!isLoading" src="assets/images/add-schedule.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }">
           </svg-icon>
+
+          <div *ngIf="isLoading" class="spinner-border spinner-border-sm text-success" role="status"></div>
+
           <span class="ms-2 align-middle">Add Program</span>
         </button>
 
@@ -63,14 +66,14 @@
 
     </div>
 
-    <mat-drawer-container class="card p-0 border-0 shadow-sm rounded-3">
+    <mat-drawer-container class="card p-0 border-0 shadow-sm rounded-3" >
       <mat-drawer mode="side" #sidenav opened style="width: 200px;">
         <div class="card-body p-0">
 
           <div class="d-flex">
             <ul ngbNav #nav="ngbNav" [(activeId)]="active" orientation="vertical"
               class="list-group list-group-flush w-100">
-              <ng-container *ngIf="weekProgram; else selectDate">
+              <ng-container *ngIf="weekProgram; else loading">
                 <li [ngbNavItem]="i" *ngFor="let week of weekProgram;  index as i"
                   class="list-group-item list-group-item-action py-2" [ngClass]="{'active': active == i }">
                   <a ngbNavLink
@@ -88,8 +91,10 @@
         </div>
       </mat-drawer>
       <mat-drawer-content>
-        <div class="card-body py-4" style="min-height: 600px;" *ngIf="weekProgram;"
-          [ngClass]="{ 'd-flex flex-wrap align-items-center justify-content-center': weekProgram.length == 0 }">
+
+        <ng-container *ngIf="weekProgram; else loading" >
+          <div class="card-body py-4"
+          [ngClass]="{ 'd-flex flex-wrap align-items-center justify-content-center': weekProgram.length == 0 }" style="min-height: 600px;">
 
           <div *ngIf="weekProgram.length == 0">
             <div class="text-center fs-5 text-secondary" style="opacity: 50%;">
@@ -104,11 +109,17 @@
           </div>
           <div [ngbNavOutlet]="nav" class="mx-4" *ngIf="weekProgram.length > 0">
           </div>
-
         </div>
+        </ng-container>
+
       </mat-drawer-content>
     </mat-drawer-container>
-    <ngx-spinner></ngx-spinner>
   </div>
 
 </div>
+<ng-template #loading>
+  <div class="d-flex justify-content-center align-items-center" style="min-height: 500px;">
+    <div class="spinner-border text-success" style="width: 3rem; height: 3rem;" role="status">
+    </div>
+  </div>
+</ng-template>

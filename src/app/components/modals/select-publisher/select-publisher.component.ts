@@ -42,102 +42,77 @@ export class SelectPublisherComponent implements OnInit {
   @Input('relacing') replacing: Publisher;
 
   ngOnInit(): void {
-    this.congregationRef = this.storage.retrieve('congregationref');
-    this.publisherForm = this.fb.group({
-      fname: ['', [Validators.required, Validators.minLength(2)]],
-      lname: ['', [Validators.required, Validators.minLength(2)]],
-      email: [
-        '',
-        [Validators.required, Validators.email, Validators.minLength(2)],
-      ],
-      gender: [Gender.brother, [Validators.required, Validators.minLength(2)]],
-      privilege: [Privilege.pub, [Validators.minLength(2)]],
-    });
-    this.forage.getItem<string>('congregationRef').then(path => {
-      this.$publishers = this.fireStoreService.fireStore.collection<Publisher>(`${path}/publishers`).valueChanges().pipe(
-        map((data) => {
-          return data.filter(
-            (pubs) =>
-              this.part.privilege.includes(pubs.privilege) &&
-              this.part.gender.includes(pubs.gender)
-          );
-        })
-      );
-    })
+
+    // this.forage.getItem<string>('congregationRef').then(path => {
+    //   this.$publishers = this.fireStoreService.fireStore.collection<Publisher>(`${path}/publishers`).valueChanges().pipe(
+    //     map((data) => {
+    //       return data.filter(
+    //         (pubs) =>
+    //           this.part.privilege.includes(pubs.privilege) &&
+    //           this.part.gender.includes(pubs.gender)
+    //       );
+    //     })
+    //   );
+    // })
   }
 
-  get fname() {
-    return this.publisherForm.get('fname');
-  }
-  get lname() {
-    return this.publisherForm.get('lname');
-  }
-  get email() {
-    return this.publisherForm.get('email');
-  }
-  get gender() {
-    return this.publisherForm.get('gender');
-  }
-  get privilege() {
-    return this.publisherForm.get('privilege');
-  }
 
-  selectPublisher(publisher: Publisher) {
-    let replacingRef: AngularFirestoreDocument;
-    this.forage.getItem<string>('congregationRef').then(path => {
-      let documentRef = this.fireStoreService.fireStore.doc<Part>(
-        `${path}/weeks/${this.weekProgram.id}/parts/${this.part.id}`
-      );
-      let publisherRef = this.fireStoreService.fireStore.doc<Publisher>(
-        `${path}/publishers/${publisher.uid}`
-      );
+  // selectPublisher(publisher: Publisher) {
+  //   let replacingRef: AngularFirestoreDocument;
+  //   this.forage.getItem<string>('congregationRef').then(path => {
+  //     let documentRef = this.fireStoreService.fireStore.doc<Part>(
+  //       `${path}/weeks/${this.weekProgram.id}/parts/${this.part.id}`
+  //     );
+  //     let publisherRef = this.fireStoreService.fireStore.doc<Publisher>(
+  //       `${path}/publishers/${publisher.uid}`
+  //     );
 
-      if (this.replacing) {
-        replacingRef = this.fireStoreService.fireStore.doc<Publisher>(
-        `${path}/publishers/${this.replacing.uid}`);
-      }
-      if (this.type == 'assignee') {
-        // this.part.assignee = publisher
-         documentRef.update({
-           assignee: publisher,
-         });
-       } else {
-       //  this.part.assistant = publisher
-         documentRef.update({
-           assistant: publisher,
-         });
-       }
-      this.part.path = documentRef.ref.path;
-      publisherRef
-      .get()
-      .toPromise()
-      .then((data) => {
-        if (data.exists && data.data().parts) {
-          let newParts = data.data().parts;
+  //     if (this.replacing) {
+  //       replacingRef = this.fireStoreService.fireStore.doc<Publisher>(
+  //       `${path}/publishers/${this.replacing.uid}`);
+  //     }
+  //     if (this.type == 'assignee') {
+  //       // this.part.assignee = publisher
+  //        documentRef.update({
+  //          assignee: publisher,
+  //        });
+  //      } else {
+  //      //  this.part.assistant = publisher
+  //        documentRef.update({
+  //          assistant: publisher,
+  //        });
+  //      }
+  //     this.part.path = documentRef.ref.path;
+  //     publisherRef
+  //     .get()
+  //     .toPromise()
+  //     .then((data) => {
+  //       if (data.exists && data.data().parts) {
+  //         let newParts = data.data().parts;
 
-          newParts.push(this.part);
-          publisherRef.update({
-            parts: newParts,
-          });
-        } else {
-          publisherRef.set(
-            {
-              parts: [this.part],
-            },
-            { merge: true }
-          );
-        }
-        this.modal.close();
-      }).then(() => {
-        if (this.replacing)
-        replacingRef.get().toPromise().then(document => {
-          if (document.exists) {
-            let parts = document.data().parts.filter(p => p.path.split('/')[5] !== this.part.id)
-            replacingRef.update({parts: parts})
-          }
-        })
-      })
-    })
+  //         newParts.push(this.part);
+  //         publisherRef.update({
+  //           parts: newParts,
+  //         });
+  //       } else {
+  //         publisherRef.set(
+  //           {
+  //             parts: [this.part],
+  //           },
+  //           { merge: true }
+  //         );
+  //       }
+  //       this.modal.close();
+  //     }).then(() => {
+  //       if (this.replacing)
+  //       replacingRef.get().toPromise().then(document => {
+  //         if (document.exists) {
+  //           let parts = document.data().parts.filter(p => p.path.split('/')[5] !== this.part.id)
+  //           replacingRef.update({parts: parts})
+  //         }
+  //       })
+  //     })
+  //   })
 
-  }
+  // }
 }

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LocalStorageService } from 'ngx-webstorage';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { Congregation } from 'src/app/models/congregation.model';
 import { Permission, Privilege, Publisher } from 'src/app/models/publisher.model';
 import { User } from 'src/app/models/user.model';
@@ -58,8 +58,6 @@ export class PublisherDetailComponent implements OnInit {
       this.authUser = authUser;
     })
 
-    this.fireUser = this.storage.retrieve('fireUser');
-
     this.forage.getItem<User>('fireUser').then(fireUser => {
       if (this.publisher.isInvited) {
         this.fireStoreService.fireStore.doc<User>(`users/${this.publisher.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe)).subscribe(d => {
@@ -99,18 +97,14 @@ export class PublisherDetailComponent implements OnInit {
 
   editPermissions(user: User, permission: Permission) {
     let _permissions = [...user.permissions];
-
    if (_permissions.includes(permission)) {
     _permissions = _permissions.filter(p => p != permission)
-
    } else {
      _permissions.push(permission)
   }
   this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`).update({
     permissions: _permissions
 })
-this.fireUser.permissions = _permissions;
-    this.forage.setItem('fireUser', this.fireUser)
 }
 
 openInviteModal() {
@@ -123,13 +117,26 @@ openInviteModal() {
 
 getPublisherParts() {
   let _parts: string[] = [];
-  if (this.publisher.parts && this.publisher.parts.length > 0) {
-    this.publisher.parts.forEach(p => {
-      _parts.push(p.path.split('/')[5])
-    })
-      this.$parts = this.fireStoreService.fireStore.collectionGroup('parts', ref => ref.where('id', 'in', _parts)).valueChanges().pipe(takeUntil(this.ngUnsubscribe))
-  }
 
+  if (this.publisher.parts && this.publisher.parts.length > 0) {
+    this.forage.getItem('congregationRef').then(path => {
+      this.publisher.parts.forEach(p => {
+        _parts.push(p.path.split('/')[3])
+      })
+        this.$parts = this.fireStoreService.fireStore
+        .collection<Part>(`${path}/parts`)
+        .valueChanges()
+        .pipe(
+          map(data => {
+            return data.filter(p => {
+                if (p.assignee) return p.assignee.uid == this.publisher.uid
+                if (p.assistant) return p.assistant.uid == this.publisher.uid
+             })
+          }),
+          takeUntil(this.ngUnsubscribe)
+          )
+    })
+    }
 }
 
 }

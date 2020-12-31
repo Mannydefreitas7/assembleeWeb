@@ -7,6 +7,7 @@ import moment from 'moment';
 import { FireStoreService } from './fire-store.service';
 import { Gender, Privilege } from '../models/publisher.model';
 import { Congregation } from '../models/congregation.model';
+import { NgForage } from 'ngforage';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class WolApiService {
    parse = new DOMParser()
   constructor(
      private http: HttpClient,
+     private forage: NgForage,
      private fireStore: FireStoreService
      ) { }
 
@@ -24,7 +26,9 @@ export class WolApiService {
       return this.http.get<WOLWeek>(url);
   }
 
-  parseWolContent(wolWeek: WOLWeek, date: Date) : [WeekProgram, Part[]] {
+  parseWolContent(wolWeek: WOLWeek, date: Date, path: string) : [WeekProgram, Part[]] {
+
+    let weekID = this.fireStore.fireStore.createId();
 
    if (wolWeek.items.length > 1) {
       let midContent: Document = this.parse.parseFromString(wolWeek.items[1].content, "text/html");
@@ -46,13 +50,15 @@ export class WolApiService {
             length: element.textContent.match(/\(([^)]+)\)/)[1],
             privilege: element.textContent.match(/\(([^)]+)\)/)[1].includes('10') ? [Privilege.elder, Privilege.ms] : [Privilege.pub, Privilege.elder, Privilege.ms],
             subTitle: "",
+            path: path,
             title: element.textContent,
             lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime(),
             index: i,
             isConfirmed: false,
             isEmailed: false,
             parent: Parent.treasures,
-            date: date
+            date: date,
+            week: weekID
          })
       })
 
@@ -69,6 +75,7 @@ export class WolApiService {
           hasDiscussion: element.textContent.match(/\(([^)]+)\)/)[1].includes('15'),
           hasAssistant: !element.textContent.match(/\(([^)]+)\)/)[1].includes('15'),
           assistant: null,
+          path: path,
           gender: element.textContent.match(/\(([^)]+)\)/)[1].includes('15') ? [Gender.brother] : [Gender.sister, Gender.brother],
           id: this.fireStore.fireStore.createId(),
           length: element.textContent.match(/\(([^)]+)\)/)[1],
@@ -80,7 +87,8 @@ export class WolApiService {
           index: i,
           isConfirmed: false,
           parent: Parent.apply,
-          date: date
+          date: date,
+          week: weekID
        })
     })
 
@@ -95,6 +103,7 @@ export class WolApiService {
           hasDiscussion: false,
           hasAssistant: false,
           assistant: null,
+          path: path,
           gender: [Gender.brother],
           id: this.fireStore.fireStore.createId(),
           length: element.textContent.match(/\(([^)]+)\)/) ? element.textContent.match(/\(([^)]+)\)/)[1] : '',
@@ -106,7 +115,8 @@ export class WolApiService {
           isEmailed: false,
           isConfirmed: false,
           parent: Parent.life,
-          date: date
+          date: date,
+          week: weekID
        })
     })
 
@@ -124,11 +134,13 @@ export class WolApiService {
          gender: [Gender.brother],
          isConfirmed: false,
          index: p,
+         path: path,
          isEmailed: false,
          parent: Parent.prayer,
          title: 'Prayer',
          date: date,
-         privilege: [Privilege.elder, Privilege.ms, Privilege.pub]
+         privilege: [Privilege.elder, Privilege.ms, Privilege.pub],
+         week: weekID
       })
    }
 
@@ -141,11 +153,13 @@ export class WolApiService {
          gender: [Gender.brother],
          isConfirmed: false,
          index: c,
+         path: path,
          parent: Parent.chairman,
          title: 'Chairman',
          isEmailed: false,
          date: date,
-         privilege: [Privilege.elder, Privilege.ms]
+         privilege: [Privilege.elder, Privilege.ms],
+         week: weekID
       })
    }
 
@@ -158,13 +172,15 @@ export class WolApiService {
             lengthTime: moment('00:30:00', 'hh:mm:ss').toDate().getTime(),
             privilege: [Privilege.elder, Privilege.ms],
             title: "",
+            path: path,
             subTitle: "",
             hasAssistant: false,
             index: 0,
             isEmailed: false,
             isConfirmed: false,
             date: date,
-            parent: Parent.talk
+            parent: Parent.talk,
+            week: weekID
        },
        {
          assignee: null,
@@ -175,19 +191,22 @@ export class WolApiService {
          hasAssistant: true,
          assistant: null,
          length: '60',
+         path: path,
          lengthTime: moment('01:00:00', 'hh:mm:ss').toDate().getTime(),
          privilege: [Privilege.elder],
          index: 1,
          isEmailed: false,
          date: date,
          isConfirmed: false,
-         parent: Parent.wt
+         parent: Parent.wt,
+         week: weekID
        })
 
       let weekProgram : WeekProgram = {
          date: date,
+         isSent: false,
          range: midContent.querySelector('header').querySelector('#p1').textContent,
-         id: this.fireStore.fireStore.createId(),
+         id: weekID,
          isCOVisit: false
       }
       return [weekProgram, parts];

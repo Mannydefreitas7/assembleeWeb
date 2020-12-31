@@ -5,7 +5,7 @@ import { FireStoreService } from 'src/app/services/fire-store.service';
 import { StoreService } from 'src/app/services/store.service';
 import { WolApiService } from 'src/app/services/wol-api.service';
 import moment from 'moment';
-import { Part, WeekProgram } from 'src/app/models/wol.model';
+import { Part, WeekProgram, WOLWeek } from 'src/app/models/wol.model';
 import { Observable, Subject } from 'rxjs';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Congregation } from 'src/app/models/congregation.model';
@@ -108,26 +108,32 @@ toggleSideBarOnResize() {
    }
 
    addMonthProgram() {
-     this.spinner.show()
+     this.isLoading = true;
+     const promises: Promise<any>[] = [];
       let mondays = this.storeService.getMondays(this.monthData.date);
       this.forage.getItem<Congregation>('congregation').then(congregation => {
         this.forage.getItem<string>('congregationRef').then(path => {
+
           mondays.forEach(monday => {
-            this.wolApiService.getWeekProgram(this.selectedYear, moment(monday).month() + 1, monday.getDate(), congregation.fireLanguage.apiURL)
-                .toPromise()
+
+            let wolWeekPromise: Promise<WOLWeek> = this.wolApiService.getWeekProgram(this.selectedYear, moment(monday).month() + 1, monday.getDate(), congregation.fireLanguage.apiURL)
+            .toPromise()
+            promises.push(wolWeekPromise)
+            wolWeekPromise
                 .then(wolWeek => {
-                  if (this.wolApiService.parseWolContent(wolWeek, monday)) {
+                  if (this.wolApiService.parseWolContent(wolWeek, monday, path)) {
 
-                      let wolContent = this.wolApiService.parseWolContent(wolWeek, monday);
-
-                      this.fireStoreService.addWeekProgram(path, monday, wolContent[0]).then(_ => {
+                      let wolContent = this.wolApiService.parseWolContent(wolWeek, monday, path);
+                      let partPromise: Promise<any> = this.fireStoreService.addWeekProgram(path, monday, wolContent[0])
+                      promises.push(partPromise)
+                      partPromise.then(_ => {
                         wolContent[1].forEach(part => {
-                            this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${wolContent[0].id}/parts/${part.id}`).set(part)
+                          // promises.push(this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${wolContent[0].id}/parts/${part.id}`).set(part))
+                          promises.push(this.fireStoreService.fireStore.doc<Part>(`${path}/parts/${part.id}`).set(part))
                         })
                       })
                   }
-            }).catch(console.log)
-            .finally(() => this.spinner.hide())
+            }).catch(console.log).finally(() => this.isLoading = false)
         })
         })
     })
@@ -153,10 +159,10 @@ toggleSideBarOnResize() {
       if (filteredWeeks.length > 0) {
         filteredWeeks.forEach(week => {
 
-          this.fireStoreService.fireStore.doc(`${path}/weeks/${week.id}`).collection('parts').get().pipe(
+          this.fireStoreService.fireStore.collection(`${path}/parts`, ref => ref.where('week', '==', week.id)).get().pipe(
             takeUntil(this.ngUnsubscribe)
           ).subscribe(parts => {
-            parts.forEach(part => part.exists ? this.fireStoreService.delete(`${path}/weeks/${week.id}/parts/${part.id}`) : '')
+            parts.forEach(part => part.exists ? this.fireStoreService.delete(`${path}/parts/${part.id}`) : '')
           },console.log, () => this.fireStoreService.fireStore.doc(`${path}/weeks/${week.id}`).delete())
 
         })

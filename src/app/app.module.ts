@@ -44,6 +44,8 @@ import { PublisherComponent } from './components/skeletons/publisher/publisher.c
 import { AddPublisherComponent } from './components/modals/add-publisher/add-publisher.component';
 import { InvitePublisherComponent } from './components/modals/invite-publisher/invite-publisher.component';
 import { PartRowComponent } from './components/part-row/part-row.component';
+import { PublisherPartsComponent } from './components/publishers/publisher-parts.component';
+import { PublisherModalComponent } from './components/publishers/publishers.component';
 
 registerLocaleData(en);
 
@@ -54,6 +56,7 @@ registerLocaleData(en);
       DashboardComponent,
       ProgramsComponent,
       ProgramDetailComponent,
+      PublishersComponent,
       PublishersComponent,
       SpeakersComponent,
       ExportComponent,
@@ -69,11 +72,13 @@ registerLocaleData(en);
       PartActionsComponent,
       ImportPubsComponent,
       PublisherRowComponent,
+      PublisherModalComponent,
       PublisherDetailComponent,
       PublisherComponent,
       AddPublisherComponent,
       InvitePublisherComponent,
-      PartRowComponent
+      PartRowComponent,
+      PublisherPartsComponent
   ],
   imports: [
     BrowserModule,

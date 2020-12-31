@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgForage } from 'ngforage';
 import { LocalStorageService } from 'ngx-webstorage';
 import { Publisher } from 'src/app/models/publisher.model';
 import { Parent, Part, WeekProgram } from 'src/app/models/wol.model';
@@ -15,7 +16,8 @@ export class PartActionsComponent implements OnInit {
   constructor(
     public modalService: NgbModal,
     private fireStoreService: FireStoreService,
-    private storage: LocalStorageService
+    private storage: LocalStorageService,
+    private forage: NgForage
   ) {}
   @Input('part') part: Part;
   @Input('weekProgram') weekProgram: WeekProgram;
@@ -26,59 +28,29 @@ export class PartActionsComponent implements OnInit {
   parentApply = Parent.apply;
   parentTalk = Parent.talk;
   parentWt = Parent.wt;
+  parentlife = Parent.life;
   ngOnInit(): void {
     this.congregation = this.storage.retrieve('congregationref');
     Parent.apply;
   }
 
   remove(type: string) {
-    if (this.part.assignee)
-      this.assigneeDocRef = this.fireStoreService.fireStore.doc<Publisher>(
-        `${this.congregation}/publishers/${this.part.assignee.uid}`
-      );
-
-    if (this.part.assistant)
-      this.assistantDocRef = this.fireStoreService.fireStore.doc<Publisher>(
-        `${this.congregation}/publishers/${this.part.assistant.uid}`
-      );
-
-    if (this.part)
+    this.forage.getItem('congregationRef').then(path => {
+      if (this.part)
       this.partDocRef = this.fireStoreService.fireStore.doc<Part>(
-        `${this.congregation}/weeks/${this.weekProgram.id}/parts/${this.part.id}`
+        `${path}/parts/${this.part.id}`
       );
 
     switch (type) {
       case 'assignee':
         if (this.part.assignee)
-          this.partDocRef.update({ assignee: null }).then(() => {
-            this.assigneeDocRef
-              .get()
-              .toPromise()
-              .then((document) => {
-                if (document.exists) {
-                  let parts = document
-                    .data()
-                    .parts.filter((p) => p.path.split('/')[5] !== this.part.id);
-                  this.assigneeDocRef.update({ parts: parts });
-                }
-              });
-          });
+          this.partDocRef.update({ assignee: null })
       case 'assistant':
         if (this.part.assistant)
-          this.partDocRef.update({ assistant: null }).then(() => {
-            this.assistantDocRef
-              .get()
-              .toPromise()
-              .then((document) => {
-                if (document.exists) {
-                  let parts = document
-                    .data()
-                    .parts.filter((p) => p.path.split('/')[5] !== this.part.id);
-                  this.assistantDocRef.update({ parts: parts });
-                }
-              });
-          });
+          this.partDocRef.update({ assistant: null })
     }
+    })
+
   }
 
   openSelectPublisherModal(part: Part, type: string) {

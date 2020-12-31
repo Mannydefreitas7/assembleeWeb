@@ -47,7 +47,7 @@ ngUnsubscribe = new Subject();
 
     this.forage.getItem<string>('congregationRef').then(path => {
       if (!this.parts)
-      this.fireStoreService.fireStore.collection<Part>(`${path}/weeks/${this.weekProgram.id}/parts`).valueChanges()
+      this.fireStoreService.fireStore.collection<Part>(`${path}/parts`, ref => ref.where('week', '==', this.weekProgram.id)).valueChanges()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(parts => {
          this.parts = parts
@@ -68,10 +68,10 @@ ngUnsubscribe = new Subject();
     this.ngUnsubscribe.complete()
   }
 
-  public downloadAsPDF() {
+  // public downloadAsPDF() {
 
-    this.exportService.createSinglePDF(this.weekProgram, this.parts)
-  }
+  //   this.exportService.createSinglePDF(this.weekProgram, this.parts)
+  // }
 
 
 }

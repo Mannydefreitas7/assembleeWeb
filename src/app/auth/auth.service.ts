@@ -86,26 +86,22 @@ export class AuthService {
          if (user) {
            // this.storage.store('user', user);
             this.forage.setItem('user', user).then(() => {
-              this.ngZone.run(() => this.router.navigate(['/home/dashboard'])).then(v => {
                 this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`)
                 .get()
                 .subscribe((fireUser) => {
                    if (fireUser.exists && fireUser.data().congregation) {
-                    // if (!this.storage.retrieve('fireUser')) {
-                      this.forage.setItem('fireUser', fireUser.data()).then(() => this.forage.setItem('congregationRef', fireUser.data().congregation))
-                     //  this.storage.store('fireUser', fireUser);
-                     //  this.storage.store('congregationRef', fireUser.data().congregation);
-                   //  }
-                      this.fireStoreService.fireStore.doc(fireUser.data().congregation).get().subscribe(cong => {
-                        if (cong.exists) {
-                         // this.forage.setItem('congregation', cong.data())
-                           this.storage.store('congregation', cong.data())
-                        }
-                      })
-
+                     this.forage.getItem('fireUser').then(fu => {
+                       if (!fu) {
+                        this.forage.setItem('fireUser', fireUser.data()).then(() => this.forage.setItem('congregationRef', fireUser.data().congregation))
+                        this.fireStoreService.fireStore.doc(fireUser.data().congregation).get().subscribe(cong => {
+                          if (cong.exists) {
+                            this.forage.setItem('congregation', cong.data())
+                          }
+                        })
+                       }
+                     })
                    }
                 })
-             })
             })
 
          } else {

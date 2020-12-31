@@ -13,13 +13,16 @@
   </div>
   </div>
   <div class="modal-body bg-light">
-      <div *ngIf="$publishers | async as publishers">
+
+    <publishers-modal [part]="part" [searchText]="searchText" [id]="weekProgram" [type]="type" [replacing]="replacing"></publishers-modal>
+
+      <!-- <div *ngIf="$publishers | async as publishers">
         <ul *ngIf="(publishers | filter: searchText).length > 0" class="list-group list-group-flush rounded shadow-sm">
           <li *ngFor="let publisher of publishers | filter: searchText" class="list-group-item list-group-item-action" type="button" (click)="selectPublisher(publisher)">
               <publisher-row [publisher]="publisher"></publisher-row>
           </li>
         </ul>
-      </div>
+      </div> -->
 
   </div>
 
