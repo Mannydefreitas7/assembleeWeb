@@ -48,6 +48,12 @@ export class HomeComponent implements OnInit {
         }),
         map(data => data.filter(p => p.assistant != null || p.assignee != null)),
         map(data => data.sort((a, b) => a.date - b.date)),
+        map(data => {
+          return data.filter(p => {
+            if (p.assignee) return p.assignee.uid != user.uid;
+            if (p.assistant) return p.assistant.uid != user.uid;
+          })
+        }),
         take(1))
       })
     })
