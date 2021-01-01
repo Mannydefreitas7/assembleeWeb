@@ -3,7 +3,7 @@ import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgForage } from 'ngforage';
 import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { map, take, takeUntil } from 'rxjs/operators';
 import { Congregation } from 'src/app/models/congregation.model';
 import { Publisher } from 'src/app/models/publisher.model';
 import { Part, WeekProgram } from 'src/app/models/wol.model';
@@ -45,7 +45,7 @@ export class PublisherModalComponent implements OnInit {
               this.part.gender.includes(pubs.gender)
           );
         }),
-        takeUntil(this.ngUnsubscribe)
+        take(1)
       );
 
     })

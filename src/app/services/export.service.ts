@@ -55,7 +55,7 @@ docDefinition = {
         subheader: {
           fontSize: 12,
           bold: false,
-          color: '#C0C0C0'
+          color: '#9e9e9e'
         },
         treasures: {
           fontSize: 16,
@@ -390,10 +390,13 @@ docDefinition = {
       })
   }
 
-  downloadMonthPDF(weeks: WeekProgram[]) {
+  downloadMonthPDF(weeks: WeekProgram[]) : Promise<boolean> {
     this.docDefinition.content = []
+    return new Promise((resolve, reject) => {
+
 
     this.docDefinition.info.title = `Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`;
+
     this.forage.getItem('congregationRef').then(path => {
       this.forage.getItem('congregation').then(congregation => {
 
@@ -412,9 +415,11 @@ docDefinition = {
 
       setTimeout(() => {
         pdfMake.createPdf(this.docDefinition).download(`Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`)
+        resolve(true)
       }, 3000)
     })
   })
+})
 
   }
 
@@ -439,7 +444,7 @@ docDefinition = {
     this.fireStore.fireStore.collection<Publisher>(`${path}/publishers`, ref => ref.where('gender', '==', Gender.brother)).get().toPromise().then(publishers => {
 
       setTimeout(() => {
-        this.spinner.hide()
+
         pdfDocGenerator.getBase64((data) => {
           publishers.docs.forEach(pub => {
             if (pub.exists) {

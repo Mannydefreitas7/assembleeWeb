@@ -45,7 +45,7 @@
         <span class="ms-2 align-middle">Edit</span>
       </button>
 
-      <button class="btn btn-light btn-sm btn-delete" [disabled]="authUser && publisher.uid == authUser.uid && amIAdmin">
+      <button class="btn btn-light btn-sm btn-delete" [disabled]="authUser && publisher.uid == authUser.uid && amIAdmin" (click)="openDeleteAlert()">
         <svg-icon src="assets/images/trash.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
         <span class="ms-2 align-middle">Delete</span>
       </button>
@@ -94,7 +94,7 @@
   </div>
 </div>
 
-<ng-container *ngIf="$parts | async as parts; else loading">
+<ng-container *ngIf="$parts | async as parts;">
   <div class="row mt-4">
     <h6 class="fw-bold" *ngIf="parts.length > 0">Parts</h6>
     <ul class="list-group list-group-flush" *ngIf="parts.length > 0">

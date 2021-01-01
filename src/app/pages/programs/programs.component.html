@@ -1,3 +1,4 @@
+
 <div class="container-lg pb-4 px-sm-4">
 
   <div class="row mt-3">
@@ -26,16 +27,15 @@
           <svg-icon  *ngIf="!isLoading" src="assets/images/add-schedule.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }">
           </svg-icon>
 
-          <div *ngIf="isLoading" class="spinner-border spinner-border-sm text-success" role="status"></div>
-
+          <div *ngIf="isLoading && !exportPDFisActive" class="spinner-border spinner-border-sm text-dark" role="status"></div>
           <span class="ms-2 align-middle">Add Program</span>
         </button>
-
         <div ngbDropdown class="d-inline-block" *ngIf="weekProgram">
 
           <button *ngIf="weekProgram" [disabled]="!exportPDFisActive"
             class="btn btn-light btn-sm" ngbDropdownToggle>
-            <svg-icon src="assets/images/export.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+            <svg-icon *ngIf="!isLoading" src="assets/images/export.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+            <div *ngIf="isLoading && exportPDFisActive" class="spinner-border spinner-border-sm text-dark" role="status"></div>
             <span class="ms-2 align-middle">Export</span>
           </button>
 
@@ -45,15 +45,15 @@
               </svg-icon>
               <span class="ms-2 align-middle">PDF</span>
             </button>
-            <button ngbDropdownItem>
+            <!-- <button ngbDropdownItem>
               <svg-icon src="assets/images/file-docx.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }">
               </svg-icon>
               <span class="ms-2 align-middle">Word</span>
-            </button>
-            <button ngbDropdownItem (click)="emailMonthPDF(weekProgram)">
+            </button> -->
+            <!-- <button ngbDropdownItem (click)="emailMonthPDF(weekProgram)">
               <svg-icon src="assets/images/send.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
               <span class="ms-2 align-middle">Email All</span>
-            </button>
+            </button> -->
           </div>
         </div>
 
@@ -67,25 +67,23 @@
     </div>
 
     <mat-drawer-container class="card p-0 border-0 shadow-sm rounded-3" >
+
       <mat-drawer mode="side" #sidenav opened style="width: 200px;">
         <div class="card-body p-0">
 
           <div class="d-flex">
-            <ul ngbNav #nav="ngbNav" [(activeId)]="active" orientation="vertical"
+            <ul ngbNav #nav="ngbNav" [(activeId)]="store.publisherActiveTab" orientation="vertical"
               class="list-group list-group-flush w-100">
               <ng-container *ngIf="weekProgram; else loading">
                 <li [ngbNavItem]="i" *ngFor="let week of weekProgram;  index as i"
-                  class="list-group-item list-group-item-action py-2" [ngClass]="{'active': active == i }">
+                  class="list-group-item list-group-item-action py-2" [ngClass]="{'active': store.publisherActiveTab == i }">
                   <a ngbNavLink
-                    [class]="active == i ? 'fw-bold text-white' : 'fw-bold text-dark'">{{ week.range | titlecase }}</a>
+                    [class]="store.publisherActiveTab == i ? 'fw-bold text-white' : 'fw-bold text-dark'">{{ week.range | titlecase }}</a>
                   <ng-template ngbNavContent>
                     <ab-program-detail [weekProgram]="week"></ab-program-detail>
                   </ng-template>
                 </li>
               </ng-container>
-              <ng-template #selectDate>
-                <mat-spinner></mat-spinner>
-              </ng-template>
             </ul>
           </div>
         </div>

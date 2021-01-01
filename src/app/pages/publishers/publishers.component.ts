@@ -5,12 +5,13 @@ import { Congregation } from 'src/app/models/congregation.model';
 import { Publisher } from 'src/app/models/publisher.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import { takeUntil, takeWhile } from 'rxjs/operators';
+import { map, takeUntil, takeWhile } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddPublisherComponent } from 'src/app/components/modals/add-publisher/add-publisher.component';
 import { MatDrawer } from '@angular/material/sidenav';
 import { StoreService } from 'src/app/services/store.service';
 import { NgForage } from 'ngforage';
+import { ImportComponent } from 'src/app/components/modals/import/import.component';
 
 @AutoUnsubscribe()
 @Component({
@@ -26,7 +27,8 @@ export class PublishersComponent implements OnInit, OnDestroy {
     private storage: LocalStorageService,
     private fireStoreService: FireStoreService,
     public modal: NgbModal,
-    private forage: NgForage
+    private forage: NgForage,
+    public store: StoreService
   ) {}
   congregation: Congregation;
   path: string;
@@ -41,9 +43,12 @@ export class PublishersComponent implements OnInit, OnDestroy {
 
     this.forage.getItem<string>('congregationRef').then(path => {
       this.$publishers = this.fireStoreService.fireStore
-      .collection(`${path}/publishers`)
+      .collection<Publisher>(`${path}/publishers`)
       .valueChanges()
-      .pipe(takeUntil(this.ngUnsubscribe));
+      .pipe(
+        map(data => data.sort((a, b) => a.lastName.localeCompare(b.lastName))),
+        takeUntil(this.ngUnsubscribe)
+        );
 
     })
   }
@@ -59,6 +64,14 @@ export class PublishersComponent implements OnInit, OnDestroy {
     } else {
       this.sidenav.open();
     }
+  }
+
+  openImport() {
+    const modalRef = this.modal.open(ImportComponent, {
+      centered: true,
+      size: 'md',
+      backdrop: true
+    })
   }
 
   ngOnDestroy() {

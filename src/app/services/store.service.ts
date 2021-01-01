@@ -11,6 +11,7 @@ export class StoreService {
   today: Date = new Date();
   showNextYear: boolean = false;
   months: Array<MonthData> = [];
+  publisherActiveTab: number = 0;
   public innerWidth: any;
   constructor(public ngf: NgForage) {
     this.onResize();

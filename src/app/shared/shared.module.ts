@@ -12,6 +12,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { NgxFileDropModule } from 'ngx-file-drop';
@@ -33,6 +34,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     MatSelectModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    MatProgressBarModule,
     NgbAccordionModule,
     NgbNavModule,
     NgbCollapseModule,
@@ -53,6 +55,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
    MatListModule,
    NgbNavModule,
    MatStepperModule,
+   MatProgressBarModule,
    MatInputModule,
    MatAutocompleteModule,
    MatSelectModule,

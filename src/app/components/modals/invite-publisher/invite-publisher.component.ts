@@ -87,7 +87,7 @@ export class InvitePublisherComponent implements OnInit {
                 to: this.publisher.email,
                 from: `${this.congregation.properties.orgName} <assemblee.app@gmail.com>`,
                 subject: `Invitation from Assemblee - ${this.publisher.lastName} ${this.publisher.firstName}`,
-                html: `<p>Welcome ${this.publisher.lastName} ${this.publisher.firstName},</p><p>Here is your login information:</p><p><strong>Login URL:</strong> <a href="https://assemblee.web.app/login">https://assemblee.web.app/login</a></p><p><strong>Email:</strong> ${this.publisher.email}</p><p><strong>Password:</strong> ${this.password.value}</p><p>Sincerely,<br>${this.congregation.properties.orgName}</p>`,
+                html: `<p>Welcome ${this.publisher.lastName} ${this.publisher.firstName},</p><p>Here is your login information:</p><p><span>(Works best on desktop)</span> <strong>Login URL:</strong> <a href="https://assemblee.web.app/login">https://assemblee.web.app/login</a></p><p><strong>Email:</strong> ${this.publisher.email}</p><p><strong>Password:</strong> ${this.password.value}</p><p>Sincerely,<br>${this.congregation.properties.orgName}</p>`,
               }
 
               this.email.sendEmail(msg)

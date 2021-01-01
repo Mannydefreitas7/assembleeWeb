@@ -2,9 +2,12 @@
   <svg-icon src="assets/images/document.svg" [svgStyle]="{ 'height.px': 18 }"></svg-icon>
   <div class="d-inline-flex align-items-center ms-3" *ngIf="part">
     <p class="mb-0 lh-base">
-      <span class="fw-normal">{{ part.title }}</span> <br>
+      <span class="fw-normal">{{ part.title.split(')').length > 1 ? part.title.split(')')[0] + ')' : part.title | titlecase }}</span> <br>
 
-      <!-- <span class="fw-normal">{{ part.subTitle }}</span> <span class="fw-normal me-2">{{ part.date.toDate() | date }}</span> <span class="badge bg-success text-light">{{ part.parent }}</span> -->
+
+      <span class="fw-normal">{{ part.subTitle | titlecase }}</span>
+
+      <span class="fw-normal me-2">{{  part.date.toDate() | date }}</span> <span class="badge bg-success text-light">{{ part.parent }}</span>
     </p>
   </div>
 </div>

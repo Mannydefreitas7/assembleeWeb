@@ -54,7 +54,7 @@ export interface WeekProgram {
 // }
 
 export interface Part {
-   date?: Date;
+   date?: any;
    id?: string;
    privilege?: Privilege[];
    assignee?: Publisher;

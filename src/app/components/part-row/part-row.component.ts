@@ -13,6 +13,7 @@ export class PartRowComponent implements OnInit {
   @Input('part') part: Part;
 
   ngOnInit(): void {
+    console.log(this.part.title.split(')'))
   }
 
 }

@@ -46,6 +46,8 @@ import { InvitePublisherComponent } from './components/modals/invite-publisher/i
 import { PartRowComponent } from './components/part-row/part-row.component';
 import { PublisherPartsComponent } from './components/publishers/publisher-parts.component';
 import { PublisherModalComponent } from './components/publishers/publishers.component';
+import { AlertDeleteComponent } from './components/modals/alert-delete/alert-delete.component';
+import { ImportComponent } from './components/modals/import/import.component';
 
 registerLocaleData(en);
 
@@ -78,7 +80,9 @@ registerLocaleData(en);
       AddPublisherComponent,
       InvitePublisherComponent,
       PartRowComponent,
-      PublisherPartsComponent
+      PublisherPartsComponent,
+      AlertDeleteComponent,
+      ImportComponent
   ],
   imports: [
     BrowserModule,

@@ -15,7 +15,7 @@
            <span class="ms-2 align-middle" >Add Publisher</span>
         </button>
 
-        <button class="btn btn-light btn-sm">
+        <button class="btn btn-light btn-sm" (click)="openImport()">
          <svg-icon src="assets/images/import.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
          <span class="ms-2 align-middle">Import</span>
        </button>
@@ -29,11 +29,11 @@
             <div class="card-body p-0">
               <div class="d-flex">
 
-                 <ul ngbNav #nav="ngbNav" [(activeId)]="active" orientation="vertical" class="list-group list-group-flush w-100">
+                 <ul ngbNav #nav="ngbNav" [(activeId)]="store.publisherActiveTab" orientation="vertical" class="list-group list-group-flush w-100">
 
                     <ng-container *ngIf="$publishers | async as publishers; else pubs">
-                       <li [ngbNavItem]="i" *ngFor="let publisher of publishers; index as i" class="list-group-item list-group-item-action py-2" [ngClass]="{'active': active == i }">
-                          <a ngbNavLink [class]="active == i ? 'fw-bold text-white' : 'fw-bold text-dark'">
+                       <li [ngbNavItem]="i" *ngFor="let publisher of publishers; index as i" class="list-group-item list-group-item-action py-2" [ngClass]="{'active': store.publisherActiveTab == i }">
+                          <a ngbNavLink [class]="store.publisherActiveTab == i ? 'fw-bold text-white' : 'fw-bold text-dark'">
                             <publisher-row [publisher]="publisher"></publisher-row>
                           </a>
                           <ng-template ngbNavContent>
@@ -46,16 +46,16 @@
             </div>
         </mat-drawer>
         <mat-drawer-content>
-            <div *ngIf="$publishers | async as publishers; else loading" class="card-body py-4" style="min-height: 600px;" [ngClass]="{ 'd-flex flex-wrap align-items-center justify-content-center': publishers.length == 0  }">
+            <div *ngIf="$publishers | async as publishers; else loading" class="card-body py-4" style="min-height: 800px;" [ngClass]="{ 'd-flex flex-wrap align-items-center justify-content-center': publishers.length == 0  }">
 
              <div *ngIf="publishers.length == 0">
              <div class="text-center fs-5 text-secondary" style="opacity: 50%;">
                <svg-icon src="assets/images/empty.svg" [svgStyle]="{ 'width.px':100, 'height.px': 100 }"></svg-icon>
-               <p class="mt-2">No programs yet.</p>
+               <p class="mt-2">No publisher yet.</p>
              </div>
              <div class="w-100 d-inline-flex justify-content-center mt-4">
              <button type="button" class="btn btn-primary btn-sm" >
-               Add Program
+               Add Publisher
              </button>
            </div>
          </div>

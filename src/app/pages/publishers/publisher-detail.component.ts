@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LocalStorageService } from 'ngx-webstorage';
 import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { map, take, takeUntil } from 'rxjs/operators';
 import { Congregation } from 'src/app/models/congregation.model';
 import { Permission, Privilege, Publisher } from 'src/app/models/publisher.model';
 import { User } from 'src/app/models/user.model';
@@ -9,10 +9,11 @@ import { Part } from 'src/app/models/wol.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import { HttpClient } from '@angular/common/http';
 import { EmailService } from 'src/app/services/email.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { InvitePublisherComponent } from 'src/app/components/modals/invite-publisher/invite-publisher.component';
 import { AuthService } from 'src/app/auth/auth.service';
 import { NgForage } from 'ngforage';
+import { AlertDeleteComponent } from 'src/app/components/modals/alert-delete/alert-delete.component';
 
 @Component({
   selector: 'publisher-detail',
@@ -37,6 +38,7 @@ export class PublisherDetailComponent implements OnInit {
  isPublisherAdmin: boolean = false;
  amIAdmin: boolean = false;
   @Input('publisher') publisher: Publisher;
+  @Input('active') active: number;
 
   firstName: string;
   lastName: string;
@@ -61,12 +63,17 @@ export class PublisherDetailComponent implements OnInit {
     this.forage.getItem<User>('fireUser').then(fireUser => {
       if (this.publisher.isInvited) {
         this.fireStoreService.fireStore.doc<User>(`users/${this.publisher.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe)).subscribe(d => {
-          this.user = d;
-          this.isPublisherAdmin = this.publisher.isInvited && d.permissions.includes(Permission.admin)
+          if (d) {
+            this.user = d;
+            this.isPublisherAdmin = this.publisher.isInvited && d.permissions.includes(Permission.admin)
+          }
+
         })
         this.fireStoreService.fireStore.doc<User>(`users/${fireUser.uid}`).valueChanges().pipe(takeUntil(this.ngUnsubscribe)).subscribe(d => {
-          this.me = d;
-          this.amIAdmin = d.permissions.includes(Permission.admin)
+          if (d) {
+            this.me = d;
+            this.amIAdmin = d.permissions.includes(Permission.admin)
+          }
         })
       }
     })
@@ -82,9 +89,19 @@ export class PublisherDetailComponent implements OnInit {
         })
       })
     })
-
   }
 
+
+
+openDeleteAlert() {
+  const modalRef = this.modal.open(AlertDeleteComponent, {
+    centered: true,
+    size: 'sm'
+  })
+  modalRef.componentInstance.publisher = this.publisher
+  modalRef.componentInstance.type = 'publisher';
+  modalRef.componentInstance.message = 'This will delete all parts associated with this publisher.';
+}
 
   saveDetail() {
     this.forage.getItem<string>('congregationRef').then(path => {
@@ -133,7 +150,7 @@ getPublisherParts() {
                 if (p.assistant) return p.assistant.uid == this.publisher.uid
              })
           }),
-          takeUntil(this.ngUnsubscribe)
+          take(1)
           )
     })
     }

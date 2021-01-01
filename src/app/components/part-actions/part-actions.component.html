@@ -38,7 +38,7 @@
   <ng-template #assist>
     <button
       class="btn btn-light ms-2 rounded-pill d-inline-flex align-items-center"
-      *ngIf="part.parent == parentApply || part.parent == parentWt || part.parent == parentlife"
+      *ngIf="part.parent == parentApply || part.parent == parentWt || part.parent == parentlife && part.hasAssistant"
       (click)="openSelectPublisherModal(part, 'assistant')"
     >
       <span class="me-2">{{ part.parent == parentWt || part.parent == parentlife ? 'Reader' : 'Assistant' }}</span>

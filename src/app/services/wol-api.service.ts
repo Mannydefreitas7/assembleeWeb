@@ -123,6 +123,7 @@ export class WolApiService {
     lifeParts.pop();
     lifeParts.pop();
     lifeParts.shift();
+    lifeParts[lifeParts.length - 1].hasAssistant = true;
     parts.push(...lifeParts)
 
     for(var p = 0; p < 4; p++) {
