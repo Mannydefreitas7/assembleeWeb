@@ -39,6 +39,7 @@ export class PublishersComponent implements OnInit, OnDestroy {
   @ViewChild('sidenav') sidenav: MatDrawer;
 
   ngOnInit(): void {
+    this.store.publisherActiveTab = 0;
     this.path = this.storage.retrieve('congregationref');
 
     this.forage.getItem<string>('congregationRef').then(path => {

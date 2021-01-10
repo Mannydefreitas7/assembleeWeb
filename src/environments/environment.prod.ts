@@ -12,6 +12,8 @@ const firebaseConfig = {
 export const environment = {
   production: true,
   firebaseConfig: firebaseConfig,
-  wolApiUrl: 'https://wol.jw.org/wol/',
+  meetingUrl: 'https://cors-anywhere.herokuapp.com/https://apps.jw.org/api/public/meeting-search',
+  wolApiUrl: 'https://cors-anywhere.herokuapp.com/https://wol.jw.org/',
+  SENDGRID_API_KEY: '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'
 };
 

@@ -86,16 +86,15 @@ export class AuthService {
          if (user) {
            // this.storage.store('user', user);
             this.forage.setItem('user', user).then(() => {
-                this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`)
-                .get()
-                .subscribe((fireUser) => {
-                   if (fireUser.exists && fireUser.data().congregation) {
+                this.fireStoreService.fireStore.doc<User>(`users/${user.uid}`).valueChanges().subscribe((fireUser) => {
+                   if (fireUser && fireUser.congregation) {
                      this.forage.getItem('fireUser').then(fu => {
                        if (!fu) {
-                        this.forage.setItem('fireUser', fireUser.data()).then(() => this.forage.setItem('congregationRef', fireUser.data().congregation))
-                        this.fireStoreService.fireStore.doc(fireUser.data().congregation).get().subscribe(cong => {
-                          if (cong.exists) {
-                            this.forage.setItem('congregation', cong.data())
+                        this.forage.setItem('fireUser', fireUser).then(() => this.forage.setItem('congregationRef', fireUser.congregation))
+                        if (fireUser)
+                        this.fireStoreService.fireStore.doc(fireUser.congregation).valueChanges().subscribe(cong => {
+                          if (cong) {
+                            this.forage.setItem('congregation', cong)
                           }
                         })
                        }
@@ -105,7 +104,7 @@ export class AuthService {
             })
 
          } else {
-          this.forage.clear()
+        //  this.forage.clear()
          }
       })
    }
@@ -201,6 +200,11 @@ export class AuthService {
    googleSignIn() {
       const provider = new firebase.default.auth.GoogleAuthProvider();
       this.socialLogin(provider)
+   }
+
+   appleSignIn() {
+     const provider = new firebase.default.auth.OAuthProvider('apple.com')
+     this.socialLogin(provider)
    }
 
 

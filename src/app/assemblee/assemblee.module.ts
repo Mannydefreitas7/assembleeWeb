@@ -18,14 +18,10 @@ import { CongregationComponent } from '../components/congregation/congregation.c
 const routes: Routes = [
 
    { path: 'home', component: DashboardComponent, canActivate: [AngularFireAuthGuard],
+
    children: [
       { path: 'dashboard', component: HomeComponent },
       { path: 'programs', component: ProgramsComponent,
-      // children: [
-      //    {
-      //       path: 'weeks/:id', component: ProgramDetailComponent, outlet: 'program'
-      //    }
-      // ]
    },
 
       { path: 'publishers', component: PublishersComponent },

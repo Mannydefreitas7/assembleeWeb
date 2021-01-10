@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { Privilege, Permission, Publisher } from '../models/publisher.model';
 import { User } from '../models/user.model';
-import { WeekProgram, WOLWeek } from '../models/wol.model';
+import { Part, WeekProgram, WOLWeek } from '../models/wol.model';
 
 
 @Injectable({
@@ -35,6 +35,13 @@ export class FireStoreService {
    // data.date = date
       return this.fireStore.collection(`${congregation}/weeks`).doc(`${data.id}`).set(data);
 
+  }
+
+  rename(congregation: string, part: Part, title: string) {
+    this.fireStore.doc<Part>(`${congregation}/parts/${part.id}`).update({
+      title: title,
+      subTitle: title
+    })
   }
 
   read(path: string) : Observable<any> {

@@ -34,7 +34,7 @@
           <h4 class="my-3 fw-bold apply">APPLIQUE-TOI AU MINISTÈRE</h4>
           <div *ngIf="apply.length > 0">
           <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of apply">
-            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ part.title.split(')')[0] }})</label>
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ part.title | shorten: 100: '...' }}</label>
 
             <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
             </div>
@@ -43,7 +43,7 @@
           <h4 class="my-3 fw-bold life">VIE CHRÉTIENNE</h4>
           <div *ngIf="life.length > 0">
           <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of life">
-            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">{{ part.title.split(')')[0] }})</label>
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">{{ part.title | shorten: 100: '...' }}</label>
             <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
           </div>
           </div>
@@ -65,7 +65,7 @@
           </div>
 
           <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[2]">
-            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prayer</label>
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Priere</label>
               <part-actions [part]="prayers[2]" [weekProgram]="weekProgram"></part-actions>
           </div>
 
@@ -86,7 +86,7 @@
           </div>
           <hr>
           <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[3]">
-            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prayer</label>
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Priere</label>
               <part-actions [part]="prayers[3]" [weekProgram]="weekProgram"></part-actions>
           </div>
         </ng-template>

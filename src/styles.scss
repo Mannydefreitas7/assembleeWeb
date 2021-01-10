@@ -257,3 +257,14 @@ a,
      font-size: 20px;
   }
 }
+
+.google {
+  background-color: #4285F4;
+  border-color: #4285F4;
+  color: white;
+  &:hover {
+    background-color: #356ac0;
+    border-color: #356ac0;
+    color: white;
+  }
+}

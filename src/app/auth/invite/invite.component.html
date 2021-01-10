@@ -1,19 +1,22 @@
-<div class="row vh-100 justify-content-center align-items-center bg-light">
-  <div class="col-lg-3 col-md-6 col-sm-10 mx-2">
+<div class="row vh-100 justify-content-center align-items-center bg-light px-2">
+  <div class="col-lg-3 col-md-6 col-sm-10">
     <div class="w-100 d-flex justify-content-center mb-5">
       <img src="assets/images/logo.jpg" class="rounded-circle" style="width: 100px; height: 100px;">
     </div>
-    <h2 class="font-weight-bold">SIGN-UP</h2>
+    <div class="mb-4">
+      <h4 class="font-weight-bold mb-0">Welcome,</h4>
+      <span class="h3" *ngIf="publisher">{{ publisher.lastName }} {{ publisher.firstName }}</span>
+    </div>
 
     <div class="d-flex justify-content-start flex-wrap">
-      <button class="btn btn-sm d-inline-flex justify-content-center align-items-center google w-100 mb-2" (click)="auth.googleSignIn()">
+      <button class="btn btn-sm d-inline-flex justify-content-center align-items-center google w-100 mb-2" (click)="googleSignIn()">
        <svg-icon src="assets/images/google.svg" [svgStyle]="{ 'height.px': 18, 'marginTop.px': 5, 'marginBottom.px': 5 }"></svg-icon>
        <span class="ms-2 fw-normal">Google</span>
      </button>
 
-      <button class="btn btn-dark btn-sm d-inline-flex justify-content-center align-items-center w-100" (click)="auth.appleSignIn()">
+      <button class="btn btn-dark btn-sm d-inline-flex justify-content-center align-items-center w-100" (click)="appleSignIn()">
        <svg-icon src="assets/images/apple.svg" [svgStyle]="{ 'height.px': 18, 'marginTop.px': 5, 'marginBottom.px': 5 }"></svg-icon>
-        <span class="ms-1 fw-normal">Sign-up with Apple</span>
+        <span class="ms-1 fw-normal">Sign-in with Apple</span>
        </button>
     </div>
 

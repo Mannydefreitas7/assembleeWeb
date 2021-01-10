@@ -1,10 +1,10 @@
  <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
    <div class="container-lg" *ngIf="$fireUser | async as fireUser;">
-      <button class="navbar-toggler btn btn-link" type="button" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation" (click)="storeService.toggleNav()">
+      <button class="navbar-toggler btn btn-link" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation" (click)="storeService.toggleNav()">
          <svg-icon src="assets/images/menu.svg" *ngIf="!storeService.isNavToggled"></svg-icon>
          <svg-icon src="assets/images/remove.svg" *ngIf="storeService.isNavToggled"></svg-icon>
        </button>
-     <a class="navbar-brand my-n2 me-0" type="button" [routerLink]="['/home/dashboard']"><img class="rounded-circle" src="assets/images/logo.jpg" style="width: 45px; height: 45px;"></a>
+     <a class="navbar-brand my-n2 me-0"  [routerLink]="['/home/dashboard']"><img class="rounded-circle" src="assets/images/logo.jpg" style="width: 45px; height: 45px;"></a>
      <div class="collapse navbar-collapse ms-2" id="navbarNavDropdown">
 
        <ul class="navbar-nav">
@@ -51,8 +51,6 @@
           <ngx-skeleton-loader count="1" appearance="circle" class="ms-2" [theme]="{'margin': '0', height: '25px', width: '25px'}"></ngx-skeleton-loader>
         </div>
       </ng-template>
-
-
 
       </button>
       <div ngbDropdownMenu class="dropdown-menu shadow border-0">

@@ -17,6 +17,7 @@ export const environment = {
   production: false,
   firebaseConfig: firebaseConfig,
   wolApiUrl: 'http://localhost:4200/wol/',
+  meetingUrl: 'http://localhost:4200/api',
   SENDGRID_API_KEY: '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'
 };
 

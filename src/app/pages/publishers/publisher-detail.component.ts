@@ -124,12 +124,27 @@ openDeleteAlert() {
 })
 }
 
-openInviteModal() {
-  const modalRef = this.modal.open(InvitePublisherComponent, {
-    centered: true,
-    size: 'md',
-  })
-  modalRef.componentInstance.publisher = this.publisher;
+// openInviteModal() {
+//   const modalRef = this.modal.open(InvitePublisherComponent, {
+//     centered: true,
+//     size: 'md',
+//   })
+//   modalRef.componentInstance.publisher = this.publisher;
+// }
+
+invite() {
+
+    this.forage.getItem<string>('congregationRef').then(path => {
+      if (path) {
+        let id = path.split('/')[1]
+        let url: string = `https://assemblee.web.app/#/invite?cong=${id}&pub=${this.publisher.uid}`
+        this.auth.afAuth.sendSignInLinkToEmail(this.publisher.email, {
+          url: url,
+          handleCodeInApp: true
+        })
+      }
+    })
+
 }
 
 getPublisherParts() {

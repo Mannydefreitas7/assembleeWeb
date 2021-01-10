@@ -10,7 +10,7 @@ import moment from 'moment';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { EmailService } from './email.service';
 import { Gender, Publisher } from '../models/publisher.model';
-import { EmailMessage } from '../models/user.model';
+import { EmailMessage, User } from '../models/user.model';
 import { NgForage } from 'ngforage';
 import { map, take } from 'rxjs/operators';
 
@@ -30,6 +30,7 @@ prayers: Part[];
 congregation: Congregation;
 congregationRef: string;
 docDefinition = {
+
   info: {
     title: '',
     author: '',
@@ -39,6 +40,20 @@ docDefinition = {
   content: [],
   styles: {}
 }
+
+partDefinition = {
+  pageSize: 'B7',
+  info: {
+    title: 'Our Christian Life and Ministry Meeting Assignment',
+    author: '',
+    subject: '',
+    keywords: '',
+  },
+  content: [],
+  pageMargins: [ 15, 10, 15, 10 ],
+  styles: {}
+}
+
   constructor(
       private storage: LocalStorageService,
       private fireStore: FireStoreService,
@@ -46,6 +61,7 @@ docDefinition = {
       public emailService: EmailService,
       public forage: NgForage
   ) {
+
     this.docDefinition.styles = {
         header: {
           fontSize: 18,
@@ -101,6 +117,41 @@ docDefinition = {
         }
         }
 
+        this.partDefinition.styles = {
+          title: {
+            fontSize: 12,
+            bold: true,
+            alignment:"center",
+            color: '#000000',
+
+          },
+          label: {
+            fontSize: 10,
+            bold: true,
+            color: '#000000'
+          },
+          info: {
+            fontSize: 6,
+            bold: true,
+            color: '#000000'
+          },
+          note: {
+            fontSize: 8,
+            bold: false,
+            color: '#9E9E9D'
+          },
+          noteLabel: {
+            fontSize: 8,
+            bold: true,
+            color: '#9E9E9D'
+          },
+          value: {
+            fontSize: 12,
+            bold: false,
+            color: '#000000'
+          }
+        }
+
    }
 
 
@@ -122,6 +173,135 @@ docDefinition = {
     return weekProgram.range != weeks[weeks.length - 1].range;
    }
 
+   downloadPartPDF(part: Part) : Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (part.assignee) {
+        this.parsePart(part)
+        setTimeout(() => {
+          pdfMake.createPdf(this.partDefinition).download(`Meeting-Assignment-${moment(part.date.toDate()).format('MMM-DD-YY')}-${part.assignee.firstName.slice(0,1) + '-' + part.assignee.lastName}.pdf`)
+          resolve(true)
+        }, 1000)
+      }
+    })
+   }
+
+   parsePart(part: Part) {
+
+    this.partDefinition.content = [
+      {
+        text: "Our Christian Life and Ministry\nMeeting Assignment\n".toUpperCase(),
+        style: 'title',
+        margin: [0, 0, 0, 20]
+      },
+      {
+        text: [
+          {
+            text: `Name: `,
+            style: 'label'
+          },
+          {
+            text: `${part.assignee ? part.assignee.firstName.slice(0, 1) + '. ' + part.assignee.lastName : ''}`,
+            style: 'value'
+          }
+        ],
+        margin: [0, 0, 0, 5],
+      },
+      {
+        text: [
+          {
+            text: `Assistant: `,
+            style: 'label'
+          },
+          {
+            text: `${part.assistant ? part.assistant.firstName.slice(0, 1) + '. ' + part.assistant.lastName : ''}`,
+            style: 'value'
+          }
+        ],
+        margin: [0, 0, 0, 5],
+      },
+      {
+        text: [
+          {
+            text: `Date: `,
+            style: 'label'
+          },
+          {
+            text: `${moment(part.date.toDate()).format("MMMM DD YYYY")}`,
+            style: 'value'
+          }
+        ],
+        margin: [0, 0, 0, 10],
+      },
+      {
+        text: "Assignment",
+        style: 'label',
+        margin: [0, 10, 0, 5],
+      },
+      {
+        text: part.title,
+        style: 'value',
+        margin: [10, 0, 0, 10],
+      },
+      {
+        text: "To be given:",
+        style: "label",
+        margin: [0, 0, 0, 5],
+      },
+      {
+        text: "Main Hall",
+        style: "value",
+        margin: [10, 0, 0, 20],
+      },
+      {
+        text: [
+          {
+            text: "Note to student: ",
+            style: "noteLabel"
+          },
+          {
+            text: "The source material and study point for your assignment can be found in the Life and Ministry Meeting Workbook. Please work on the listed study point, which is discussed in the Teaching brochure.",
+            style: "note"
+          }
+        ]
+      }
+    ]
+
+  }
+
+  emailPartPDF(part: Part, user: User) {
+    if (part.assignee) {
+      this.parsePart(part)
+      this.forage.getItem('congregationRef').then(path => {
+        this.forage.getItem<Congregation>('congregation').then(congregation => {
+          const pdfDocGenerator = pdfMake.createPdf(this.partDefinition);
+          pdfDocGenerator.getBase64((data) => {
+            if (part.assignee.email) {
+              let cc = `${user.email}, ${part.assistant ? part.assistant.email : ''}`;
+              console.log(cc);
+              let msg: EmailMessage = {
+                to: part.assignee.email,
+                cc: cc,
+                from: `${congregation.properties.orgName} <assemblee.app@gmail.com>`,
+                subject: `${this.partDefinition.info.title}`,
+                html: `<p>Hello ${part.assignee.lastName} ${part.assignee.firstName},</p><p>Please find attached your meeting assignment for <strong>${moment(part.date.toDate()).format('MMMM DD yyyy')}</strong>.</p>
+                <a style="padding: 5px 10px; color: #ffffff; background-color: #198754; text-decoration: none; border-radius: 5px;" href="https://assemblee.web.app/#/confirm?cong=${congregation.id}&part=${part.id}">Confirm</a>
+                <p>Sincerely,<br>${congregation.properties.orgName}</p>`,
+                attachments: [
+                  {
+                    content: data,
+                    type: 'application/pdf',
+                    filename: this.partDefinition.info.title
+                  }
+                ]
+            }
+            console.log(msg)
+            this.emailService.sendEmail(msg)
+            }
+          })
+        })
+      })
+    }
+  }
 
   parseSinglePage(congInfo: Congregation, weekProgram: WeekProgram, parts: Part[], weeks: WeekProgram[]) {
     let filteredParts = this.filterPart(parts)
@@ -390,6 +570,8 @@ docDefinition = {
       })
   }
 
+
+
   downloadMonthPDF(weeks: WeekProgram[]) : Promise<boolean> {
     this.docDefinition.content = []
     return new Promise((resolve, reject) => {
@@ -420,8 +602,9 @@ docDefinition = {
     })
   })
 })
-
   }
+
+
 
   emailMonthPDF(weeks: WeekProgram[]) {
     this.docDefinition.content = []

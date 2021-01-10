@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 import { GeoZip, GeoCity } from '../models/address.model';
 import { CongLanguage, Congregation, CongregationData } from '../models/congregation.model';
 import { Convert } from '../models/convert';
@@ -52,7 +53,7 @@ export class GeolocationService {
      let url = 'http://localhost:4200/api/languages'
      let request = this.http.get(url).pipe(
       map((data: Array<Object>) => {
- 
+
          let languages: Array<CongLanguage> = [];
          data.forEach(item => {
             languages.push(Convert.toCongLanguage(JSON.stringify(item)))
@@ -64,12 +65,13 @@ export class GeolocationService {
   }
 
   getCongregations(long: number, lat: number, language: CongLanguage) : Observable<CongregationData> {
-   let url = `http://localhost:4200/api/weekly-meetings?lowerLatitude=${lat - 0.1000}&lowerLongitude=${long - 0.1000}&searchLanguageCode=${language.languageCode}&upperLatitude=${lat + 0.1000}&upperLongitude=${long + 0.1000}`;
+
+   let url = `${environment.meetingUrl}/weekly-meetings?lowerLatitude=${lat - 0.1000}&lowerLongitude=${long - 0.1000}&searchLanguageCode=${language.languageCode}&upperLatitude=${lat + 0.1000}&upperLongitude=${long + 0.1000}`;
 
    let request = this.http.get(url).pipe(
     map(data => {
        let congregation: CongregationData = Convert.toCongregation(JSON.stringify(data));
-     
+
 
        this.fireStore.fireStore.collection<Congregation>('congregations')
        .valueChanges().subscribe(congs => {

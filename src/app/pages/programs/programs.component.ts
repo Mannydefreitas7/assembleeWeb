@@ -54,6 +54,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
   active = 0;
 
   ngOnInit(): void {
+    this.store.publisherActiveTab = 0;
     this.year = new Date().getFullYear();
     this.selectedYear = new Date().getFullYear();
     this.years = [this.year, this.year + 1];

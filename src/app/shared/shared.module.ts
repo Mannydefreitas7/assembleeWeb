@@ -17,6 +17,8 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { AngularSvgIconModule } from 'angular-svg-icon';
+import { NgPipesModule } from 'ngx-pipes';
 @NgModule({
   imports: [
     CommonModule,
@@ -40,13 +42,16 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     NgbCollapseModule,
     NgxSkeletonLoaderModule.forRoot(),
     NgxWebstorageModule.forRoot(),
+    AngularSvgIconModule.forRoot(),
     NgxFileDropModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    NgPipesModule
   ],
   exports: [
    FormsModule,
    CommonModule,
    BrowserModule,
+   AngularSvgIconModule,
    NgbAlertModule,
    MatSidenavModule,
    ReactiveFormsModule,
@@ -54,6 +59,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
    NgbModalModule,
    MatListModule,
    NgbNavModule,
+   NgPipesModule,
    MatStepperModule,
    MatProgressBarModule,
    MatInputModule,

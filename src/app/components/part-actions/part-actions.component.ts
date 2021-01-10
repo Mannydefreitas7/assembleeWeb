@@ -4,8 +4,11 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgForage } from 'ngforage';
 import { LocalStorageService } from 'ngx-webstorage';
 import { Publisher } from 'src/app/models/publisher.model';
+import { User } from 'src/app/models/user.model';
 import { Parent, Part, WeekProgram } from 'src/app/models/wol.model';
+import { ExportService } from 'src/app/services/export.service';
 import { FireStoreService } from 'src/app/services/fire-store.service';
+import { RenamePartComponent } from '../modals/rename-part/rename-part.component';
 import { SelectPublisherComponent } from '../modals/select-publisher/select-publisher.component';
 
 @Component({
@@ -17,7 +20,8 @@ export class PartActionsComponent implements OnInit {
     public modalService: NgbModal,
     private fireStoreService: FireStoreService,
     private storage: LocalStorageService,
-    private forage: NgForage
+    private forage: NgForage,
+    public exportService: ExportService
   ) {}
   @Input('part') part: Part;
   @Input('weekProgram') weekProgram: WeekProgram;
@@ -27,11 +31,14 @@ export class PartActionsComponent implements OnInit {
   partDocRef: AngularFirestoreDocument<Part>;
   parentApply = Parent.apply;
   parentTalk = Parent.talk;
+  parentTreasures = Parent.treasures;
   parentWt = Parent.wt;
   parentlife = Parent.life;
+  user: User;
   ngOnInit(): void {
-    this.congregation = this.storage.retrieve('congregationref');
-    Parent.apply;
+
+    this.forage.getItem<User>("fireUser").then(fireUser => this.user = fireUser)
+
   }
 
   remove(type: string) {
@@ -50,7 +57,15 @@ export class PartActionsComponent implements OnInit {
           this.partDocRef.update({ assistant: null })
     }
     })
+  }
 
+  openRenameModal(part: Part) {
+    const modalRef = this.modalService.open(RenamePartComponent, {
+      centered: true,
+      backdrop: true,
+      size: 'md'
+    })
+    modalRef.componentInstance.part = part;
   }
 
   openSelectPublisherModal(part: Part, type: string) {

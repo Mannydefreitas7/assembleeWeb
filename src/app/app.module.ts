@@ -48,6 +48,9 @@ import { PublisherPartsComponent } from './components/publishers/publisher-parts
 import { PublisherModalComponent } from './components/publishers/publishers.component';
 import { AlertDeleteComponent } from './components/modals/alert-delete/alert-delete.component';
 import { ImportComponent } from './components/modals/import/import.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RenamePartComponent } from './components/modals/rename-part/rename-part.component';
+import { ConfirmComponent } from './pages/confirm/confirm.component';
 
 registerLocaleData(en);
 
@@ -82,7 +85,9 @@ registerLocaleData(en);
       PartRowComponent,
       PublisherPartsComponent,
       AlertDeleteComponent,
-      ImportComponent
+      ImportComponent,
+      RenamePartComponent,
+      ConfirmComponent
   ],
   imports: [
     BrowserModule,
@@ -98,8 +103,7 @@ registerLocaleData(en);
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    AngularFireDatabaseModule,
-    AngularSvgIconModule.forRoot(),
+    AngularFireDatabaseModule
   ],
   bootstrap: [AppComponent],
   providers: [

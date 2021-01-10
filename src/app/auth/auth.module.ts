@@ -9,13 +9,17 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { CongregationComponent } from '../components/congregation/congregation.component';
+import { InviteComponent } from './invite/invite.component';
+import { ConfirmComponent } from '../pages/confirm/confirm.component';
 
 const routes: Routes = [
 
    { path: '', redirectTo: 'login', pathMatch: 'full' },
    { path: 'signup', component: SignupComponent },
    { path: 'reset', component: ResetComponent },
-   { path: 'login', component: LoginComponent }
+   { path: 'login', component: LoginComponent },
+   { path: 'invite', component: InviteComponent },
+   { path: 'confirm', component: ConfirmComponent }
  ];
 
 
@@ -24,10 +28,12 @@ const routes: Routes = [
      EmailComponent,
      LoginComponent,
      SignupComponent,
-     ResetComponent
+     ResetComponent,
+     InviteComponent
    ],
   imports: [
      AngularFireAuthModule,
+     SharedModule,
      AngularFirestoreModule,
      RouterModule.forRoot(routes, {useHash: true}),
      SharedModule

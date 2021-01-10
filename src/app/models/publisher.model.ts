@@ -15,7 +15,7 @@ export class Publisher {
    isWTConductor?: boolean;
    speaker?: Speaker;
    parts?: Part[];
-
+  isReader?: boolean;
 };
 
 export class Speaker {

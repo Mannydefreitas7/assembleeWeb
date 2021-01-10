@@ -8,6 +8,7 @@ import { FireStoreService } from './fire-store.service';
 import { Gender, Privilege } from '../models/publisher.model';
 import { Congregation } from '../models/congregation.model';
 import { NgForage } from 'ngforage';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class WolApiService {
      ) { }
 
   getWeekProgram(year: number, month: number, day: number, apiURL: string) : Observable<WOLWeek> {
-     let url = `http://localhost:4200/${apiURL}${year}/${month}/${day}`;
+     let url = `${environment.wolApiUrl}${apiURL}${year}/${month}/${day}`;
       return this.http.get<WOLWeek>(url);
   }
 
@@ -138,7 +139,7 @@ export class WolApiService {
          path: path,
          isEmailed: false,
          parent: Parent.prayer,
-         title: 'Prayer',
+         title: 'Priere',
          date: date,
          privilege: [Privilege.elder, Privilege.ms, Privilege.pub],
          week: weekID
@@ -156,7 +157,7 @@ export class WolApiService {
          index: c,
          path: path,
          parent: Parent.chairman,
-         title: 'Chairman',
+         title: 'President',
          isEmailed: false,
          date: date,
          privilege: [Privilege.elder, Privilege.ms],
