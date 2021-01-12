@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgbAccordionModule, NgbAlertModule, NgbCollapseModule, NgbModalModule, NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionModule, NgbAlertModule, NgbCollapseModule, NgbModalModule, NgbModule, NgbNavModule, NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -19,7 +19,10 @@ import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { NgPipesModule } from 'ngx-pipes';
+import { MessageService } from '../services/message.service';
+import { ToastComponent } from '../components/toast/toast.component';
 @NgModule({
+
   imports: [
     CommonModule,
     FormsModule,
@@ -39,6 +42,7 @@ import { NgPipesModule } from 'ngx-pipes';
     MatProgressBarModule,
     NgbAccordionModule,
     NgbNavModule,
+    NgbToastModule,
     NgbCollapseModule,
     NgxSkeletonLoaderModule.forRoot(),
     NgxWebstorageModule.forRoot(),
@@ -53,6 +57,7 @@ import { NgPipesModule } from 'ngx-pipes';
    BrowserModule,
    AngularSvgIconModule,
    NgbAlertModule,
+   NgbToastModule,
    MatSidenavModule,
    ReactiveFormsModule,
    MatToolbarModule,

@@ -9,6 +9,7 @@ import { Privilege } from '../models/publisher.model';
 import { LocalStorageService } from 'ngx-webstorage';
 import { FireDBService } from '../services/fire-db.service';
 import { NgForage } from 'ngforage';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Injectable({
@@ -26,6 +27,7 @@ export class AuthService {
       private router: Router,
       private ngZone: NgZone,
       public forage: NgForage,
+      public toastr: ToastrService,
       public storage: LocalStorageService,
    ) {
       this.authState = this.afAuth.authState;
@@ -207,34 +209,72 @@ export class AuthService {
      this.socialLogin(provider)
    }
 
+  googleSignUp() {
+    const provider = new firebase.default.auth.GoogleAuthProvider();
+    this.socialSignUp(provider)
+  }
+
+  appleSignUp() {
+    const provider = new firebase.default.auth.OAuthProvider('apple.com')
+    this.socialSignUp(provider)
+  }
+
 
    private socialLogin(provider) {
+
       return this.afAuth.signInWithPopup(provider)
          .then((credential: firebase.default.auth.UserCredential) => {
-
-            let fireUserRef = this.fireStoreService.fireStore.doc<User>(`users/${credential.user.uid}`).valueChanges()
-
-            fireUserRef.subscribe(fireUser => {
-               if (fireUser) {
-              //  this.storage.store('fireUser', fireUser);
-                  // already exists
-                  if (fireUser.congregation) {
-                   //  this.storage.store('congregationref', fireUser.congregation)
-                     // already has congregation setup
-                     this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
-                  } else {
-                     this.ngZone.run(() => this.router.navigate(['/setup']));
-                  }
-               } else {
-                  this.createUserData(credential, credential.additionalUserInfo.profile['given_name'], credential.additionalUserInfo.profile['family_name'])
-                     .then(() => {
+           console.log(credential)
+              if (credential.additionalUserInfo.isNewUser == false) {
+                let fireUserRef = this.fireStoreService.fireStore.doc<User>(`users/${credential.user.uid}`).valueChanges();
+                fireUserRef.subscribe(fireUser => {
+                  if (fireUser) {
+                    this.toastr.success("Login success")
+                     // already exists
+                     if (fireUser.congregation) {
+                        // already has congregation setup
+                        this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
+                     } else {
                         this.ngZone.run(() => this.router.navigate(['/setup']));
-                     })
-               }
-            })
+                     }
+                  }
+               })
+              } else {
+                this.toastr.error("User not found")
+                console.warn("login not found")
+              }
          })
-      // .catch(error => this.snackBar.open(error.message,'', { duration: 3000}));
+       .catch(console.log);
    }
+
+   private socialSignUp(provider) {
+    return this.afAuth.signInWithPopup(provider)
+       .then((credential: firebase.default.auth.UserCredential) => {
+
+          let fireUserRef = this.fireStoreService.fireStore.doc<User>(`users/${credential.user.uid}`).valueChanges()
+
+          fireUserRef.subscribe(fireUser => {
+             if (fireUser) {
+              this.toastr.info("User already exists. Please login instead.")
+            //  this.storage.store('fireUser', fireUser);
+                // // already exists
+                // if (fireUser.congregation) {
+                //  //  this.storage.store('congregationref', fireUser.congregation)
+                //    // already has congregation setup
+                //    this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
+                // } else {
+                //    this.ngZone.run(() => this.router.navigate(['/setup']));
+                // }
+             } else {
+                this.createUserData(credential, credential.additionalUserInfo.profile['given_name'], credential.additionalUserInfo.profile['family_name'])
+                   .then(() => {
+                      this.ngZone.run(() => this.router.navigate(['/setup']));
+                   })
+             }
+          })
+       })
+     .catch(error => this.toastr.error(error.message));
+ }
 
 
    createUserData(credential: firebase.default.auth.UserCredential, firstName: string, lastName: string): Promise<any> {
@@ -250,7 +290,6 @@ export class AuthService {
          loginProvider: credential.additionalUserInfo.providerId,
          isEmailVerified: credential.user.emailVerified
       };
-     // return this.fireDBService.fireDBService.object(`users/${credential.user.uid}`).set(data)
       return this.fireStoreService.create('users', credential.user.uid, data);
    }
 

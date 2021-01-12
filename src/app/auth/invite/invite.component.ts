@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import firebase from 'firebase/app';
 import { NgForage } from 'ngforage';
 import { Permission, Publisher } from 'src/app/models/publisher.model';
 import { EmailMessage, User } from 'src/app/models/user.model';
+import { Part } from 'src/app/models/wol.model';
 import { EmailService } from 'src/app/services/email.service';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import { AuthService } from '../auth.service';
@@ -33,7 +35,7 @@ export class InviteComponent implements OnInit {
      public route: ActivatedRoute,
      private router: Router,
   ) { }
-// http://localhost:4200/#/invite?cong=0927216B-2451-4AB5-AD08-11AC5777CCB1&pub=7Gaknqo7h37XUV1mUC4m
+
   ngOnInit(): void {
     this.signUpForm = this.fb.group({
       firstName: ['', [Validators.minLength(3), Validators.required]],
@@ -101,7 +103,8 @@ export class InviteComponent implements OnInit {
         // create replacing publisher
 
         this.forage.setItem('fireUser', user).then(() => {
-          this.fireStore.fireStore.doc<Publisher>(`congregations/${path}/publishers/${credential.user.uid}`).set({
+
+          let publisher: Publisher = {
             email: this.publisher.email,
             firstName: this.publisher.firstName,
             gender: this.publisher.gender,
@@ -112,7 +115,26 @@ export class InviteComponent implements OnInit {
             privilege: this.publisher.privilege,
             isReader: false,
             uid: credential.user.uid
-          }).then(() => {
+          }
+
+          if (this.publisher.parts.length > 0) {
+              this.publisher.parts.forEach(part => {
+                let document: AngularFirestoreDocument<Part> = this.fireStore.fireStore.doc<Part>(`congregations/${path}/parts/${part.id}`);
+                if (part.assignee.uid == this.publisher.uid) {
+                  document.update({
+                    assignee: publisher
+                  })
+                  part.assignee = publisher;
+                } else if (part.assistant.uid == this.publisher.uid) {
+                  document.update({
+                    assistant: publisher
+                  })
+                  part.assistant = publisher;
+                }
+              })
+          }
+
+          this.fireStore.fireStore.doc<Publisher>(`congregations/${path}/publishers/${credential.user.uid}`).set(publisher).then(() => {
 
             let msg : EmailMessage = {
               from: "Assemblee App <assemblee.app@gmail.com>",

@@ -51,6 +51,9 @@ import { ImportComponent } from './components/modals/import/import.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RenamePartComponent } from './components/modals/rename-part/rename-part.component';
 import { ConfirmComponent } from './pages/confirm/confirm.component';
+import { ToastComponent } from './components/toast/toast.component';
+import { MessageService } from './services/message.service';
+import { ToastrModule } from 'ngx-toastr';
 
 registerLocaleData(en);
 
@@ -87,7 +90,9 @@ registerLocaleData(en);
       AlertDeleteComponent,
       ImportComponent,
       RenamePartComponent,
-      ConfirmComponent
+      ConfirmComponent,
+      ToastComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -103,7 +108,8 @@ registerLocaleData(en);
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    ToastrModule.forRoot()
   ],
   bootstrap: [AppComponent],
   providers: [
@@ -115,23 +121,7 @@ registerLocaleData(en);
          showError: true
        }
     },
-    // { provide: NEW_ORIGIN_BEHAVIOR, useValue: true },
-    // { provide: ORIGIN, useValue: 'https://assemblee.web.app/' },
-    // { provide: USE_EMULATOR, useValue: ['localhost', 4200] }
-
-      // {
-      //   provide: AUTH_EMULATOR,
-      //   useValue: environment.production ? undefined : ['localhost', 9099],
-      // },
-      // {
-      //   provide: FIRESTORE_EMULATOR,
-      //   useValue: environment.production ? undefined : ['localhost', 8080],
-      // },
-      // {
-      //   provide: FUNCTIONS_EMULATOR,
-      //   useValue: environment.production ? undefined : ['localhost', 5001],
-      // }
-
+    MessageService
    ],
    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

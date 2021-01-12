@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 import { CongregationComponent } from '../components/congregation/congregation.component';
 import { InviteComponent } from './invite/invite.component';
 import { ConfirmComponent } from '../pages/confirm/confirm.component';
+import { ToastComponent } from '../components/toast/toast.component';
 
 const routes: Routes = [
 

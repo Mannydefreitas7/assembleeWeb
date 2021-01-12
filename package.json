@@ -57,6 +57,7 @@
     "ngx-pipes": "^2.7.5",
     "ngx-skeleton-loader": "^2.6.2",
     "ngx-spinner": "^10.0.1",
+    "ngx-toastr": "^13.2.0",
     "ngx-webstorage": "^6.0.0",
     "nodemailer": "^6.4.17",
     "pdfmake": "^0.1.68",
