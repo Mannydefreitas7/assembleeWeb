@@ -156,7 +156,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
               }
             })
             .catch((error: Error) => { this.toastService.error(`${moment(this.monthData.date).format('MMMM')} schedule not available yet`, "", {
-              progressBar: true,
+             // progressBar: true,
             })})
             .then(() => setTimeout(() => this.isLoading = false, 3000))
         });

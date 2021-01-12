@@ -111,7 +111,8 @@ registerLocaleData(en);
     AngularFireDatabaseModule,
     ToastrModule.forRoot({
       preventDuplicates: true,
-      timeOut: 4000
+      timeOut: 4000,
+      progressBar: false
     })
   ],
   bootstrap: [AppComponent],
