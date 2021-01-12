@@ -17,6 +17,8 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { NgForage } from 'ngforage';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertDeleteComponent } from 'src/app/components/modals/alert-delete/alert-delete.component';
+import { ToastrService } from 'ngx-toastr';
+import { error } from 'protractor';
 @AutoUnsubscribe()
 @Component({
   selector: 'app-programs',
@@ -49,7 +51,8 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     public modal: NgbModal,
     private spinner: NgxSpinnerService,
-    private exportService: ExportService
+    private exportService: ExportService,
+    public toastService: ToastrService
   ) {}
   active = 0;
 
@@ -152,7 +155,9 @@ export class ProgramsComponent implements OnInit, OnDestroy {
                 });
               }
             })
-            .catch(console.log)
+            .catch((error: Error) => { this.toastService.warning(`${moment(this.monthData.date).format('MMMM')} schedule not available yet`, "Not Available", {
+              progressBar: true,
+            })})
             .then(() => setTimeout(() => this.isLoading = false, 3000))
         });
       });

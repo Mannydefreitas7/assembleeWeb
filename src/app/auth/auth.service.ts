@@ -128,15 +128,6 @@ export class AuthService {
       return this.afAuth.signInWithEmailAndPassword(email, password)
          .then((credential) => {
 
-            // this.storage.store('user', credential.user)
-
-            // this.fireStoreService.fireStore.doc(`users/${credential.user.uid}`)
-            //    .valueChanges()
-            //    .subscribe((fireUser:User) => {
-            //       this.storage.store('fireUser', fireUser);
-            //       this.storage.store('congregationRef', fireUser.congregation)
-            // })
-
             let _users = this.fireStoreService.fireStore.collection<User>('users', ref => ref.where('uid', '==', credential.user.uid)).valueChanges()
 
              _users.subscribe(users => {

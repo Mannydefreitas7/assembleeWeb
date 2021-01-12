@@ -14,6 +14,8 @@ import { InvitePublisherComponent } from 'src/app/components/modals/invite-publi
 import { AuthService } from 'src/app/auth/auth.service';
 import { NgForage } from 'ngforage';
 import { AlertDeleteComponent } from 'src/app/components/modals/alert-delete/alert-delete.component';
+import { ToastrService } from 'ngx-toastr';
+import moment from 'moment';
 
 @Component({
   selector: 'publisher-detail',
@@ -29,6 +31,7 @@ export class PublisherDetailComponent implements OnInit {
     public modal: NgbModal,
     private auth: AuthService,
     private forage: NgForage,
+    private toastService: ToastrService,
     private fireStoreService: FireStoreService
   ) { }
  congregation: Congregation;
@@ -86,7 +89,9 @@ export class PublisherDetailComponent implements OnInit {
       this.fireStoreService.fireStore.doc(`${path}/users/${this.publisher.uid}`).delete().then(() => {
         this.fireStoreService.fireStore.doc<Publisher>(`${path}/publishers/${this.publisher.uid}`).update({
           isInvited: false
-        })
+        }).then(() => this.toastService.success(`${this.publisher.firstName.slice(0,1).toUpperCase()}. ${this.publisher.lastName.toUpperCase()} login access was removed`, "Access removed", {
+          progressBar: true,
+        }))
       })
     })
   }
@@ -143,7 +148,9 @@ invite() {
           handleCodeInApp: true
         })
       }
-    })
+    }).then(() => this.toastService.success(`Email sent to ${this.publisher.firstName.slice(0,1).toUpperCase()}. ${this.publisher.lastName.toUpperCase()}`, "Invitation sent", {
+      progressBar: true,
+    }))
 
 }
 

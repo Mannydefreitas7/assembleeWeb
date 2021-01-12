@@ -109,7 +109,10 @@ registerLocaleData(en);
     HttpClientModule,
     BrowserAnimationsModule,
     AngularFireDatabaseModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot({
+      preventDuplicates: true,
+      timeOut: 4000
+    })
   ],
   bootstrap: [AppComponent],
   providers: [
