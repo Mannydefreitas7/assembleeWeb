@@ -1,5 +1,5 @@
  <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
-   <div class="container-lg" *ngIf="$fireUser | async as fireUser;">
+   <div class="container-fluid" *ngIf="$fireUser | async as fireUser;">
       <button class="navbar-toggler btn btn-link" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation" (click)="storeService.toggleNav()">
          <svg-icon src="assets/images/menu.svg" *ngIf="!storeService.isNavToggled"></svg-icon>
          <svg-icon src="assets/images/remove.svg" *ngIf="storeService.isNavToggled"></svg-icon>

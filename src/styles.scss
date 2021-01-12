@@ -33,7 +33,7 @@ $theme-colors: ("primary": $green-500,
 
 
 @import "../node_modules/bootstrap/scss/bootstrap";
-@import '~ngx-toastr/toastr';
+@import '../src/toast.scss';
 html,
 body {
   height: 100%;
