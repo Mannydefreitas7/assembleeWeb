@@ -42,7 +42,7 @@
      <div ngbDropdown class="d-inline-block" display="dynamic" placement="bottom-right">
       <button class="btn btn btn-white d-inline-flex align-items-center rounded-3" id="dropdownBasic2" ngbDropdownToggle>
       <ng-container *ngIf="$fireUser | async as fireUser; else loader">
-        <span class="fs-6 d-none d-lg-block d-xl-block d-xxl-block">{{ fireUser.firstName }} {{ fireUser.lastName }}</span>
+        <span class="fs-6 d-none d-lg-block d-xl-block d-xxl-block fw-bold">{{ fireUser.firstName }} {{ fireUser.lastName }}</span>
         <img class="ms-3 rounded-circle" style="width: 25px; height: 25px;" [src]="fireUser && fireUser.photoURL ? fireUser.photoURL : 'assets/images/placeholder-pub.jpg'" alt="">
       </ng-container>
       <ng-template #loader>

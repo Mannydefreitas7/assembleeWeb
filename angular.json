@@ -11,8 +11,8 @@
           "skipTests": true
         },
         "@schematics/angular:service": {
-         "skipTests": true
-       }
+          "skipTests": true
+        }
       },
       "root": "",
       "sourceRoot": "src",
@@ -74,9 +74,7 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-
           "options": {
-
             "browserTarget": "assembleeWeb:build",
             "proxyConfig": "src/proxy.conf.json",
             "aot": true,
@@ -143,5 +141,8 @@
       }
     }
   },
-  "defaultProject": "assembleeWeb"
+  "defaultProject": "assembleeWeb",
+  "cli": {
+    "analytics": false
+  }
 }

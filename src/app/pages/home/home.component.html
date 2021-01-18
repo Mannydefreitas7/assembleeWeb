@@ -1,12 +1,12 @@
 <!-- <ab-setup></ab-setup> -->
-<section class="container pb-4">
+<section class="container-fluid pb-4 px-3">
    <div class="row">
       <div class="col-sm-12 g-3">
         <div class="card shadow-sm border-0 rounded-3" *ngIf="$myParts | async as myParts">
           <div class="card-body px-4 py-3">
             <h5 class="card-title fw-bold d-flex justify-content-between mb-2">
               <span>My Assignments</span>
-              <span class="fs-6 badge rounded-pill bg-info">{{ myParts.length }}</span>
+              <span class="fs-6 badge rounded-pill bg-light text-dark">{{ myParts.length }}</span>
             </h5>
             <ul class="list-group list-group-flush" *ngFor="let part of myParts">
               <li class="list-group-item list-group-item-action py-3">
@@ -18,31 +18,43 @@
       </div>
     </div>
 <div class="row" *ngIf="$user | async as user">
-   <div class="col-sm-12 g-3" *ngIf="user.permissions.includes('publishers')">
-     <div class="card shadow-sm border-0 rounded-3" *ngIf="$parts | async as parts">
-       <div class="card-body px-4 py-3">
+  <ng-container *ngIf="$parts | async as parts">
+    <div class="col-sm-12 col-lg-6 col-md-6 g-3" *ngIf="user.permissions.includes('publishers')">
+
+      <div class="card shadow-sm border-0 rounded-3" >
+        <div class="card-body px-4 py-3">
+          <h5 class="card-title fw-bold d-flex justify-content-between mb-2">
+           <span>Unconfirmed Assignments</span>
+           <span class="fs-6 badge rounded-pill bg-warning">{{ (parts | filterBy: ['isConfirmed']: false).length }}</span>
+          </h5>
+          <ul class="list-group list-group-flush" *ngFor="let part of parts | filterBy: ['isConfirmed']: false">
+           <li class="list-group-item list-group-item-action py-3" >
+             <span class="fw-bold pb-2" *ngIf="part.assignee">{{ part.assignee.firstName +
+               ' ' + part.assignee.lastName | titlecase }}</span>
+             <part-row [part]="part"></part-row>
+           </li>
+         </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-6 g-3" *ngIf="user.permissions.includes('publishers')">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body px-4 py-3">
          <h5 class="card-title fw-bold d-flex justify-content-between mb-2">
-          <span>Unconfirmed Assignments</span>
-          <span class="fs-6 badge rounded-pill bg-warning">{{ parts.length }}</span>
-         </h5>
-         <ul class="list-group list-group-flush" *ngFor="let part of parts">
-          <li class="list-group-item list-group-item-action py-3" >
-            <span class="fw-bold pb-2" *ngIf="part.assignee">{{ part.assignee.firstName +
-              ' ' + part.assignee.lastName | titlecase }}</span>
-            <part-row [part]="part"></part-row>
-          </li>
-        </ul>
-       </div>
-     </div>
-   </div>
-   <!-- <div class="col-sm-6 g-3">
-     <div class="card shadow-sm border-0">
-       <div class="card-body">
-         <h5 class="card-title">Special title treatment</h5>
-         <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-         <a href="#" class="btn btn-primary">Go somewhere</a>
-       </div>
-     </div>
-   </div> -->
+           <span>Confirmed Assignments</span>
+           <span class="fs-6 badge rounded-pill bg-success">{{ (parts | filterBy: ['isConfirmed']: true).length }}</span>
+          </h5>
+          <ul class="list-group list-group-flush" *ngFor="let part of parts | filterBy: ['isConfirmed']: true">
+           <li class="list-group-item list-group-item-action py-3" >
+             <span class="fw-bold pb-2" *ngIf="part.assignee">{{ part.assignee.firstName +
+               ' ' + part.assignee.lastName | titlecase }}</span>
+             <part-row [part]="part"></part-row>
+           </li>
+         </ul>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+ 
  </div>
 </section>

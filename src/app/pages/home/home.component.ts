@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
   $myParts: Observable<Part[]>;
   $user: Observable<User>;
   ngOnInit(): void {
-
+    let today: Date = new Date()
     this.forage.getItem('congregationRef').then(path => {
       if (path) {
         this.forage.getItem<User>('fireUser').then(user => {
@@ -38,7 +38,8 @@ export class HomeComponent implements OnInit {
               if (p.assistant) return p.assistant.uid == user.uid;
             })
           }),
-          map(data => data.sort((a, b) => a.date - b.date)))
+          map(data => data.sort((a, b) => a.date - b.date)),
+          map(data => data.filter(p => moment(p.date.toDate()).isAfter(today))))
 
           this.$user = this.fireStore.fireStore.doc(`users/${user.uid}`).valueChanges()
 
@@ -46,7 +47,7 @@ export class HomeComponent implements OnInit {
           .valueChanges()
           .pipe(map(data => {
             return data.filter(p => {
-              return !p.isConfirmed && moment(p.date.toDate()).isAfter(new Date())
+              return moment(p.date.toDate()).isAfter(today)
             })
           }),
           map(data => data.filter(p => p.assistant != null || p.assignee != null)),
@@ -56,8 +57,7 @@ export class HomeComponent implements OnInit {
               if (p.assignee) return p.assignee.uid != user.uid;
               if (p.assistant) return p.assistant.uid != user.uid;
             })
-          }),
-          take(1))
+          }))
         })
       }
     })

@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
 const sgMail = require('@sendgrid/mail')
-require('dotenv').config()
 
+require('dotenv').config()
+const nodemailer = require("nodemailer");
 
 exports.sendEmail = functions.https.onCall((data, context) => {
   sendEmail(data)
@@ -19,4 +20,8 @@ const sendEmail = (message) => {
   .catch((error) => {
     console.error(error)
   })
+}
+
+const sendOutlookEmail = (message) => {
+  Email
 }
