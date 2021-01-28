@@ -36,7 +36,6 @@ export class PublisherModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.forage.getItem<string>('congregationRef').then(path => {
-      console.log(path)
       this.$publishers = this.fireStoreService.fireStore.collection<Publisher>(`${path}/publishers`).valueChanges().pipe(
         map((data) => {
           return data.filter(

@@ -1,6 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgForage } from 'ngforage';
-import { Part } from 'src/app/models/wol.model';
+import { ToastrService } from 'ngx-toastr';
+import { User } from 'src/app/models/user.model';
+import { Parent, Part } from 'src/app/models/wol.model';
+import { EmailService } from 'src/app/services/email.service';
+import { ExportService } from 'src/app/services/export.service';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 
 @Component({
@@ -9,16 +13,28 @@ import { FireStoreService } from 'src/app/services/fire-store.service';
   styleUrls: ['./part-row.component.scss']
 })
 export class PartRowComponent implements OnInit {
-
+  parentApply = Parent.apply;
+  parentTalk = Parent.talk;
+  parentTreasures = Parent.treasures;
+  parentWt = Parent.wt;
+  parentlife = Parent.life;
   constructor(
     public fireStore: FireStoreService,
-    public forage: NgForage
+    public forage: NgForage,
+    public exportService: ExportService,
+    public emailService: EmailService,
+    public toastService : ToastrService
   ) { }
 
   @Input('part') part: Part;
-
+  user: User;
   ngOnInit(): void {
-    
+    this.forage.getItem<User>("fireUser").then(fireUser => this.user = fireUser)
+  }
+
+  emailPart(part: Part, user: User) {
+    this.exportService.emailPartPDF(part, user)
+    this.toastService.success('Email sent successfully')
   }
 
   confirm() {

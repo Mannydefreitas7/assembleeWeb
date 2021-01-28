@@ -45,8 +45,7 @@ export class PublisherPartsComponent implements OnInit {
           .pipe(
             map(data => {
               return data.filter(p => {
-                if (p.assignee) return p.assignee.uid == this.publisher.uid && p.parent == this.part.parent
-                if (p.assistant) return p.assistant.uid == this.publisher.uid && p.parent == this.part.parent
+                return p.assignee && p.assignee.uid == this.publisher.uid || p.assistant && p.assistant.uid == this.publisher.uid
               })
             }),
             take(1),

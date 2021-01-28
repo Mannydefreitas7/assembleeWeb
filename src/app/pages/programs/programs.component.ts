@@ -12,7 +12,7 @@ import { Congregation } from 'src/app/models/congregation.model';
 import { LocalStorageService } from 'ngx-webstorage';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ExportService } from 'src/app/services/export.service';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { MatDrawer } from '@angular/material/sidenav';
 import { NgForage } from 'ngforage';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -64,6 +64,12 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     this.storeService.getMonths(this.year);
     this.monthData = this.storeService.months[0];
     this.loadWeeks();
+
+    let temp: Date = new Date('2021/3/24')
+   
+
+   // this.addProgram(temp)
+
   }
 
   ngOnDestroy() {
@@ -113,6 +119,44 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     this.checkCanExport();
   }
 
+  addProgram(date: Date) {
+    const promises: Promise<any>[] = [];
+    this.forage.getItem<Congregation>('congregation').then((congregation) => {
+      this.forage.getItem<string>('congregationRef').then((path) => {
+        this.wolApiService
+            .getWeekProgram(
+              moment(date).year(),
+              moment(date).month() + 1,
+              date.getDate(),
+              congregation.fireLanguage.apiURL
+          ).toPromise().then(wolWeek => {
+            if (this.wolApiService.parseWolContent(wolWeek, date, path)) {
+              let wolContent = this.wolApiService.parseWolContent(
+                wolWeek,
+                date,
+                path
+              );
+              let partPromise: Promise<any> = this.fireStoreService.addWeekProgram(
+                path,
+                date,
+                wolContent[0]
+              );
+              promises.push(partPromise);
+              partPromise.then((_) => {
+                wolContent[1].forEach((part) => {
+                  promises.push(
+                    this.fireStoreService.fireStore
+                      .doc<Part>(`${path}/parts/${part.id}`)
+                      .set(part)
+                  );
+                });
+              });
+            }
+          })
+      })
+    })
+  }
+
   addMonthProgram() {
     this.isLoading = true;
     const promises: Promise<any>[] = [];
@@ -145,7 +189,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
                 promises.push(partPromise);
                 partPromise.then((_) => {
                   wolContent[1].forEach((part) => {
-                    // promises.push(this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${wolContent[0].id}/parts/${part.id}`).set(part))
+
                     promises.push(
                       this.fireStoreService.fireStore
                         .doc<Part>(`${path}/parts/${part.id}`)
@@ -203,6 +247,11 @@ export class ProgramsComponent implements OnInit, OnDestroy {
           ref.orderBy('date', 'asc')
         )
         .valueChanges()
+        .pipe(
+          map(weeks => {
+            return weeks.filter(week => moment(week.date.toDate()).isAfter(new Date()))
+          })
+        )
         .subscribe((data) => {
           this.weekProgram = data;
           if (data.length == 0) this.sidenav.close();

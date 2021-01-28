@@ -52,8 +52,8 @@
     </button>
     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
       <button ngbDropdownItem class="py-2 btn-sm" (click)="openRenameModal(part)">Rename</button>
-      <button *ngIf="user && part.parent == parentApply && part.assignee || user && part.parent == parentTreasures && part.index == 2 && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="exportService.emailPartPDF(part, user)">Email</button>
-      <button *ngIf="part.parent == parentApply && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="exportService.downloadPartPDF(part)">Download</button>
+      <button *ngIf="user && part.parent == parentApply && part.assignee || user && part.parent == parentTreasures && part.index == 2 && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="emailPart(part, user)">Email</button>
+      <button *ngIf="user && part.parent == parentApply && part.assignee || user && part.parent == parentTreasures && part.index == 2 && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="exportService.downloadPartPDF(part)">Download</button>
     </div>
   </div>
 </div>

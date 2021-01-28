@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import firebase from 'firebase/app';
 import { NgForage } from 'ngforage';
+import { take } from 'rxjs/operators';
 import { Permission, Publisher } from 'src/app/models/publisher.model';
 import { EmailMessage, User } from 'src/app/models/user.model';
 import { Part } from 'src/app/models/wol.model';
@@ -43,8 +44,7 @@ export class InviteComponent implements OnInit {
       email: ['', [Validators.email, Validators.required]],
       password: ['',
          [
-            Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-            Validators.minLength(6),
+            Validators.minLength(5),
             Validators.maxLength(25)
          ],
       ]
@@ -54,9 +54,11 @@ export class InviteComponent implements OnInit {
        let uid = params.pub;
        this.fireStore.fireStore.doc<Publisher>(`congregations/${this.path}/publishers/${uid}`).valueChanges().subscribe(publisher => {
          this.publisher = publisher;
-        this.email.setValue(publisher.email)
-        this.firstName.setValue(publisher.firstName)
-        this.lastName.setValue(publisher.lastName)
+         if (publisher) {
+          this.email.setValue(publisher.email)
+          this.firstName.setValue(publisher.firstName)
+          this.lastName.setValue(publisher.lastName)
+         }
        })
      })
   }
@@ -118,14 +120,15 @@ export class InviteComponent implements OnInit {
           }
 
           if (this.publisher.parts.length > 0) {
+
               this.publisher.parts.forEach(part => {
                 let document: AngularFirestoreDocument<Part> = this.fireStore.fireStore.doc<Part>(`congregations/${path}/parts/${part.id}`);
-                if (part.assignee.uid == this.publisher.uid) {
+                if (part.assignee && part.assignee.uid == this.publisher.uid) {
                   document.update({
                     assignee: publisher
                   })
                   part.assignee = publisher;
-                } else if (part.assistant.uid == this.publisher.uid) {
+                } else if (part.assignee && part.assistant.uid == this.publisher.uid) {
                   document.update({
                     assistant: publisher
                   })

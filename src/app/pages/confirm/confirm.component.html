@@ -1,9 +1,9 @@
 <div class="row h-100 justify-content-center align-items-center bg-light">
-  <div class="col-lg-3 col-md-4 col-sm-10 mx-2 bg-white shadow-sm p-4">
+  <div class="col-lg-3 col-md-4 col-sm-10 mx-2 bg-white shadow-sm p-4" *ngIf="part$ | async as part">
 
      <h3 class="font-weight-bold text-center mb-4">Meeting Assignment</h3>
 
-      <div class="p-2" *ngIf="part$ | async as part">
+      <div class="p-2" >
         <p>
           <strong>Name:</strong> <span *ngIf="part.assignee" class="ms-2 h6">{{ part.assignee.firstName }} {{ part.assignee.lastName }}</span>
         </p>
@@ -23,7 +23,13 @@
      <hr>
 
      <div class="d-grid">
-      <button class="btn btn-primary" type="button">Confirm</button>
+       <p class="text-center" *ngIf="part.isConfirmed">
+        <span class="mb-2 fw-bold">
+          Thank you!
+        </span><br>
+        Your part is confirmed.
+      </p>
+      <button class="btn btn-primary" *ngIf="!part.isConfirmed" type="button" (click)="confirm()">Confirm</button>
     </div>
    </div>
   </div>

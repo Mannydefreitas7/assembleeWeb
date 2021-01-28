@@ -2,10 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgForage } from 'ngforage';
+import { ToastrService } from 'ngx-toastr';
 import { LocalStorageService } from 'ngx-webstorage';
 import { Publisher } from 'src/app/models/publisher.model';
-import { User } from 'src/app/models/user.model';
+import { EmailMessage, User } from 'src/app/models/user.model';
 import { Parent, Part, WeekProgram } from 'src/app/models/wol.model';
+import { EmailService } from 'src/app/services/email.service';
 import { ExportService } from 'src/app/services/export.service';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import { RenamePartComponent } from '../modals/rename-part/rename-part.component';
@@ -21,7 +23,9 @@ export class PartActionsComponent implements OnInit {
     private fireStoreService: FireStoreService,
     private storage: LocalStorageService,
     private forage: NgForage,
-    public exportService: ExportService
+    public exportService: ExportService,
+    public emailService: EmailService,
+    public toastService : ToastrService
   ) {}
   @Input('part') part: Part;
   @Input('weekProgram') weekProgram: WeekProgram;
@@ -57,6 +61,11 @@ export class PartActionsComponent implements OnInit {
           this.partDocRef.update({ assistant: null })
     }
     })
+  }
+
+  emailPart(part: Part, user: User) {
+    this.exportService.emailPartPDF(part, user)
+    this.toastService.success('Email sent successfully')
   }
 
   openRenameModal(part: Part) {

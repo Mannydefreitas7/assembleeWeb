@@ -74,7 +74,7 @@ export class StoreService {
 
   getMondays(date: Date): [Date] {
     let startMonth = moment(date).startOf('month').day('Monday');
-    console.log(startMonth.toDate().getMonth());
+    
     let endMonth = moment(date).endOf('month');
     let mondays: [Date] = [startMonth.toDate()];
     let numberOfWeeks = moment(endMonth).diff(startMonth, 'week');

@@ -4,15 +4,21 @@
      <div class="p-0 mb-3 d-flex justify-content-between align-items-center">
 
       <div class="d-inline-flex align-items-center">
-        <button class="btn btn-light btn-sm d-inline-block" (click)="sidenav.opened ? sidenav.close() : sidenav.open()">
+        <button class="btn btn-light btn-sm d-inline-block me-2" (click)="sidenav.opened ? sidenav.close() : sidenav.open()">
           <svg-icon [src]="sidenav.opened ? 'assets/images/slide-left.svg' : 'assets/images/slide-right.svg'" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
        </button>
+       <div class="input-group input-group-end" style="width: 250px;">
+        <input id="publisherFrom" type="text" class="form-control" [(ngModel)]="searchText" placeholder="Search Publisher" />
+        <span class="input-group-text"><svg-icon src="assets/images/search.svg" [svgStyle]="{ 'height.px': 24 }"></svg-icon></span>
       </div>
+      </div>
+
+
 
       <div class="d-inline-flex align-items-center">
         <button class="btn btn-light btn-sm d-inline-block" (click)="addPublisher()">
            <svg-icon src="assets/images/add.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
-           <span class="ms-2 align-middle" >Add Publisher</span>
+           <span class="ms-2 align-middle" >Add</span>
         </button>
 
         <button class="btn btn-light btn-sm" (click)="openImport()">
@@ -26,13 +32,14 @@
      <mat-drawer-container class="card p-0 border-0 shadow-sm rounded-3" >
 
         <mat-drawer mode="side" opened #sidenav style="width: 300px;" >
-            <div class="card-body p-0">
+            <div class="card-body p-0 ">
+              
               <div class="d-flex">
 
                  <ul ngbNav #nav="ngbNav" [(activeId)]="store.publisherActiveTab" orientation="vertical" class="list-group list-group-flush w-100">
 
-                    <ng-container *ngIf="$publishers | async as publishers; else pubs">
-                       <li [ngbNavItem]="i" *ngFor="let publisher of publishers; index as i" class="list-group-item list-group-item-action py-2" [ngClass]="{'active': store.publisherActiveTab == i }">
+                    <ng-container *ngIf="$publishers | async as publishers ; else pubs">
+                       <li [ngbNavItem]="i" *ngFor="let publisher of publishers | filter: searchText; index as i" class="list-group-item list-group-item-action py-2" [ngClass]="{'active': store.publisherActiveTab == i }">
                           <a ngbNavLink [class]="store.publisherActiveTab == i ? 'fw-bold text-white' : 'fw-bold text-dark'">
                             <publisher-row [publisher]="publisher"></publisher-row>
                           </a>

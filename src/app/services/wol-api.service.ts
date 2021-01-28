@@ -30,10 +30,12 @@ export class WolApiService {
   parseWolContent(wolWeek: WOLWeek, date: Date, path: string) : [WeekProgram, Part[]] {
 
     let weekID = this.fireStore.fireStore.createId();
-
+    let endContent: Document;
    if (wolWeek.items.length > 1) {
       let midContent: Document = this.parse.parseFromString(wolWeek.items[1].content, "text/html");
-      let endContent: Document = this.parse.parseFromString(wolWeek.items[2].content, "text/html");
+      if (wolWeek.items.length > 2) {
+         endContent = this.parse.parseFromString(wolWeek.items[2].content, "text/html");
+      }
       let parts : Part[] = [];
 
 
@@ -187,8 +189,8 @@ export class WolApiService {
        {
          assignee: null,
          gender: [Gender.brother],
-         title: endContent.querySelector('.groupTOC').querySelector('h3').textContent,
-         subTitle: endContent.querySelector('.groupTOC').querySelector('p').textContent,
+         title: endContent ? endContent.querySelector('.groupTOC').querySelector('h3').textContent : "",
+         subTitle: endContent ? endContent.querySelector('.groupTOC').querySelector('p').textContent : "",
          id: this.fireStore.fireStore.createId(),
          hasAssistant: true,
          assistant: null,

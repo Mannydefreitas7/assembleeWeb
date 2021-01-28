@@ -7,7 +7,7 @@
 
       <span class="fw-normal">{{ part.subTitle | titlecase }}</span>
 
-      <span class="fw-normal me-2">{{  part.date.toDate() | date }}</span> <span class="badge bg-success text-light">{{ part.parent }}</span>
+      <span class="fw-normal me-2">{{  part.date.toDate() | date }}</span> <span class="badge bg-light text-dark">{{ part.parent }}</span>
     </p>
   </div>
 
@@ -21,6 +21,8 @@
         <button ngbDropdownItem class="py-2 btn-sm" (click)="part.isConfirmed ? unconfirm() : confirm()">
           {{ part.isConfirmed ? 'Cancel' : 'Confirm' }}
         </button>
+        <button *ngIf="user && part.parent == parentApply && part.assignee || user && part.parent == parentTreasures && part.index == 2 && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="emailPart(part, user)">Email</button>
+        <button *ngIf="user && part.parent == parentApply && part.assignee || user && part.parent == parentTreasures && part.index == 2 && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="exportService.downloadPartPDF(part)">Download</button>
       </div>
     </div>
   </div>

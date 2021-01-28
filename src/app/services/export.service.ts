@@ -277,11 +277,10 @@ partDefinition = {
           pdfDocGenerator.getBase64((data) => {
             if (part.assignee.email) {
               let cc = `${user.email}, ${part.assistant ? part.assistant.email : ''}`;
-              console.log(cc);
               let msg: EmailMessage = {
                 to: part.assignee.email,
-                cc: cc,
-                from: `${congregation.properties.orgName} <assemblee.app@gmail.com>`,
+                cc: part.assistant ? part.assistant.email : user.email,
+                from: `${congregation.properties.orgName} <${user.email}>`,
                 subject: `${this.partDefinition.info.title}`,
                 html: `<p>Hello ${part.assignee.lastName} ${part.assignee.firstName},</p><p>Please find attached your meeting assignment for <strong>${moment(part.date.toDate()).format('MMMM DD yyyy')}</strong>.</p>
                 <a style="padding: 5px 10px; color: #ffffff; background-color: #198754; text-decoration: none; border-radius: 5px;" href="https://assemblee.web.app/#/confirm?cong=${congregation.id}&part=${part.id}">Confirm</a>

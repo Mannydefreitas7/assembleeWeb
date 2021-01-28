@@ -32,6 +32,7 @@ export class PublishersComponent implements OnInit, OnDestroy {
   ) {}
   congregation: Congregation;
   path: string;
+  searchText: string = '';
   $publishers: Observable<Publisher[]>;
   ngUnsubscribe = new Subject();
   active = 0;
