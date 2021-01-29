@@ -12,6 +12,7 @@ import { CongregationComponent } from '../components/congregation/congregation.c
 import { InviteComponent } from './invite/invite.component';
 import { ConfirmComponent } from '../pages/confirm/confirm.component';
 import { ToastComponent } from '../components/toast/toast.component';
+import { BoardComponent } from '../pages/board/board.component';
 
 const routes: Routes = [
 
@@ -20,7 +21,8 @@ const routes: Routes = [
    { path: 'reset', component: ResetComponent },
    { path: 'login', component: LoginComponent },
    { path: 'invite', component: InviteComponent },
-   { path: 'confirm', component: ConfirmComponent }
+   { path: 'confirm', component: ConfirmComponent },
+   { path: 'board/cong/:id', component: BoardComponent }
  ];
 
 

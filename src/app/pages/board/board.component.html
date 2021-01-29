@@ -1,0 +1,15 @@
+<div class="h-100 bg-light">
+    <div class="py-4 container">
+        <h3>
+            <span class="fw-normal fs-4 text-muted">Assemblée</span> <br>
+            {{ congregation?.properties.orgName }}
+        </h3>
+        <ngb-carousel *ngIf="weeks && weeks.length > 0">
+            <ng-template ngbSlide *ngFor="let week of weeks">
+                
+                <app-schedule [week]="week" [parts]="parts"></app-schedule>
+            </ng-template>
+          </ngb-carousel>
+    </div>
+</div>
+  

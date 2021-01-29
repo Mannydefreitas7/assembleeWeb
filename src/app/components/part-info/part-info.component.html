@@ -1,0 +1,7 @@
+<div class="d-inline-flex align-items-center">
+    <span class="me-2">{{ part.assignee?.firstName }} {{ part.assignee?.lastName }}</span>
+    <ng-container *ngIf="part.assistant">
+        <span class="me-2">{{ part.assistant?.firstName }} {{ part.assistant?.lastName }}</span
+        >
+    </ng-container>
+  </div>

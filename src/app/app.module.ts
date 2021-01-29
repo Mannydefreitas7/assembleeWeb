@@ -54,6 +54,9 @@ import { ConfirmComponent } from './pages/confirm/confirm.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { MessageService } from './services/message.service';
 import { ToastrModule } from 'ngx-toastr';
+import { BoardComponent } from './pages/board/board.component';
+import { ScheduleComponent } from './components/schedule/schedule.component';
+import { PartInfoComponent } from './components/part-info/part-info.component';
 
 registerLocaleData(en);
 
@@ -92,6 +95,9 @@ registerLocaleData(en);
       RenamePartComponent,
       ConfirmComponent,
       ToastComponent,
+      BoardComponent,
+      ScheduleComponent,
+      PartInfoComponent,
 
   ],
   imports: [
