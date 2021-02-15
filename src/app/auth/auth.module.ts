@@ -13,6 +13,7 @@ import { InviteComponent } from './invite/invite.component';
 import { ConfirmComponent } from '../pages/confirm/confirm.component';
 import { ToastComponent } from '../components/toast/toast.component';
 import { BoardComponent } from '../pages/board/board.component';
+import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 
 const routes: Routes = [
 
@@ -38,7 +39,7 @@ const routes: Routes = [
      AngularFireAuthModule,
      SharedModule,
      AngularFirestoreModule,
-     RouterModule.forRoot(routes, {useHash: true}),
+     RouterModule.forRoot(routes),
      SharedModule
    ],
    providers: [

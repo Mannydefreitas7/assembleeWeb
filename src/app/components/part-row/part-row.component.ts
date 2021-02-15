@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgForage } from 'ngforage';
+import { ClipboardService } from 'ngx-clipboard';
 import { ToastrService } from 'ngx-toastr';
 import { User } from 'src/app/models/user.model';
 import { Parent, Part } from 'src/app/models/wol.model';
@@ -21,6 +22,7 @@ export class PartRowComponent implements OnInit {
   constructor(
     public fireStore: FireStoreService,
     public forage: NgForage,
+    public clipboardService: ClipboardService,
     public exportService: ExportService,
     public emailService: EmailService,
     public toastService : ToastrService
@@ -35,6 +37,11 @@ export class PartRowComponent implements OnInit {
   emailPart(part: Part, user: User) {
     this.exportService.emailPartPDF(part, user)
     this.toastService.success('Email sent successfully')
+  }
+
+  copyEmail(part: Part) {
+    this.clipboardService.copy(part.assignee.email);
+    this.toastService.info("Email Copied")
   }
 
   confirm() {

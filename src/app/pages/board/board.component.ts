@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgForage } from 'ngforage';
 import { Congregation } from 'src/app/models/congregation.model';
@@ -6,23 +6,35 @@ import { Part, WeekProgram } from 'src/app/models/wol.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import moment, { WeekSpec } from 'moment';
 import { map, take } from 'rxjs/operators';
+import { NgbCarousel, NgbCarouselConfig } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.scss']
+  styleUrls: ['./board.component.scss'],
+  providers: [NgbCarouselConfig]
 })
 export class BoardComponent implements OnInit {
 
   constructor(
     public fireStore: FireStoreService,
     public forage: NgForage,
-    public route: ActivatedRoute
-  ) { }
+    public route: ActivatedRoute,
+    public config: NgbCarouselConfig
+  ) { 
+    config.showNavigationArrows = false;
+    config.showNavigationIndicators = false;
+  }
 
+  @ViewChild('carousel') carousel: NgbCarousel;
+  active = 0;
   congregation: Congregation;
-  weeks: WeekProgram[];
+  weeks: WeekProgram[] = []
   parts: Part[];
+  showNavigationArrows = false;
+  showNavigationIndicators = false;
+
   ngOnInit(): void {
     
     this.route.url.subscribe(data => {
@@ -37,6 +49,32 @@ export class BoardComponent implements OnInit {
     })
   }
 
+  loadProgram(congID: String, weekID: string) : Observable<Part[]> {
+   return this.fireStore.fireStore.collection<Part>(`congregations/${congID}/parts`, ref => ref.where('week', '==', weekID)).valueChanges()
+  }
+
+  get nextDate() : Date {
+      let index = 0;
+      if (this.carousel)
+      index = Number(this.carousel?.activeId.split('-')[2]) + 1;
+      if (this.weeks[index])
+      return this.weeks[index].date.toDate()
+  }
+
+  get prevDate() : Date {
+    let index = 0;
+      if (this.carousel) {
+        index = Number(this.carousel?.activeId.split('-')[2]) - 1;
+      }
+     
+      if (this.weeks[index])
+      return this.weeks[index].date.toDate()
+  }
+
+
+
+
+
   loadWeeks(congID: String) {
       this.fireStore.fireStore
         .collection<WeekProgram>(`congregations/${congID}/weeks`, (ref) =>
@@ -45,21 +83,20 @@ export class BoardComponent implements OnInit {
         .valueChanges()
         .pipe(
           map(weeks => {
-            return weeks.filter(week => moment(week.date.toDate()).isAfter(new Date()))
+            return weeks.filter(week => moment(week.date.toDate()).isAfter(moment(new Date()).subtract('1', 'week')))
           }),
-        //  take(1)
+          map(weeks => {
+             weeks.forEach(week => {
+              return this.loadProgram(congID, week.id).subscribe(parts => week.parts = parts)
+            })
+            return weeks 
+          }),
+       //   take(1)
         )
         .subscribe((data) => {
           this.weeks = data;
-          this.weeks.forEach(week => {
-            this.fireStore.fireStore.collection<Part>(`congregations/${congID}/parts`, ref => ref.where('week', '==', week.id)).valueChanges()
-            .pipe(
-             // take(1)
-            )
-            .subscribe(parts => {
-              this.parts = parts;
-             })
-          })
+          
+         // console.log(this.weeks)
       });
   }
 

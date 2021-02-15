@@ -7,10 +7,12 @@ import { FireStoreService } from 'src/app/services/fire-store.service';
 import { LocalStorageService } from 'ngx-webstorage';
 
 import { ExportService } from 'src/app/services/export.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, take, takeUntil } from 'rxjs/operators';
 import { NgForage } from 'ngforage';
-
+import talks from './../../../../assets/talks.json'
+import { Talk } from 'src/app/models/talk.model';
+import { Congregation } from 'src/app/models/congregation.model';
 
 @AutoUnsubscribe()
 @Component({
@@ -38,10 +40,14 @@ talk: Part[];
 wt: Part[];
 chairmans: Part[];
 prayers: Part[];
+talks: Talk[];
 ngUnsubscribe = new Subject();
 
 
 @Input('weekProgram') public weekProgram: WeekProgram;
+
+public model: string;
+
   ngOnInit(): void {
     let path : string = this.storage.retrieve('congregationref');
 
@@ -60,7 +66,7 @@ ngUnsubscribe = new Subject();
          this.prayers = this.parts.filter(part => part.parent == Parent.prayer).sort((a, b) => a.index - b.index)
       })
     })
-
+    this.loadTalks();
   }
 
   ngOnDestroy() {
@@ -68,10 +74,33 @@ ngUnsubscribe = new Subject();
     this.ngUnsubscribe.complete()
   }
 
-  // public downloadAsPDF() {
+  saveTalk(talk: Talk, part: Part) {
+    console.log(talk)
+    this.forage.getItem<Congregation>('congregation').then(congregation => {
+      this.fireStoreService.fireStore
+      .doc<Part>(`congregations/${congregation.id}/parts/${part.id}`)
+      .update({
+        title: talk.title,
+        isSymposium: false,
+        talkNumber: String(talk.id + 1)
+      })
+    })
+   
+  }
 
-  //   this.exportService.createSinglePDF(this.weekProgram, this.parts)
-  // }
+  loadTalks() {
+    this.fireStoreService.fireStore.collection<Talk>('languages/F/talks')
+    .valueChanges()
+    .pipe(take(1))
+    .subscribe(talks => this.talks = talks)
+  }
 
+  search = (text$: Observable<string>) =>
+  text$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    map(term => term.length < 1 ? []
+      : this.talks.filter(v => v.title.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+  )
 
 }

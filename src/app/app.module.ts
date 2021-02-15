@@ -6,7 +6,7 @@ import { AngularFireModule } from "@angular/fire";
 import { AngularFireDatabaseModule } from "@angular/fire/database";
 import { AngularFirestoreModule, SETTINGS } from "@angular/fire/firestore";
 import { environment } from 'src/environments/environment';
-import { NgbAlertModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAlertModule, NgbCarouselModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AssembleeModule } from './assemblee/assemblee.module';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -57,6 +57,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { BoardComponent } from './pages/board/board.component';
 import { ScheduleComponent } from './components/schedule/schedule.component';
 import { PartInfoComponent } from './components/part-info/part-info.component';
+import { ClipboardModule } from 'ngx-clipboard';
+import { TalkActionsComponent } from './components/talk-actions/talk-actions.component';
 
 registerLocaleData(en);
 
@@ -98,6 +100,7 @@ registerLocaleData(en);
       BoardComponent,
       ScheduleComponent,
       PartInfoComponent,
+      TalkActionsComponent,
 
   ],
   imports: [
@@ -111,6 +114,7 @@ registerLocaleData(en);
     AngularFireFunctionsModule,
     AngularFireAuthModule,
     NgbModule,
+    ClipboardModule,
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,

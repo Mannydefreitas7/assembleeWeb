@@ -1,15 +1,15 @@
 <div class="h-100 bg-light">
     <div class="py-4 container">
-        <h3>
-            <span class="fw-normal fs-4 text-muted">Assemblée</span> <br>
+        <h3 class="mb-4">
+            <span class="fw-normal fs-4 text-muted">Tableau d'Affichage</span> <br>
             {{ congregation?.properties.orgName }}
         </h3>
-        <ngb-carousel *ngIf="weeks && weeks.length > 0">
-            <ng-template ngbSlide *ngFor="let week of weeks">
-                
-                <app-schedule [week]="week" [parts]="parts"></app-schedule>
-            </ng-template>
-          </ngb-carousel>
+        <select class="form-select mb-4" [(ngModel)]="active" >
+            <option [value]="i" *ngFor="let week of weeks; index as i">{{ week?.range }}</option>
+        </select>
+        <div class="p-4 rounded bg-white shadow-sm">
+        <app-schedule [week]="weeks[active]"></app-schedule>
+        </div>
     </div>
 </div>
   

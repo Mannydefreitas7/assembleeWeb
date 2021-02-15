@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgbAccordionModule, NgbAlertModule, NgbCollapseModule, NgbModalModule, NgbModule, NgbNavModule, NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionModule, NgbAlertModule, NgbCarouselModule, NgbCollapseModule, NgbModalModule, NgbModule, NgbNavModule, NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';

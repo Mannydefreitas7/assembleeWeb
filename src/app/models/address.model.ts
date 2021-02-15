@@ -5,7 +5,7 @@ export class Address {
    street?: string
    city?: string
    zip?: number
-   coordinates?: Coordinates   
+  // coordinates?: GeolocationCoordinates   
 }
 
 export interface GeoZip {

@@ -19,6 +19,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertDeleteComponent } from 'src/app/components/modals/alert-delete/alert-delete.component';
 import { ToastrService } from 'ngx-toastr';
 import { error } from 'protractor';
+import talks from './../../../assets/talks.json';
+import { Talk } from 'src/app/models/publisher.model';
 @AutoUnsubscribe()
 @Component({
   selector: 'app-programs',
@@ -67,6 +69,17 @@ export class ProgramsComponent implements OnInit, OnDestroy {
 
     let temp: Date = new Date('2021/3/24')
    
+    // setTimeout(() => {
+
+    //   talks.forEach(talk => {
+    //     this.fireStoreService.fireStore.doc<Talk>(`languages/F/talks/${talk.DocumentId}`)
+    //     .set({
+    //       id: String(talk.DocumentId),
+    //       number: talk.PublicationId,
+    //       title: talk.Title
+    //     })
+    //   })
+    // }, 4000)
 
    // this.addProgram(temp)
 
@@ -249,7 +262,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
         .valueChanges()
         .pipe(
           map(weeks => {
-            return weeks.filter(week => moment(week.date.toDate()).isAfter(new Date()))
+            return weeks.filter(week => moment(week.date.toDate()).isAfter(moment(new Date()).subtract('1', 'week')))
           })
         )
         .subscribe((data) => {

@@ -5,20 +5,24 @@ import { NgForage } from 'ngforage';
 import { ClipboardService } from 'ngx-clipboard';
 import { ToastrService } from 'ngx-toastr';
 import { LocalStorageService } from 'ngx-webstorage';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Publisher } from 'src/app/models/publisher.model';
-import { EmailMessage, User } from 'src/app/models/user.model';
+import { User } from 'src/app/models/user.model';
 import { Parent, Part, WeekProgram } from 'src/app/models/wol.model';
 import { EmailService } from 'src/app/services/email.service';
 import { ExportService } from 'src/app/services/export.service';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import { RenamePartComponent } from '../modals/rename-part/rename-part.component';
 import { SelectPublisherComponent } from '../modals/select-publisher/select-publisher.component';
+import talks from './../../../assets/talks.json'
 
 @Component({
-  selector: 'part-actions',
-  templateUrl: './part-actions.component.html'
+  selector: 'talk-actions',
+  templateUrl: './talk-actions.component.html',
+  styleUrls: ['./talk-actions.component.scss']
 })
-export class PartActionsComponent implements OnInit {
+export class TalkActionsComponent implements OnInit {
 
   constructor(
     public modalService: NgbModal,
@@ -27,9 +31,8 @@ export class PartActionsComponent implements OnInit {
     private forage: NgForage,
     public clipboardService: ClipboardService,
     public exportService: ExportService,
-    public emailService: EmailService,
     public toastService : ToastrService
-  ) {}
+  ) { }
 
   @Input('part') part: Part;
   @Input('weekProgram') weekProgram: WeekProgram;
@@ -45,9 +48,6 @@ export class PartActionsComponent implements OnInit {
   user: User;
 
   ngOnInit(): void {
-
-    this.forage.getItem<User>("fireUser").then(fireUser => this.user = fireUser)
-
   }
 
   remove(type: string) {
@@ -68,16 +68,6 @@ export class PartActionsComponent implements OnInit {
     })
   }
 
-  copyEmail(part: Part) {
-    this.clipboardService.copy(part.assignee.email);
-    this.toastService.info("Email Copied")
-  }
-
-  emailPart(part: Part, user: User) {
-    this.exportService.emailPartPDF(part, user)
-    this.toastService.success('Email sent successfully')
-  }
-
   openRenameModal(part: Part) {
     const modalRef = this.modalService.open(RenamePartComponent, {
       centered: true,
@@ -86,6 +76,13 @@ export class PartActionsComponent implements OnInit {
     })
     modalRef.componentInstance.part = part;
   }
+
+  addAssistant(part: Part) {
+    part.isSymposium = !part.isSymposium;
+  }
+
+
+
 
   openSelectPublisherModal(part: Part, type: string) {
     const modalRef = this.modalService.open(SelectPublisherComponent, {
@@ -103,4 +100,5 @@ export class PartActionsComponent implements OnInit {
     }
     modalRef.componentInstance.weekProgram = this.weekProgram;
   }
+
 }
