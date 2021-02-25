@@ -34,7 +34,7 @@ export class StoreService {
       this.showNextYear = false;
       for (
         var i = moment(new Date()).month();
-        i <= moment(new Date()).month() + 2;
+        i <= moment(new Date()).month() + 3;
         i++
       ) {
         let month: MonthData = {
@@ -64,6 +64,10 @@ export class StoreService {
           name: moment.months()[nextTwoIndex + 1],
           date: nextTwoMonth.toDate(),
         },
+        {
+          name: moment.months()[nextTwoIndex + 2],
+          date: nextTwoMonth.toDate(),
+        },
       ].filter((month) => month.date.getFullYear() == year);
     }
   }
@@ -72,11 +76,11 @@ export class StoreService {
     this.isNavToggled = !this.isNavToggled;
   }
 
-  getMondays(date: Date): [Date] {
+  getMondays(date: Date): Date[] {
     let startMonth = moment(date).startOf('month').day('Monday');
     
     let endMonth = moment(date).endOf('month');
-    let mondays: [Date] = [startMonth.toDate()];
+    let mondays: Date[] = [];
     let numberOfWeeks = moment(endMonth).diff(startMonth, 'week');
     for (var i = 1; i <= numberOfWeeks; i++) {
       let next = startMonth.add(1, 'week');

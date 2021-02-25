@@ -13,6 +13,7 @@ import { NgForage } from 'ngforage';
 import talks from './../../../../assets/talks.json'
 import { Talk } from 'src/app/models/talk.model';
 import { Congregation } from 'src/app/models/congregation.model';
+import { StoreService } from 'src/app/services/store.service';
 
 @AutoUnsubscribe()
 @Component({
@@ -29,6 +30,7 @@ export class ProgramDetailComponent implements OnInit, OnDestroy {
      public modalService: NgbModal,
      private storage: LocalStorageService,
      private forage: NgForage,
+     public store: StoreService,
      private exportService: ExportService
      ) { }
 id: string
@@ -75,7 +77,6 @@ public model: string;
   }
 
   saveTalk(talk: Talk, part: Part) {
-    console.log(talk)
     this.forage.getItem<Congregation>('congregation').then(congregation => {
       this.fireStoreService.fireStore
       .doc<Part>(`congregations/${congregation.id}/parts/${part.id}`)
@@ -93,6 +94,24 @@ public model: string;
     .valueChanges()
     .pipe(take(1))
     .subscribe(talks => this.talks = talks)
+  }
+
+  deleteWeek(weekID: string) {
+    this.forage.getItem<Congregation>('congregation').then(congregation => {
+      this.fireStoreService
+      .delete(`congregations/${congregation.id}/weeks/${weekID}`)
+      .then(_ => {
+         this.fireStoreService.fireStore
+         .collection<Part>(`congregations/${congregation.id}/parts`, ref => ref.where("week", '==', weekID))
+         .valueChanges()
+         .pipe(take(1))
+         .subscribe(parts => {
+           parts.forEach(part => this.fireStoreService
+            .delete(`congregations/${congregation.id}/parts/${part.id}`))
+         })
+      })
+    })
+   
   }
 
   search = (text$: Observable<string>) =>

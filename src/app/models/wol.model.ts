@@ -72,6 +72,7 @@ export interface Part {
    parent?: Parent;
    path?: string;
    week?: string;
+   isCalendarAdded?: boolean;
    isSymposium?: boolean;
    talkNumber?: string;
    songNumber?: number;

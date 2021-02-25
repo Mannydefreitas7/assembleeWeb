@@ -34,8 +34,8 @@ export class PartActionsComponent implements OnInit {
   @Input('part') part: Part;
   @Input('weekProgram') weekProgram: WeekProgram;
   congregation: string;
-  assigneeDocRef: AngularFirestoreDocument<Publisher>;
-  assistantDocRef: AngularFirestoreDocument<Publisher>;
+  assigneeDocRef: AngularFirestoreDocument<Part>;
+  assistantDocRef: AngularFirestoreDocument<Part>;
   partDocRef: AngularFirestoreDocument<Part>;
   parentApply = Parent.apply;
   parentTalk = Parent.talk;
@@ -56,14 +56,29 @@ export class PartActionsComponent implements OnInit {
       this.partDocRef = this.fireStoreService.fireStore.doc<Part>(
         `${path}/parts/${this.part.id}`
       );
+      this.assigneeDocRef = this.fireStoreService.fireStore.doc<Part>(
+        `${path}/publishers/${this.part.assignee.uid}/parts/${this.part.id}`
+      );
+      this.assistantDocRef = this.fireStoreService.fireStore.doc<Part>(
+        `${path}/publishers/${this.part.assistant.uid}/parts/${this.part.id}`
+      );
 
     switch (type) {
       case 'assignee':
-        if (this.part.assignee)
+        if (this.part.assignee) {
           this.partDocRef.update({ assignee: null })
+          .then(() => {
+            this.assigneeDocRef.delete()
+          }) 
+        }
+         
       case 'assistant':
-        if (this.part.assistant)
+        if (this.part.assistant) {
           this.partDocRef.update({ assistant: null })
+          .then(() => {
+            this.assigneeDocRef.delete()
+          }) 
+        }  
     }
     })
   }

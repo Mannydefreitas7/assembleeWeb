@@ -5,13 +5,14 @@ import { Congregation } from 'src/app/models/congregation.model';
 import { Publisher } from 'src/app/models/publisher.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import { map, takeUntil, takeWhile } from 'rxjs/operators';
+import { map, take, takeUntil, takeWhile } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddPublisherComponent } from 'src/app/components/modals/add-publisher/add-publisher.component';
 import { MatDrawer } from '@angular/material/sidenav';
 import { StoreService } from 'src/app/services/store.service';
 import { NgForage } from 'ngforage';
 import { ImportComponent } from 'src/app/components/modals/import/import.component';
+import { Part } from 'src/app/models/wol.model';
 
 @AutoUnsubscribe()
 @Component({
@@ -51,8 +52,8 @@ export class PublishersComponent implements OnInit, OnDestroy {
         map(data => data.sort((a, b) => a.lastName.localeCompare(b.lastName))),
         takeUntil(this.ngUnsubscribe)
         );
-
     })
+
   }
 
   onResize(event) {

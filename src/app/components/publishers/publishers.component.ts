@@ -85,30 +85,15 @@ export class PublisherModalComponent implements OnInit {
       .get()
       .toPromise()
       .then((data) => {
-        if (data.exists && data.data().parts) {
-          let newParts = data.data().parts;
+        this.part.assignee = null
+        this.part.assistant = null
+          publisherRef.collection('parts').doc(this.part.id).set({
+            assignee: null,
+            assistant: null,
+            ...this.part
+          }, { merge: true })
 
-          newParts.push(this.part);
-          publisherRef.update({
-            parts: newParts,
-          });
-        } else {
-          publisherRef.set(
-            {
-              parts: [this.part],
-            },
-            { merge: true }
-          );
-        }
-        this.modal.close();
-      }).then(() => {
-        if (this.replacing)
-        replacingRef.get().toPromise().then(document => {
-          if (document.exists) {
-            let parts = document.data().parts.filter(p => p.path.split('/')[5] !== this.part.id)
-            replacingRef.update({parts: parts})
-          }
-        })
+        this.modal.close(); 
       })
     })
 

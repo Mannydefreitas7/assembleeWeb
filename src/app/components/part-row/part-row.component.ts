@@ -48,6 +48,10 @@ export class PartRowComponent implements OnInit {
     this.forage.getItem('congregationRef').then(path => {
       this.fireStore.fireStore.doc<Part>(`${path}/parts/${this.part.id}`).update({
         isConfirmed: true
+      }).then(() => {
+        this.fireStore.fireStore.doc<Part>(`${path}/publishers/${this.part.assignee.uid}/parts/${this.part.id}`).update({
+          isConfirmed: true
+        })
       })
     })
   }
@@ -55,6 +59,10 @@ export class PartRowComponent implements OnInit {
     this.forage.getItem('congregationRef').then(path => {
       this.fireStore.fireStore.doc<Part>(`${path}/parts/${this.part.id}`).update({
         isConfirmed: false
+      }).then(() => {
+        this.fireStore.fireStore.doc<Part>(`${path}/publishers/${this.part.assignee.uid}/parts/${this.part.id}`).update({
+          isConfirmed: false
+        })
       })
     })
   }

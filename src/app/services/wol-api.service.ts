@@ -27,6 +27,164 @@ export class WolApiService {
       return this.http.get<WOLWeek>(url);
   }
 
+  parseMidWeek(wolWeek: WOLWeek, date: Date, path: string, weekID: string) : Part[] {
+   let midContent: Document = this.parse.parseFromString(wolWeek.items[1].content, "text/html");
+   let parts : Part[] = [];
+
+   // Treasures
+   midContent.getElementById('section2')
+   .querySelector('ul')
+   .querySelectorAll('.so')
+   .forEach((element, i) => {
+      parts.push({
+         assignee: null,
+         hasDiscussion: false,
+         hasAssistant: false,
+         assistant: null,
+         gender: [Gender.brother],
+         id: this.fireStore.fireStore.createId(),
+         length: element.textContent.match(/\(([^)]+)\)/)[1],
+         privilege: element.textContent.match(/\(([^)]+)\)/)[1].includes('10') ? [Privilege.elder, Privilege.ms] : [Privilege.pub, Privilege.elder, Privilege.ms],
+         subTitle: "",
+         path: path,
+         title: element.textContent,
+         lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime(),
+         index: i,
+         isConfirmed: false,
+         isEmailed: false,
+         isCalendarAdded: false,
+         parent: Parent.treasures,
+         date: date,
+         week: weekID
+      })
+   })
+   parts[1].hasDiscussion = true;
+
+   // Apply
+   midContent.getElementById('section3')
+    .querySelector('ul')
+    .querySelectorAll('.so')
+    .forEach((element, i) => {
+
+       parts.push({
+          assignee: null,
+          hasDiscussion: element.textContent.match(/\(([^)]+)\)/)[1].includes('15'),
+          hasAssistant: !element.textContent.match(/\(([^)]+)\)/)[1].includes('15'),
+          assistant: null,
+          path: path,
+          gender: element.textContent.match(/\(([^)]+)\)/)[1].includes('15') ? [Gender.brother] : [Gender.sister, Gender.brother],
+          id: this.fireStore.fireStore.createId(),
+          length: element.textContent.match(/\(([^)]+)\)/)[1],
+          privilege: element.textContent.match(/\(([^)]+)\)/)[1].includes('15') ? [Privilege.elder, Privilege.ms] : [Privilege.elder, Privilege.ms, Privilege.pub],
+          isEmailed: false,
+          subTitle: "",
+          title: element.textContent,
+          lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime(),
+          index: i,
+          isCalendarAdded: false,
+          isConfirmed: false,
+          parent: Parent.apply,
+          date: date,
+          week: weekID
+       })
+    })
+
+    // Living
+    let lifeParts : Part[] = [];
+    midContent.getElementById('section4')
+    .querySelector('ul')
+    .querySelectorAll('li')
+    .forEach((element, i) => {
+     lifeParts.push({
+          assignee: null,
+          hasDiscussion: false,
+          hasAssistant: false,
+          assistant: null,
+          path: path,
+          gender: [Gender.brother],
+          id: this.fireStore.fireStore.createId(),
+          length: element.textContent.match(/\(([^)]+)\)/) ? element.textContent.match(/\(([^)]+)\)/)[1] : '',
+          lengthTime: element.textContent.match(/\(([^)]+)\)/) ? moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime() : null,
+          privilege: [Privilege.elder, Privilege.ms],
+          subTitle: '',
+          title: element.textContent,
+          index: i,
+          isCalendarAdded: false,
+          isEmailed: false,
+          isConfirmed: false,
+          parent: Parent.life,
+          date: date,
+          week: weekID
+       })
+    })
+
+    lifeParts.pop();
+    lifeParts.pop();
+    lifeParts.shift();
+    lifeParts[lifeParts.length - 1].hasAssistant = true;
+    parts.push(...lifeParts)
+
+   return parts
+  }
+
+  weekSchedule(wolWeek: WOLWeek, date: Date, path: string, range: string) : WeekProgram {
+   let weekID = this.fireStore.fireStore.createId();
+   let weekProgram : WeekProgram = {
+      date: date,
+      isSent: false,
+      range: range,
+      id: weekID,
+      isCOVisit: false
+   }
+   return weekProgram
+  }
+
+  parseWeekEnd(wolWeek: WOLWeek, date: Date, path: string, weekID: string) : Part[] {
+      let endContent: Document = this.parse.parseFromString(wolWeek.items[wolWeek.items.length - 1].content, "text/html");
+      let parts : Part[] = [];
+      parts.push({
+         assignee: null,
+         assistant: null,
+         gender: [Gender.brother],
+         id: this.fireStore.fireStore.createId(),
+         length: '30',
+         lengthTime: moment('00:30:00', 'hh:mm:ss').toDate().getTime(),
+         privilege: [Privilege.elder, Privilege.ms],
+         title: "",
+         path: path,
+         subTitle: "",
+         hasAssistant: false,
+         index: 0,
+         isCalendarAdded: false,
+         isEmailed: false,
+         isConfirmed: false,
+         date: date,
+         parent: Parent.talk,
+         week: weekID
+    },
+    {
+      assignee: null,
+      gender: [Gender.brother],
+      title: endContent ? endContent.querySelector('.groupTOC').querySelector('h3').textContent : "",
+      subTitle: endContent ? endContent.querySelector('.groupTOC').querySelector('p').textContent : "",
+      id: this.fireStore.fireStore.createId(),
+      hasAssistant: true,
+      assistant: null,
+      length: '60',
+      path: path,
+      isCalendarAdded: false,
+      lengthTime: moment('01:00:00', 'hh:mm:ss').toDate().getTime(),
+      privilege: [Privilege.elder],
+      index: 1,
+      isEmailed: false,
+      date: date,
+      isConfirmed: false,
+      parent: Parent.wt,
+      week: weekID
+    })
+      return parts
+  }
+
   parseWolContent(wolWeek: WOLWeek, date: Date, path: string) : [WeekProgram, Part[]] {
 
     let weekID = this.fireStore.fireStore.createId();
@@ -37,7 +195,6 @@ export class WolApiService {
          endContent = this.parse.parseFromString(wolWeek.items[2].content, "text/html");
       }
       let parts : Part[] = [];
-
 
       midContent.getElementById('section2')
       .querySelector('ul')
@@ -59,6 +216,7 @@ export class WolApiService {
             index: i,
             isConfirmed: false,
             isEmailed: false,
+            isCalendarAdded: false,
             parent: Parent.treasures,
             date: date,
             week: weekID
@@ -66,7 +224,6 @@ export class WolApiService {
       })
 
       parts[1].hasDiscussion = true;
-
 
     midContent.getElementById('section3')
     .querySelector('ul')
@@ -88,6 +245,7 @@ export class WolApiService {
           title: element.textContent,
           lengthTime: moment(element.textContent.match(/\(([^)]+)\)/)[1].match(/\d+/)[0]).toDate().getTime(),
           index: i,
+          isCalendarAdded: false,
           isConfirmed: false,
           parent: Parent.apply,
           date: date,
@@ -115,6 +273,7 @@ export class WolApiService {
           subTitle: '',
           title: element.textContent,
           index: i,
+          isCalendarAdded: false,
           isEmailed: false,
           isConfirmed: false,
           parent: Parent.life,
@@ -141,6 +300,7 @@ export class WolApiService {
          path: path,
          isEmailed: false,
          parent: Parent.prayer,
+         isCalendarAdded: false,
          title: 'Priere',
          date: date,
          privilege: [Privilege.elder, Privilege.ms, Privilege.pub],
@@ -157,6 +317,7 @@ export class WolApiService {
          gender: [Gender.brother],
          isConfirmed: false,
          index: c,
+         isCalendarAdded: false,
          path: path,
          parent: Parent.chairman,
          title: 'President',
@@ -180,6 +341,7 @@ export class WolApiService {
             subTitle: "",
             hasAssistant: false,
             index: 0,
+            isCalendarAdded: false,
             isEmailed: false,
             isConfirmed: false,
             date: date,
@@ -196,6 +358,7 @@ export class WolApiService {
          assistant: null,
          length: '60',
          path: path,
+         isCalendarAdded: false,
          lengthTime: moment('01:00:00', 'hh:mm:ss').toDate().getTime(),
          privilege: [Privilege.elder],
          index: 1,

@@ -174,8 +174,14 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     const promises: Promise<any>[] = [];
     let mondays = this.storeService.getMondays(this.monthData.date);
+    // console.log(mondays) 
+    // mondays.forEach(monday => {
+    //   let start = moment(monday).locale('fr');
+    //   console.log(`${moment(start).format("Do")}-${start.add(6, 'day').format('Do MMM')}`)
+    // })
     this.forage.getItem<Congregation>('congregation').then((congregation) => {
       this.forage.getItem<string>('congregationRef').then((path) => {
+
         mondays.forEach((monday) => {
           let wolWeekPromise: Promise<WOLWeek> = this.wolApiService
             .getWeekProgram(
@@ -185,37 +191,63 @@ export class ProgramsComponent implements OnInit, OnDestroy {
               congregation.fireLanguage.apiURL
             )
             .toPromise();
-          promises.push(wolWeekPromise);
           wolWeekPromise
             .then((wolWeek) => {
-              if (this.wolApiService.parseWolContent(wolWeek, monday, path)) {
-                let wolContent = this.wolApiService.parseWolContent(
-                  wolWeek,
-                  monday,
-                  path
-                );
-                let partPromise: Promise<any> = this.fireStoreService.addWeekProgram(
+              // if program exists at all
+              if (wolWeek.items.length > 0) {
+                let start = moment(monday).locale('fr');
+                let range = `${moment(start).format("Do MMM")} - ${start.add(6, 'day').format('Do MMM')}`
+                let week: WeekProgram = this.wolApiService.weekSchedule(wolWeek, monday, path, range)
+                let weekPromise: Promise<any> = this.fireStoreService.addWeekProgram(
                   path,
                   monday,
-                  wolContent[0]
+                  week
                 );
-                promises.push(partPromise);
-                partPromise.then((_) => {
-                  wolContent[1].forEach((part) => {
+                promises.push(weekPromise);
+                
+                if (wolWeek.items.length > 2) {
+                  
+                  let midWeekPart : Part[] = this.wolApiService.parseMidWeek(wolWeek, monday, path, week.id)
+                  let weekEndPart : Part[] = this.wolApiService.parseWeekEnd(wolWeek, monday, path, week.id)
+                  promises[0].then(_ => {
+                    weekEndPart.forEach(part => {
+                      promises.push(
+                        this.fireStoreService.fireStore
+                          .doc<Part>(`${path}/parts/${part.id}`)
+                          .set(part)
+                      );
+                    })
+                    midWeekPart.forEach(part => {
+                      promises.push(
+                        this.fireStoreService.fireStore
+                          .doc<Part>(`${path}/parts/${part.id}`)
+                          .set(part)
+                      );
+                    })
+                  })
 
-                    promises.push(
-                      this.fireStoreService.fireStore
-                        .doc<Part>(`${path}/parts/${part.id}`)
-                        .set(part)
-                    );
-                  });
-                });
+                } else if (wolWeek.items.length > 1) {
+               
+                  let weekEndPart : Part[] = this.wolApiService.parseWeekEnd(wolWeek, monday, path, week.id)
+                  promises[0].then(_ => {
+                    weekEndPart.forEach(part => {
+                      promises.push(
+                        this.fireStoreService.fireStore
+                          .doc<Part>(`${path}/parts/${part.id}`)
+                          .set(part)
+                      );
+                    })
+                  }) 
+                 }
               }
             })
-            .catch((error: Error) => { this.toastService.error(`${moment(this.monthData.date).format('MMMM')} schedule not available yet`, "", {
+            .catch((error: Error) => { this.toastService.error(`${moment(this.monthData.date).format('MMMM')} schedule not available yet`, `${error.message}`, {
              // progressBar: true,
             })})
-            .then(() => setTimeout(() => this.isLoading = false, 3000))
+            .then(() => { 
+              Promise.all(promises).then(_ => this.isLoading = false)
+             // setTimeout(() => this.isLoading = false, 3000) 
+            })
         });
       });
     });

@@ -32,7 +32,7 @@ export class FireStoreService {
   }
 
   addWeekProgram(congregation: string, date: Date, data: WeekProgram) : Promise<any> {
-   // data.date = date
+      
       return this.fireStore.collection(`${congregation}/weeks`).doc(`${data.id}`).set(data);
 
   }

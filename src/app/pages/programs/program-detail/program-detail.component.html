@@ -1,5 +1,7 @@
 <h3 class="mb-4">{{ weekProgram.range | titlecase }}</h3>
-
+<!-- <button class="btn btn-danger" (click)="deleteWeek(weekProgram.id)">
+    Delete
+</button> -->
 <ng-container *ngIf="parts">
 
    <ul ngbNav #nav="ngbNav" class="nav nav-pills">
@@ -93,6 +95,7 @@
         </ng-template>
       </li>
     </ul>
+
     <div [ngbNavOutlet]="nav"></div>
 </ng-container>
 

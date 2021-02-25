@@ -3,7 +3,7 @@ import { NgForage } from 'ngforage';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { User } from 'src/app/models/user.model';
-import { Part } from 'src/app/models/wol.model';
+import { Part, WeekProgram } from 'src/app/models/wol.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import moment from 'moment';
 import { Publisher } from 'src/app/models/publisher.model';
@@ -26,6 +26,7 @@ export class HomeComponent implements OnInit {
   $myParts: Observable<Part[]>;
   $user: Observable<User>;
   ngOnInit(): void {
+ 
     let today: Date = new Date()
     this.forage.getItem('congregationRef').then(path => {
       if (path) {
@@ -60,6 +61,53 @@ export class HomeComponent implements OnInit {
           }))
         })
       }
+    })
+    .then(() => this.deleteOldWeeks())
+    .then(() => this.deleteOlderParts())
+  }
+
+  deleteOldWeeks() {
+    this.forage.getItem('congregationRef').then((path) => {
+      this.fireStore.fireStore
+        .collection<WeekProgram>(`${path}/weeks`, (ref) =>
+          ref.orderBy('date', 'asc')
+        )
+        .valueChanges()
+        .pipe(
+          map(weeks => {
+            return weeks.filter(week => moment(week.date.toDate()).isBefore(moment(new Date()).subtract('1', 'week')))
+          })
+        ).subscribe(weeks => {
+          if (weeks.length > 0)
+          weeks.forEach(week => {
+            this.fireStore.fireStore
+            .doc<WeekProgram>(`${path}/weeks/${week.id}`)
+            .delete()
+          })
+        })
+    })
+  }
+
+  deleteOlderParts() {
+    this.forage.getItem('congregationRef').then((path) => {
+      this.fireStore.fireStore
+        .collection<Part>(`${path}/parts`, (ref) =>
+          ref.orderBy('date', 'asc')
+        )
+        .valueChanges()
+        .pipe(
+          map(parts => {
+            return parts.filter(part => moment(part.date.toDate()).isBefore(moment(new Date()).subtract('2', 'month')))
+          })
+        )
+        .subscribe(parts => {
+          if (parts.length > 0)
+          parts.forEach(part => {
+            this.fireStore.fireStore
+            .doc<WeekProgram>(`${path}/parts/${part.id}`)
+            .delete()
+          })
+        })
     })
   }
 
