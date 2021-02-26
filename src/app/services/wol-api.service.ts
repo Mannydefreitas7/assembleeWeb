@@ -185,6 +185,54 @@ export class WolApiService {
       return parts
   }
 
+  addPrayers(date: Date, path: string, weekID: string) : Part[] {
+   let parts : Part[] = [];
+   for(var p = 0; p < 4; p++) {
+      parts.push({
+         id: this.fireStore.fireStore.createId(),
+         assignee: null,
+         hasDiscussion: false,
+         hasAssistant: false,
+         gender: [Gender.brother],
+         isConfirmed: false,
+         index: p,
+         path: path,
+         isEmailed: false,
+         parent: Parent.prayer,
+         isCalendarAdded: false,
+         title: 'Prière',
+         date: date,
+         privilege: [Privilege.elder, Privilege.ms, Privilege.pub],
+         week: weekID
+      })
+   }
+     return parts
+  }
+
+  addChairmans(date: Date, path: string, weekID: string) : Part[] {
+   let parts : Part[] = [];
+   for(var c = 0; c < 2; c++) {
+      parts.push({
+         id: this.fireStore.fireStore.createId(),
+         assignee: null,
+         hasDiscussion: false,
+         hasAssistant: false,
+         gender: [Gender.brother],
+         isConfirmed: false,
+         index: c,
+         isCalendarAdded: false,
+         path: path,
+         parent: Parent.chairman,
+         title: 'Président',
+         isEmailed: false,
+         date: date,
+         privilege: [Privilege.elder, Privilege.ms],
+         week: weekID
+      })
+   }
+     return parts
+  }
+
   parseWolContent(wolWeek: WOLWeek, date: Date, path: string) : [WeekProgram, Part[]] {
 
     let weekID = this.fireStore.fireStore.createId();

@@ -1,4 +1,2 @@
-export class Talk {
-    id: number;
-    title: string;
-}
+import { Song } from "./publisher.model";
+

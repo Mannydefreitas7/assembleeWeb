@@ -45,19 +45,19 @@ export interface FireLanguage {
 }
 
 export interface Properties {
-   orgGuid:               string;
-   orgName:               string;
-   orgType:               string;
-   orgTransliteratedName: string;
-   address:               string;
-   transliteratedAddress: string;
-   languageCode:          string;
-   schedule:              Schedule;
-   relatedLanguageCodes:  any[];
-   phones:                Phone[];
-   isPrivateMtgPlace:     boolean;
-   memorialAddress:       string;
-   memorialTime:          string;
+   orgGuid?:               string;
+   orgName?:               string;
+   orgType?:               string;
+   orgTransliteratedName?: string;
+   address?:               string;
+   transliteratedAddress?: string;
+   languageCode?:          string;
+   schedule?:              Schedule;
+   relatedLanguageCodes?:  any[];
+   phones?:                Phone[];
+   isPrivateMtgPlace?:     boolean;
+   memorialAddress?:       string;
+   memorialTime?:          string;
 }
 
 export interface Phone {

@@ -17,40 +17,50 @@
 
 
          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[0]">
-            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Priere</label>
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prière</label>
                <part-actions [part]="prayers[0]" [weekProgram]="weekProgram"></part-actions>
           </div>
 
 
           <hr>
-          <h4 class="my-3 fw-bold treasures">JOYAUX DE LA PAROLE DE DIEU</h4>
-          <div *ngIf="treasures.length > 0">
-          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of treasures">
+         
+          <ng-container *ngIf="treasures.length > 0; else downloadMWB">
+            <h4 class="my-3 fw-bold treasures">JOYAUX DE LA PAROLE DE DIEU</h4>
 
-            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ part.title.split(')')[0] }})</label>
-            <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
+            <div *ngIf="treasures.length > 0">
+              <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of treasures">
+    
+                <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ part.title.split(')')[0] }})</label>
+                <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
+                </div>
+              </div>
+              <h4 class="my-3 fw-bold apply">APPLIQUE-TOI AU MINISTÈRE</h4>
+              <div *ngIf="apply.length > 0">
+              <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of apply">
+                <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ part.title | shorten: 100: '...' }}</label>
+    
+                <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
+                </div>
+             </div>
+    
+              <h4 class="my-3 fw-bold life">VIE CHRÉTIENNE</h4>
+              <div *ngIf="life.length > 0">
+              <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of life">
+                <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">{{ part.title | shorten: 100: '...' }}</label>
+                <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
+              </div>
+              </div>
+          </ng-container>
+          <ng-template #downloadMWB>
+            <div class="py-4 d-flex justify-content-center">
+              <button class="btn btn-light btn-sm fw-bold">Download Schedule</button>
             </div>
-          </div>
+              
+          </ng-template>
 
-          <h4 class="my-3 fw-bold apply">APPLIQUE-TOI AU MINISTÈRE</h4>
-          <div *ngIf="apply.length > 0">
-          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of apply">
-            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label"> {{ part.title | shorten: 100: '...' }}</label>
-
-            <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
-            </div>
-         </div>
-
-          <h4 class="my-3 fw-bold life">VIE CHRÉTIENNE</h4>
-          <div *ngIf="life.length > 0">
-          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngFor="let part of life">
-            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">{{ part.title | shorten: 100: '...' }}</label>
-            <part-actions [part]="part" [weekProgram]="weekProgram"></part-actions>
-          </div>
-          </div>
           <hr>
           <div class="mt-3 d-flex justify-content-between align-items-center" *ngIf="prayers.length > 0 && prayers[1]">
-            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prayer</label>
+            <label for="prayer1" class="col-sm-12 col-md-6 col-lg-6 col-form-label">Prière</label>
               <part-actions [part]="prayers[1]" [weekProgram]="weekProgram"></part-actions>
           </div>
         </ng-template>
@@ -58,8 +68,6 @@
 
       <li ngbNavItem>
         <a ngbNavLink>Weekend</a>
-
-       
 
         <ng-template ngbNavContent>
 
@@ -71,14 +79,15 @@
           <hr>
           <h4 class="my-3 fw-bold weekend">DISCOURS PUBLIC</h4>
 
-          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngIf="talk.length > 0 && talk[0]">
+          <div class="mt-3 d-flex flex-wrap justify-content-between align-items-center" *ngIf="talk && talk.length > 0 && talk[0]">
 
-            <ng-template #rt let-r="result" let-t="term">
-              <ngb-highlight (click)="saveTalk(r, talk[0])" [result]="r.title" [term]="t"></ngb-highlight>
-            </ng-template>
+
             <div class="input-group-sm d-flex col-sm-12 col-md-5 col-lg-5">
-              <input type="text" class="form-control" [ngbTypeahead]="search" [resultTemplate]="rt" [value]="talk[0].title"  placeholder="Type talk number or title"/>
-          </div>
+              <select class="form-select form-select-sm" [disabled]="!talk[0].assignee">
+                <option [selected]="!talk[0].title" class="fw-bold p-1">Select talk outline</option>
+                <option *ngFor="let t of talks" class="p-1">{{ t.title }}</option>
+              </select>
+            </div>
             <talk-actions [part]="talk[0]" [weekProgram]="weekProgram"></talk-actions>
           </div>
           <hr>

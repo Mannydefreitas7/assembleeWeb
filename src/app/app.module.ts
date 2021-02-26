@@ -59,6 +59,9 @@ import { ScheduleComponent } from './components/schedule/schedule.component';
 import { PartInfoComponent } from './components/part-info/part-info.component';
 import { ClipboardModule } from 'ngx-clipboard';
 import { TalkActionsComponent } from './components/talk-actions/talk-actions.component';
+import { SpeakerDetailComponent } from './pages/speakers/speaker-detail/speaker-detail.component';
+import { SpeakerRowComponent } from './components/speaker-row/speaker-row.component'; 
+import { SelectSpeakerComponent } from './components/modals/select-speaker/select-speaker.component';
 
 registerLocaleData(en);
 
@@ -79,6 +82,7 @@ registerLocaleData(en);
       CongregationComponent,
       AddSpeakerComponent,
       SelectPublisherComponent,
+      SelectSpeakerComponent,
       ClaimedCongregationComponent,
       FilterPipe,
       SortByPipe,
@@ -87,6 +91,7 @@ registerLocaleData(en);
       PublisherRowComponent,
       PublisherModalComponent,
       PublisherDetailComponent,
+      SpeakerDetailComponent,
       PublisherComponent,
       AddPublisherComponent,
       InvitePublisherComponent,
@@ -100,6 +105,7 @@ registerLocaleData(en);
       BoardComponent,
       ScheduleComponent,
       PartInfoComponent,
+      SpeakerRowComponent,
       TalkActionsComponent,
 
   ],

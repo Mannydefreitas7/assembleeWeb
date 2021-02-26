@@ -1,0 +1,33 @@
+
+  <div class="modal-header flex-wrap bg-light">
+    <div class="d-flex align-items-center justify-content-between pb-2 w-100">
+      <h5 class="modal-title fw-bold">Speakers</h5>
+
+        <button type="button" class="close btn btn-light btn-sm" (click)="modal.close()">
+          Close
+        </button>
+    </div>
+    <div class="input-group input-group-end w-100">
+    <input id="publisherFrom" type="text" class="form-control" [(ngModel)]="searchText" placeholder="Search Publisher" />
+    <span class="input-group-text"><svg-icon src="assets/images/search.svg" [svgStyle]="{ 'height.px': 24 }"></svg-icon></span>
+  </div>
+  </div>
+  <div class="modal-body bg-light">
+
+    <ul class="list-group list-group-flush w-100">
+  
+      <ng-container *ngIf="$speakers | async as speakers ; else pubs">
+         <li *ngFor="let speaker of speakers | filter: searchText; index as i" class="list-group-item list-group-item-action py-2">
+              <speaker-row (click)="saveSpeaker(speaker)" [speaker]="speaker"></speaker-row>
+          </li>
+      </ng-container>
+   </ul>
+
+  </div>
+  <ng-template #pubs>
+    <ul class="list-group list-group-flush w-100" *ngFor="let number of [0,1,2,3,4,5]; let i=index">
+      <li class="list-group-item py-2 d-flex align-items-center">
+          <publisher-skeleton></publisher-skeleton>
+      </li>
+    </ul>
+</ng-template>

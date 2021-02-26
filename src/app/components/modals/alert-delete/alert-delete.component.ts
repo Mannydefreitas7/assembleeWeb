@@ -3,7 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgForage } from 'ngforage';
 import { map, take } from 'rxjs/operators';
 import { MonthData } from 'src/app/models/month.model';
-import { Publisher } from 'src/app/models/publisher.model';
+import { Publisher, Speaker } from 'src/app/models/publisher.model';
 import { Part, WeekProgram } from 'src/app/models/wol.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import { StoreService } from 'src/app/services/store.service';
@@ -19,7 +19,7 @@ export class AlertDeleteComponent implements OnInit {
   @Input('publisher') publisher: Publisher;
   @Input('type') type: string;
   @Input('weeks') weeks: WeekProgram[];
-
+  @Input('id') id: string;
   @Input('monthData') monthData: MonthData;
 
 
@@ -36,6 +36,9 @@ export class AlertDeleteComponent implements OnInit {
     }
     if (this.type == 'program') {
       this.deleteMonth()
+    }
+    if (this.type == 'speaker') {
+      this.deleteSpeaker()
     }
     this.store.publisherActiveTab = 0;
     this.modal.close()
@@ -59,6 +62,13 @@ export class AlertDeleteComponent implements OnInit {
 
         })
       }
+    })
+   }
+
+   deleteSpeaker() {
+    this.forage.getItem('congregationRef')
+    .then(path => {
+      this.fireStoreService.fireStore.doc<Speaker>(`${path}/speakers/${this.id}`).delete()
     })
    }
 

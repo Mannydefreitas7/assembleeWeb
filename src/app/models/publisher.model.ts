@@ -1,9 +1,9 @@
 import { AngularFirestoreDocument, DocumentReference } from "@angular/fire/firestore";
+import { AnyARecord } from "dns";
 import { Congregation } from "./congregation.model";
 import { Part } from "./wol.model";
 
 export class Publisher {
-
 	uid?: string;
    email?: string;
 	photoURL?: string;
@@ -15,23 +15,30 @@ export class Publisher {
    isWTConductor?: boolean;
    speaker?: Speaker;
    parts?: Part[];
-  isReader?: boolean;
+   isReader?: boolean;
 };
 
 export class Speaker {
+   id?: string
+   firstName?: string;
+   lastName?: string;
+   email?: string;
+   privilege?:Privilege;
    isOutGoing?: boolean;
+   photoURL?: string;
+   congregation?: Congregation;
    talks?: Talk[];
 }
 
 export class Talk {
    id?: string;
+   timeStamp?: any;
    title?: string;
    number?: number;
    lastDelivered?: Date;
    songNumber?: Song;
-   isSymposium?: boolean;
-   symposiumAssistant?: Publisher;
 }
+
 
 export class Song {
    id?: string;

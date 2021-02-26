@@ -66,23 +66,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     this.storeService.getMonths(this.year);
     this.monthData = this.storeService.months[0];
     this.loadWeeks();
-
-    let temp: Date = new Date('2021/3/24')
-   
-    // setTimeout(() => {
-
-    //   talks.forEach(talk => {
-    //     this.fireStoreService.fireStore.doc<Talk>(`languages/F/talks/${talk.DocumentId}`)
-    //     .set({
-    //       id: String(talk.DocumentId),
-    //       number: talk.PublicationId,
-    //       title: talk.Title
-    //     })
-    //   })
-    // }, 4000)
-
-   // this.addProgram(temp)
-
+    
   }
 
   ngOnDestroy() {
@@ -174,11 +158,6 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     const promises: Promise<any>[] = [];
     let mondays = this.storeService.getMondays(this.monthData.date);
-    // console.log(mondays) 
-    // mondays.forEach(monday => {
-    //   let start = moment(monday).locale('fr');
-    //   console.log(`${moment(start).format("Do")}-${start.add(6, 'day').format('Do MMM')}`)
-    // })
     this.forage.getItem<Congregation>('congregation').then((congregation) => {
       this.forage.getItem<string>('congregationRef').then((path) => {
 
@@ -204,6 +183,24 @@ export class ProgramsComponent implements OnInit, OnDestroy {
                   week
                 );
                 promises.push(weekPromise);
+
+                let prayers : Part[] = this.wolApiService.addPrayers(monday, path, week.id)
+                let chairmans : Part[] = this.wolApiService.addChairmans(monday, path, week.id)
+
+                prayers.forEach(prayer => {
+                  promises.push(
+                    this.fireStoreService.fireStore
+                      .doc<Part>(`${path}/parts/${prayer.id}`)
+                      .set(prayer)
+                  );
+                })
+                chairmans.forEach(chairman => {
+                  promises.push(
+                    this.fireStoreService.fireStore
+                      .doc<Part>(`${path}/parts/${chairman.id}`)
+                      .set(chairman)
+                  );
+                })
                 
                 if (wolWeek.items.length > 2) {
                   

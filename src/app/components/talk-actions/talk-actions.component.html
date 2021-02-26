@@ -13,7 +13,7 @@
       <button
         class="btn btn-light rounded-pill d-inline-flex align-items-center"
         *ngIf="!part.assignee"
-        (click)="openSelectPublisherModal(part, 'assignee')"
+        (click)="openSelectSpeakerModal(part, 'assignee')"
       >
         <span class="me-2">Speaker</span>
         <svg-icon src="assets/images/c-pub.svg"></svg-icon>
@@ -36,7 +36,7 @@
       <button
         class="btn btn-light ms-2 rounded-pill d-inline-flex align-items-center"
         *ngIf="part.isSymposium"
-        (click)="openSelectPublisherModal(part, 'assistant')"
+        (click)="openSelectSpeakerModal(part, 'assistant')"
       >
         <span class="me-2">Assistant</span>
         <svg-icon src="assets/images/c-pub.svg"></svg-icon>

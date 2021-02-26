@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Parent, Part, WeekProgram } from 'src/app/models/wol.model';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { FireStoreService } from 'src/app/services/fire-store.service';
@@ -11,9 +11,9 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, take, takeUntil } from 'rxjs/operators';
 import { NgForage } from 'ngforage';
 import talks from './../../../../assets/talks.json'
-import { Talk } from 'src/app/models/talk.model';
 import { Congregation } from 'src/app/models/congregation.model';
 import { StoreService } from 'src/app/services/store.service';
+import { Talk } from 'src/app/models/publisher.model';
 
 @AutoUnsubscribe()
 @Component({
@@ -66,9 +66,10 @@ public model: string;
          this.wt = this.parts.filter(part => part.parent == Parent.wt).sort((a, b) => a.index - b.index)
          this.chairmans = this.parts.filter(part => part.parent == Parent.chairman).sort((a, b) => a.index - b.index)
          this.prayers = this.parts.filter(part => part.parent == Parent.prayer).sort((a, b) => a.index - b.index)
+         this.loadTalks(this.talk)
       })
     })
-    this.loadTalks();
+    
   }
 
   ngOnDestroy() {
@@ -86,14 +87,25 @@ public model: string;
         talkNumber: String(talk.id + 1)
       })
     })
-   
   }
 
-  loadTalks() {
-    this.fireStoreService.fireStore.collection<Talk>('languages/F/talks')
-    .valueChanges()
-    .pipe(take(1))
-    .subscribe(talks => this.talks = talks)
+  loadTalks(talkParts: Part[]) {
+  
+    if (talkParts && talkParts.length > 0) {
+     
+      this.forage.getItem<Congregation>('congregationRef').then(path => {
+      this.fireStoreService.fireStore.doc<Part>(`${path}/parts/${talkParts[0].id}`)
+      .valueChanges()
+      .pipe(take(1))
+      .subscribe(talkChanges => {
+        if (talkChanges.assignee) {
+          this.fireStoreService.fireStore.collection<Talk>(`${path}/speakers/${talkChanges.assignee.uid}/talks`)
+          .valueChanges()
+          .subscribe(talks => this.talks = talks)
+      }
+      })
+    })
+    }
   }
 
   deleteWeek(weekID: string) {

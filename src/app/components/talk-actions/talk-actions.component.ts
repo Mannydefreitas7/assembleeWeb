@@ -15,6 +15,7 @@ import { ExportService } from 'src/app/services/export.service';
 import { FireStoreService } from 'src/app/services/fire-store.service';
 import { RenamePartComponent } from '../modals/rename-part/rename-part.component';
 import { SelectPublisherComponent } from '../modals/select-publisher/select-publisher.component';
+import { SelectSpeakerComponent } from '../modals/select-speaker/select-speaker.component';
 import talks from './../../../assets/talks.json'
 
 @Component({
@@ -84,8 +85,8 @@ export class TalkActionsComponent implements OnInit {
 
 
 
-  openSelectPublisherModal(part: Part, type: string) {
-    const modalRef = this.modalService.open(SelectPublisherComponent, {
+  openSelectSpeakerModal(part: Part, type: string) {
+    const modalRef = this.modalService.open(SelectSpeakerComponent, {
       centered: false,
       keyboard: false,
       backdrop: true,
