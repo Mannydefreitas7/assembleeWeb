@@ -35,6 +35,7 @@ export class SelectSpeakerComponent implements OnInit {
   $speakers: Observable<Speaker[]>;
 
   @Input('part') part: Part;
+  @Input('priere') priere: Part;
   @Input('id') weekProgram: WeekProgram;
   @Input('type') type: string;
   @Input('relacing') replacing: Speaker;
@@ -62,12 +63,15 @@ export class SelectSpeakerComponent implements OnInit {
       privilege: speaker.privilege
     }
     this.forage.getItem<string>('congregationRef').then(path => {
+      this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${this.part.week}/parts/${this.priere.id}`).update({
+        assignee: publisher
+      })
       if (this.type == 'assignee') {
-        this.fireStoreService.fireStore.doc<Part>(`${path}/parts/${this.part.id}`).update({
+        this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${this.part.week}/parts/${this.part.id}`).update({
           assignee: publisher
         }).then(() => this.modal.close())
       } else if (this.type == 'assistant') {
-        this.fireStoreService.fireStore.doc<Part>(`${path}/parts/${this.part.id}`).update({
+        this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${this.part.week}/parts/${this.part.id}`).update({
           assistant: publisher
         }).then(() => this.modal.close())
       }

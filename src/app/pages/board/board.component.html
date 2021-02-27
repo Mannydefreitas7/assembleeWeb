@@ -4,8 +4,8 @@
             <span class="fw-normal fs-4 text-muted">Tableau d'Affichage</span> <br>
             {{ congregation?.properties.orgName }}
         </h3>
-        <select class="form-select mb-4" [(ngModel)]="active" >
-            <option [value]="i" *ngFor="let week of weeks; index as i">{{ week?.range }}</option>
+        <select class="form-select mb-4" [(ngModel)]="active" (change)="onWeekChange(weeks)">
+            <option [value]="i" *ngFor="let week of weeks; index as i" >{{ week?.range }}</option>
         </select>
         <div class="p-4 rounded bg-white shadow-sm">
         <app-schedule [week]="weeks[active]"></app-schedule>

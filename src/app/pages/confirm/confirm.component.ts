@@ -33,7 +33,7 @@ export class ConfirmComponent implements OnInit {
 confirm() {
   this.route.queryParams.subscribe(params => {
     if (params && params.part && params.cong) {
-     this.fireStore.fireStore.doc<Part>(`congregations/${params.cong}/parts/${params.part}`).update({
+     this.fireStore.fireStore.doc<Part>(`congregations/${params.cong}/weeks/${params.part.week}/parts/${params.part}`).update({
        isConfirmed: true
      }).then(() => {
 
@@ -54,10 +54,6 @@ confirm() {
           this.emailService.sendEmail(msg)
         }
       })
-
-       
-
-      
      })
     }
   })

@@ -36,6 +36,7 @@ export class TalkActionsComponent implements OnInit {
   ) { }
 
   @Input('part') part: Part;
+  @Input('priere') priere: Part;
   @Input('weekProgram') weekProgram: WeekProgram;
   congregation: string;
   assigneeDocRef: AngularFirestoreDocument<Publisher>;
@@ -55,9 +56,9 @@ export class TalkActionsComponent implements OnInit {
     this.forage.getItem('congregationRef').then(path => {
       if (this.part)
       this.partDocRef = this.fireStoreService.fireStore.doc<Part>(
-        `${path}/parts/${this.part.id}`
+        `${path}/weeks/${this.weekProgram.id}/parts/${this.part.id}`
       );
-
+        this.partDocRef.update({ title: null })
     switch (type) {
       case 'assignee':
         if (this.part.assignee)
@@ -65,7 +66,16 @@ export class TalkActionsComponent implements OnInit {
       case 'assistant':
         if (this.part.assistant)
           this.partDocRef.update({ assistant: null })
-    }
+      }
+    })
+  }
+
+  changeTalk() {
+    this.forage.getItem('congregationRef').then(path => {
+      this.partDocRef = this.fireStoreService.fireStore.doc<Part>(
+        `${path}/weeks/${this.weekProgram.id}/parts/${this.part.id}`
+      );
+      this.partDocRef.update({ title: null })
     })
   }
 
@@ -94,6 +104,7 @@ export class TalkActionsComponent implements OnInit {
       scrollable: true,
     });
     modalRef.componentInstance.part = part;
+    modalRef.componentInstance.priere = this.priere;
     modalRef.componentInstance.type = type;
     if (part.assignee || part.assistant) {
       modalRef.componentInstance.replacing =

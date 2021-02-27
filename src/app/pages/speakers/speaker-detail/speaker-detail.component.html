@@ -84,7 +84,7 @@
           <span class="fw-bold">Title</span> <br>
           <span class="text-muted fs-6 fst-italic">{{ talk.title }}</span>
         </p>
-        <button class="btn btn-light btn-sm btn-delete" [disabled]="authUser && speaker.id != authUser.uid" (click)="deleteTalk(talk)">
+        <button class="btn btn-light btn-sm btn-delete" (click)="deleteTalk(talk)">
           <svg-icon src="assets/images/trash.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
         </button>
       </ng-container>

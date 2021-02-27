@@ -283,7 +283,7 @@ partDefinition = {
                 from: `${congregation.properties.orgName} <${user.email}>`,
                 subject: `${this.partDefinition.info.title}`,
                 html: `<p>Hello ${part.assignee.lastName} ${part.assignee.firstName},</p><p>Please find attached your meeting assignment for <strong>${moment(part.date.toDate()).format('MMMM DD yyyy')}</strong>.</p>
-                <a style="padding: 5px 10px; color: #ffffff; background-color: #198754; text-decoration: none; border-radius: 5px;" href="https://assemblee.web.app/#/confirm?cong=${congregation.id}&part=${part.id}">Confirm</a>
+                <a style="padding: 5px 10px; color: #ffffff; background-color: #198754; text-decoration: none; border-radius: 5px;" href="https://assemblee.web.app/#/confirm?cong=${congregation.id}&week=${part.week}&part=${part.id}">Confirm</a>
                 <p>Sincerely,<br>${congregation.properties.orgName}</p>`,
                 attachments: [
                   {
@@ -301,6 +301,229 @@ partDefinition = {
       })
     }
   }
+
+  parsePDFPage(congInfo: Congregation, weekProgram: WeekProgram, parts: Part[]) {
+    let filteredParts = this.filterPart(parts)
+
+      this.docDefinition.content.push({
+        columns: [
+          [
+            {
+              text: congInfo.properties.orgName,
+              style: 'subheader'
+            },
+            {
+              text: 'Programme de la Réunion',
+              style: 'header'
+            }
+          ],
+          {
+            text: weekProgram.range,
+            alignment: 'right',
+            margin: [0, 7],
+            fontSize: 22,
+            bold: true
+          }
+        ],
+        margin: [0, 20, 0, 0]
+      },
+      {
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
+        width: 520,
+        margin: [0, 3, 0, 10],
+      },
+      {
+        columns: [
+          [
+            {
+              text: 'Président',
+              style: 'label'
+            },
+            {
+              text: filteredParts.chairmans[0] && filteredParts.chairmans[0].assignee ? `${filteredParts.chairmans[0].assignee.firstName} ${filteredParts.chairmans[0].assignee.lastName}` : '',
+              style: 'value'
+            }
+          ],
+          [
+            {
+              text: 'Priere',
+              style: 'label'
+            },
+            {
+              text:filteredParts.prayers[0] && filteredParts.prayers[0].assignee ? `${filteredParts.prayers[0].assignee.firstName} ${filteredParts.prayers[0].assignee.lastName}` : '',
+              style: 'value'
+            }
+          ]
+        ]
+      },
+      {
+        text: "JOYAUX DE LA PAROLE DE DIEU",
+        style: "treasures",
+        margin: [0, 15, 0 , 0]
+      },
+      {
+        markerColor: '#808080',
+        ul: filteredParts.treasures.map(part => {
+          return {
+            columns: [
+              {
+
+                text: part.title,
+                style: "part",
+              },
+              {
+                text: part && part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
+                style: 'partValue'
+              }
+            ],
+            margin: [0, 10, 0, 0]
+          }
+        }),
+      },
+      {
+        text: "APPLIQUE-TOI AU MINISTÈRE",
+        style: "apply",
+        margin: [0, 15, 0 , 0]
+      },
+      {
+        markerColor: '#808080',
+        ul: filteredParts.apply.map(part => {
+          return {
+            columns: [
+              [
+                {
+
+                  text: `${part.title.split(')')[0]})`,
+                  style: "part",
+                },
+                {
+                  text: part && part.assistant ? `Interlocuteur` : '',
+                  style: 'part'
+                }
+              ],
+              [
+                {
+
+                  text: part && part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
+                  style: "partValue",
+                },
+                {
+                  text: part && part.assistant ? `${part.assistant.firstName} ${part.assistant.lastName}` : '',
+                  style: 'partValue'
+                }
+              ]
+            ],
+            margin: [0, 10, 0, 0]
+          }
+        }),
+      },
+      {
+        text: "VIE CHRÉTIENNE",
+        style: "life",
+        margin: [0, 15, 0 , 0]
+      },
+      {
+        markerColor: '#808080',
+        ul: filteredParts.life.map(part => {
+          return {
+            columns: [
+              [
+                {
+                  text: `${part.title.split(')')[0]})`,
+                  style: "part",
+                },
+                {
+                  text: part && part.assistant ? `Lecteur` : '',
+                  style: 'part'
+                }
+              ],
+              [
+                {
+
+                  text: part && part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
+                  style: "partValue",
+                },
+                {
+                  text: part && part.assistant ? `${part.assistant.firstName} ${part.assistant.lastName}` : '',
+                  style: 'partValue'
+                }
+              ]
+            ],
+            margin: [0, 10, 0, 0]
+          }
+        }),
+      },
+      {
+        text: 'Priere',
+        style: 'label',
+        margin: [0, 10, 0, 0]
+      },
+      {
+        text: filteredParts.prayers[1] && filteredParts.prayers[1].assignee ? `${filteredParts.prayers[1].assignee.firstName} ${filteredParts.prayers[1].assignee.lastName}` : '',
+        style: 'value'
+      },
+      {
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
+        width: 520,
+        margin: [0, 10, 0, 1],
+      },
+      {
+        columns: [
+          [
+            {
+              text: 'Président',
+              style: 'label'
+            },
+            {
+              text:filteredParts.chairmans[1] && filteredParts.chairmans[1].assignee ? `${filteredParts.chairmans[1].assignee.firstName} ${filteredParts.chairmans[1].assignee.lastName}` : '',
+              style: 'value'
+            }
+          ]
+        ],
+        margin: [0, 10, 0, 1]
+      },
+      {
+        text:filteredParts.talk[0] && filteredParts.talk[0].assignee ? `Frère ${filteredParts.talk[0].assignee.firstName} ${filteredParts.
+          talk[0].assignee.lastName} - ${filteredParts.talk[0].assignee.speaker.congregation.properties.orgName}` : '',
+        style: "label",
+        margin: [0, 10, 0, 0]
+      },
+      {
+        text:filteredParts.talk[0] && filteredParts.talk[0].title.length > 0 ? filteredParts.talk[0].title : 'Plan Du Discours',
+        style: "value",
+      },
+      {
+        text: 'Etude de la Tour de Garde',
+        style: "weekend",
+        margin: [0, 10, 0, 0]
+      },
+      {
+        columns: [
+            [
+              {
+                text: 'Conducteur',
+                style: "label"
+              },
+              {
+                text:filteredParts.wt[0] && filteredParts.wt[0].assignee ? `${filteredParts.wt[0].assignee.firstName} ${filteredParts.wt[0].assignee.lastName}` : '',
+                style: "value",
+              }
+            ],
+            [
+              {
+                text: 'Lecteur',
+                style: "label",
+              },
+              {
+                text:filteredParts.wt[0] && filteredParts.wt[0].assistant ? `${filteredParts.wt[0].assistant.firstName} ${filteredParts.wt[0].assistant.lastName}` : '',
+                style: "value",
+              }
+            ],
+        ],
+        margin: [0, 5, 0, 0]
+      })
+  }
+
 
   parseSinglePage(congInfo: Congregation, weekProgram: WeekProgram, parts: Part[], weeks: WeekProgram[]) {
     let filteredParts = this.filterPart(parts)
@@ -462,106 +685,106 @@ partDefinition = {
         text: filteredParts.prayers[1] && filteredParts.prayers[1].assignee ? `${filteredParts.prayers[1].assignee.firstName} ${filteredParts.prayers[1].assignee.lastName}` : '',
         style: 'value'
       },
-      // {
-      //   svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
-      //   width: 520,
-      //   margin: [0, 10, 0, 1],
-      // },
-      // {
-      //   columns: [
-      //     [
-      //       {
-      //         text: 'Président',
-      //         style: 'label'
-      //       },
-      //       {
-      //         text:filteredParts.chairmans[1] && filteredParts.chairmans[1].assignee ? `${filteredParts.chairmans[1].assignee.firstName} ${filteredParts.chairmans[1].assignee.lastName}` : '',
-      //         style: 'value'
-      //       }
-      //     ],
-      //     [
-      //       {
-      //         text: 'Priere',
-      //         style: 'label'
-      //       },
-      //       {
-      //         text:filteredParts.prayers[2] && filteredParts.prayers[2].assignee ? `${filteredParts.prayers[2].assignee.firstName} ${filteredParts.prayers[2].assignee.lastName}` : '',
-      //         style: 'value'
-      //       }
-      //     ]
-      //   ],
-      //   margin: [0, 20, 0, 1]
-      // },
-      // {
-      //   text:filteredParts.talk[0] && filteredParts.talk[0].title.length > 0 ? filteredParts.talk[0].title : 'Plan Du Discours',
-      //   style: "weekend",
-      //   margin: [0, 15]
-      // },
-      // {
-      //   columns: [
-      //       [
-      //         {
-      //           text: 'Orateur',
-      //           style: "label"
-      //         },
-      //         {
-      //           text:filteredParts.talk[0] && filteredParts.talk[0].assignee ? `${filteredParts.talk[0].assignee.firstName} ${filteredParts.
-      //             talk[0].assignee.lastName}` : '',
-      //           style: "value",
-      //         }
-      //       ],
-      //       [
-      //         {
-      //           text: 'Congrégation',
-      //           style: "label",
-      //         },
-      //         {
-      //           text: '',
-      //           style: "value",
-      //         }
-      //       ]
-      //   ]
-      // },
-      // {
-      //   text: 'Etude de la Tour de Garde',
-      //   style: "weekend",
-      //   margin: [0, 15]
-      // },
-      // {
-      //   columns: [
-      //       [
-      //         {
-      //           text: 'Conducteur',
-      //           style: "label"
-      //         },
-      //         {
-      //           text:filteredParts.wt[0] && filteredParts.wt[0].assignee ? `${filteredParts.wt[0].assignee.firstName} ${filteredParts.wt[1].assignee.lastName}` : '',
-      //           style: "value",
-      //         }
-      //       ],
-      //       [
-      //         {
-      //           text: 'Lecteur',
-      //           style: "label",
-      //         },
-      //         {
-      //           text:filteredParts.wt[0] && filteredParts.wt[0].assistant ? `${filteredParts.wt[0].assistant.firstName} ${filteredParts.wt[0].assistant.lastName}` : '',
-      //           style: "value",
-      //         }
-      //       ],
-      //   ]
-      // },
-      // [
-      //   {
-      //     text: 'Priere',
-      //     style: 'label'
-      //   },
-      //   {
-      //     text:filteredParts.prayers[3] && filteredParts.prayers[3].assignee ? `${filteredParts.prayers[3].assignee.firstName} ${filteredParts.prayers[3].assignee.lastName}` : "",
-      //     style: 'value',
+      {
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="1166" height="1" viewBox="0 0 1166 1"><line id="Line_13" data-name="Line 13" x2="1166" transform="translate(0 0.5)" fill="none" stroke="#707070" stroke-width="1"/></svg>',
+        width: 520,
+        margin: [0, 10, 0, 1],
+      },
+      {
+        columns: [
+          [
+            {
+              text: 'Président',
+              style: 'label'
+            },
+            {
+              text:filteredParts.chairmans[1] && filteredParts.chairmans[1].assignee ? `${filteredParts.chairmans[1].assignee.firstName} ${filteredParts.chairmans[1].assignee.lastName}` : '',
+              style: 'value'
+            }
+          ],
+          [
+            {
+              text: 'Priere',
+              style: 'label'
+            },
+            {
+              text:filteredParts.prayers[2] && filteredParts.prayers[2].assignee ? `${filteredParts.prayers[2].assignee.firstName} ${filteredParts.prayers[2].assignee.lastName}` : '',
+              style: 'value'
+            }
+          ]
+        ],
+        margin: [0, 20, 0, 1]
+      },
+      {
+        text:filteredParts.talk[0] && filteredParts.talk[0].title.length > 0 ? filteredParts.talk[0].title : 'Plan Du Discours',
+        style: "weekend",
+        margin: [0, 15]
+      },
+      {
+        columns: [
+            [
+              {
+                text: 'Orateur',
+                style: "label"
+              },
+              {
+                text:filteredParts.talk[0] && filteredParts.talk[0].assignee ? `${filteredParts.talk[0].assignee.firstName} ${filteredParts.
+                  talk[0].assignee.lastName}` : '',
+                style: "value",
+              }
+            ],
+            [
+              {
+                text: 'Congrégation',
+                style: "label",
+              },
+              {
+                text: '',
+                style: "value",
+              }
+            ]
+        ]
+      },
+      {
+        text: 'Etude de la Tour de Garde',
+        style: "weekend",
+        margin: [0, 15]
+      },
+      {
+        columns: [
+            [
+              {
+                text: 'Conducteur',
+                style: "label"
+              },
+              {
+                text:filteredParts.wt[0] && filteredParts.wt[0].assignee ? `${filteredParts.wt[0].assignee.firstName} ${filteredParts.wt[1].assignee.lastName}` : '',
+                style: "value",
+              }
+            ],
+            [
+              {
+                text: 'Lecteur',
+                style: "label",
+              },
+              {
+                text:filteredParts.wt[0] && filteredParts.wt[0].assistant ? `${filteredParts.wt[0].assistant.firstName} ${filteredParts.wt[0].assistant.lastName}` : '',
+                style: "value",
+              }
+            ],
+        ]
+      },
+      [
+        {
+          text: 'Priere',
+          style: 'label'
+        },
+        {
+          text:filteredParts.prayers[3] && filteredParts.prayers[3].assignee ? `${filteredParts.prayers[3].assignee.firstName} ${filteredParts.prayers[3].assignee.lastName}` : "",
+          style: 'value',
 
-      //   },
-      // ],
+        },
+      ],
       {
         text: '',
         pageBreak: weekProgram.id == weeks[weeks.length - 1].id ? '' : 'after',
@@ -569,7 +792,36 @@ partDefinition = {
       })
   }
 
+  downloadSinglePDF(week: WeekProgram) : Promise<boolean> {
+    this.docDefinition.content = []
+    return new Promise((resolve, reject) => {
 
+
+      this.docDefinition.info.title = `Schedule - ${moment(week.date.toDate()).format('MMMM yyyy')}.pdf`;
+  
+      this.forage.getItem('congregationRef').then(path => {
+        this.forage.getItem('congregation').then(congregation => {
+  
+          this.fireStore.fireStore.collection<Part>(`${path}/weeks/${week.id}/parts`)
+          .valueChanges()
+          .pipe(
+            map(data => data.filter(p => p.week == week.id)),
+            take(1))
+          .subscribe(parts => {
+            if (parts) {
+               this.parsePDFPage(congregation, week, parts)
+            }
+          })
+
+  
+        setTimeout(() => {
+          pdfMake.createPdf(this.docDefinition).download(`Schedule - ${moment(week.date.toDate()).format('MMMM yyyy')}.pdf`)
+          resolve(true)
+        }, 3000)
+      })
+    })
+  })
+  }
 
   downloadMonthPDF(weeks: WeekProgram[]) : Promise<boolean> {
     this.docDefinition.content = []

@@ -23,47 +23,24 @@ export class HomeComponent implements OnInit {
 
   fireUser: User;
   $parts: Observable<Part[]>;
+  weeks: WeekProgram[];
   $myParts: Observable<Part[]>;
   $user: Observable<User>;
   ngOnInit(): void {
- 
+  //  this.addAssigneeAssistantToPubs()
     let today: Date = new Date()
     this.forage.getItem('congregationRef').then(path => {
       if (path) {
         this.forage.getItem<User>('fireUser').then(user => {
-          this.$myParts = this.fireStore.fireStore.collection<Part>(`${path}/parts`)
+          this.$myParts = this.fireStore.fireStore.collection<Part>(`${path}/publishers/${user.uid}/parts`)
           .valueChanges()
-          .pipe(map(data => {
-            return data.filter(p => {
-              if (p.assignee) return p.assignee.uid == user.uid;
-              if (p.assistant) return p.assistant.uid == user.uid;
-            })
-          }),
-          map(data => data.sort((a, b) => a.date - b.date)),
+          .pipe(map(data => data.sort((a, b) => a.date.toDate() - b.date.toDate())),
           map(data => data.filter(p => moment(p.date.toDate()).isAfter(today))))
-
           this.$user = this.fireStore.fireStore.doc(`users/${user.uid}`).valueChanges()
-
-          this.$parts = this.fireStore.fireStore.collection<Part>(`${path}/parts`)
-          .valueChanges()
-          .pipe(map(data => {
-            return data.filter(p => {
-              return moment(p.date.toDate()).isAfter(today)
-            })
-          }),
-          map(data => data.filter(p => p.assistant != null || p.assignee != null)),
-          map(data => data.sort((a, b) => a.date - b.date)),
-          map(data => {
-            return data.filter(p => {
-              if (p.assignee) return p.assignee.uid != user.uid;
-              if (p.assistant) return p.assistant.uid != user.uid;
-            })
-          }))
         })
       }
     })
     .then(() => this.deleteOldWeeks())
-    .then(() => this.deleteOlderParts())
   }
 
   deleteOldWeeks() {
@@ -88,27 +65,57 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  deleteOlderParts() {
+  addAssigneeAssistantToPubs() {
     this.forage.getItem('congregationRef').then((path) => {
-      this.fireStore.fireStore
-        .collection<Part>(`${path}/parts`, (ref) =>
-          ref.orderBy('date', 'asc')
-        )
-        .valueChanges()
-        .pipe(
-          map(parts => {
-            return parts.filter(part => moment(part.date.toDate()).isBefore(moment(new Date()).subtract('2', 'month')))
-          })
-        )
-        .subscribe(parts => {
-          if (parts.length > 0)
-          parts.forEach(part => {
-            this.fireStore.fireStore
-            .doc<WeekProgram>(`${path}/parts/${part.id}`)
-            .delete()
-          })
+      this.fireStore.fireStore.collection<Publisher>(`${path}/publishers`)
+      .get()
+      .subscribe(data => {
+        let publishers = data.docs;
+        publishers.map(pub => pub.data()).forEach(publisher => {
+           this.fireStore.fireStore.collection<Part>(`${path}/publishers/${publisher.uid}/parts`)
+           .get()
+           .subscribe(partsData => {
+              let parts = partsData.docs
+              parts.map(p => p.data()).forEach(p => {
+                this.fireStore.fireStore.doc<Part>(`${path}/publishers/${publisher.uid}/parts/${p.id}`)
+                .update({
+                  assignee: publisher
+                })
+              })
+           })
         })
-    })
+      })
+      })
   }
 
+  transferPartsToWeeks() {
+    this.forage.getItem('congregationRef').then((path) => {
+    this.fireStore.fireStore.collection<WeekProgram>(`${path}/weeks`)
+    .get()
+    .subscribe(data => {
+      let weeks = data.docs;
+      this.fireStore.fireStore
+        .collection<Part>(`${path}/parts`)
+        .get()
+        .subscribe(parts => {
+
+        weeks.forEach(week => {
+          let _parts: Part[] = [];
+          let _week = week.data();
+          _parts = parts.docs.filter(p => p.data().week == _week.id).map(p => p.data())
+          
+          _parts.forEach(p => {
+            let part: Part = {
+              ...p, 
+              parts: []
+            }
+            this.fireStore.fireStore.doc<Part>(`${path}/weeks/${_week.id}/parts/${p.id}`).set(part)
+          })
+
+        })
+
+      })
+    })
+    })
+  }
 }

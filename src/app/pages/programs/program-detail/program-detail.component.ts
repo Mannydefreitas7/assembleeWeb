@@ -39,6 +39,7 @@ treasures: Part[];
 apply: Part[];
 life: Part[];
 talk: Part[];
+selectedTalk: Talk = null
 wt: Part[];
 chairmans: Part[];
 prayers: Part[];
@@ -55,7 +56,7 @@ public model: string;
 
     this.forage.getItem<string>('congregationRef').then(path => {
       if (!this.parts)
-      this.fireStoreService.fireStore.collection<Part>(`${path}/parts`, ref => ref.where('week', '==', this.weekProgram.id)).valueChanges()
+      this.fireStoreService.fireStore.collection<Part>(`${path}/weeks/${this.weekProgram.id}/parts`).valueChanges()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(parts => {
          this.parts = parts
@@ -76,11 +77,16 @@ public model: string;
     this.ngUnsubscribe.next()
     this.ngUnsubscribe.complete()
   }
+  test(selectedTalk: Talk) {
+    console.log(selectedTalk)
+
+  }
 
   saveTalk(talk: Talk, part: Part) {
+    if (talk)
     this.forage.getItem<Congregation>('congregation').then(congregation => {
       this.fireStoreService.fireStore
-      .doc<Part>(`congregations/${congregation.id}/parts/${part.id}`)
+      .doc<Part>(`congregations/${congregation.id}/weeks/${this.weekProgram.id}/parts/${part.id}`)
       .update({
         title: talk.title,
         isSymposium: false,
@@ -94,7 +100,7 @@ public model: string;
     if (talkParts && talkParts.length > 0) {
      
       this.forage.getItem<Congregation>('congregationRef').then(path => {
-      this.fireStoreService.fireStore.doc<Part>(`${path}/parts/${talkParts[0].id}`)
+      this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${this.weekProgram.id}/parts/${talkParts[0].id}`)
       .valueChanges()
       .pipe(take(1))
       .subscribe(talkChanges => {
@@ -112,16 +118,6 @@ public model: string;
     this.forage.getItem<Congregation>('congregation').then(congregation => {
       this.fireStoreService
       .delete(`congregations/${congregation.id}/weeks/${weekID}`)
-      .then(_ => {
-         this.fireStoreService.fireStore
-         .collection<Part>(`congregations/${congregation.id}/parts`, ref => ref.where("week", '==', weekID))
-         .valueChanges()
-         .pipe(take(1))
-         .subscribe(parts => {
-           parts.forEach(part => this.fireStoreService
-            .delete(`congregations/${congregation.id}/parts/${part.id}`))
-         })
-      })
     })
    
   }

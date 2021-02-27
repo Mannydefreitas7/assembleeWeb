@@ -59,7 +59,7 @@ export class PublisherModalComponent implements OnInit {
     let replacingRef: AngularFirestoreDocument;
     this.forage.getItem<string>('congregationRef').then(path => {
       let documentRef = this.fireStoreService.fireStore.doc<Part>(
-        `${path}/parts/${this.part.id}`
+        `${path}/weeks/${this.weekProgram.id}/parts/${this.part.id}`
       );
       let publisherRef = this.fireStoreService.fireStore.doc<Publisher>(
         `${path}/publishers/${publisher.uid}`

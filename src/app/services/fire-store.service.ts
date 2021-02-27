@@ -31,14 +31,12 @@ export class FireStoreService {
    return this.fireStore.collection<Publisher>(`${congregation}/publishers`).valueChanges();
   }
 
-  addWeekProgram(congregation: string, date: Date, data: WeekProgram) : Promise<any> {
-      
+  addWeekProgram(congregation: string, date: Date, data: WeekProgram) : Promise<any> {  
       return this.fireStore.collection(`${congregation}/weeks`).doc(`${data.id}`).set(data);
-
   }
 
   rename(congregation: string, part: Part, title: string) {
-    this.fireStore.doc<Part>(`${congregation}/parts/${part.id}`).update({
+    this.fireStore.doc<Part>(`${congregation}/weeks/${part.week}/parts/${part.id}`).update({
       title: title,
       subTitle: title
     })

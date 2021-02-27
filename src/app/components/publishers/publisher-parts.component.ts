@@ -29,28 +29,13 @@ export class PublisherPartsComponent implements OnInit {
   }
 
   getPublisherParts() {
-    let _parts: string[] = [];
-
     if (this.publisher.parts && this.publisher.parts.length > 0) {
       this.forage.getItem('congregationRef').then(path => {
         if (path) {
-
-          this.publisher.parts.forEach(p => {
-            _parts.push(p.path.split('/')[3])
-          })
-
           this.$parts = this.fireStoreService.fireStore
-          .collection<Part>(`${path}/parts`)
+          .collection<Part>(`${path}/publishers/${this.publisher.uid}/parts`)
           .valueChanges()
-          .pipe(
-            map(data => {
-              return data.filter(p => {
-                return p.assignee && p.assignee.uid == this.publisher.uid || p.assistant && p.assistant.uid == this.publisher.uid
-              })
-            }),
-            take(1),
-          //  takeUntil(this.ngUnsubscribe)
-            )
+          .pipe(takeUntil(this.ngUnsubscribe))
         }
       })
       }

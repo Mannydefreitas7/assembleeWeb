@@ -1,7 +1,7 @@
 <div class="d-inline-flex align-items-center">
     <ng-container *ngIf="part.assignee; else assign">
       <button
-        class="btn btn-light rounded-pill d-inline-flex align-items-center"
+        class="btn btn-light btn-sm rounded-pill d-inline-flex align-items-center"
         (click)="remove('assignee')"
         *ngIf="part.assignee"
       >
@@ -11,7 +11,7 @@
     </ng-container>
     <ng-template #assign>
       <button
-        class="btn btn-light rounded-pill d-inline-flex align-items-center"
+        class="btn btn-light btn-sm rounded-pill d-inline-flex align-items-center"
         *ngIf="!part.assignee"
         (click)="openSelectSpeakerModal(part, 'assignee')"
       >
@@ -22,7 +22,7 @@
   
     <ng-container *ngIf="part.assistant; else assist">
       <button
-        class="btn btn-light rounded-pill ms-2 d-inline-flex align-items-center"
+        class="btn btn-light btn-sm rounded-pill ms-2 d-inline-flex align-items-center"
         (click)="remove('assistant')"
         *ngIf="part.assistant"
       >
@@ -34,7 +34,7 @@
   
     <ng-template #assist>
       <button
-        class="btn btn-light ms-2 rounded-pill d-inline-flex align-items-center"
+        class="btn btn-light btn-sm ms-2 rounded-pill d-inline-flex align-items-center"
         *ngIf="part.isSymposium"
         (click)="openSelectSpeakerModal(part, 'assistant')"
       >
@@ -48,7 +48,7 @@
         <svg-icon src="assets/images/more.svg"></svg-icon>
       </button>
       <div ngbDropdownMenu>
-        <button ngbDropdownItem class="py-2 btn-sm" (click)="openRenameModal(part)">Rename</button>
+        <button ngbDropdownItem class="py-2 btn-sm" *ngIf="part.assignee" (click)="changeTalk()">Change Talk</button>
         <button ngbDropdownItem class="py-2 btn-sm" (click)="addAssistant(part)">{{ part.isSymposium ? 'Remove Assistant' : 'Add Assistant' }} </button>
       </div>
     </div>

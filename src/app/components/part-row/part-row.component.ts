@@ -46,7 +46,7 @@ export class PartRowComponent implements OnInit {
 
   confirm() {
     this.forage.getItem('congregationRef').then(path => {
-      this.fireStore.fireStore.doc<Part>(`${path}/parts/${this.part.id}`).update({
+      this.fireStore.fireStore.doc<Part>(`${path}/weeks/${this.part.week}/parts/${this.part.id}`).update({
         isConfirmed: true
       }).then(() => {
         this.fireStore.fireStore.doc<Part>(`${path}/publishers/${this.part.assignee.uid}/parts/${this.part.id}`).update({
@@ -56,10 +56,12 @@ export class PartRowComponent implements OnInit {
     })
   }
   unconfirm() {
+
     this.forage.getItem('congregationRef').then(path => {
-      this.fireStore.fireStore.doc<Part>(`${path}/parts/${this.part.id}`).update({
+      this.fireStore.fireStore.doc<Part>(`${path}/weeks/${this.part.week}/parts/${this.part.id}`).update({
         isConfirmed: false
       }).then(() => {
+     
         this.fireStore.fireStore.doc<Part>(`${path}/publishers/${this.part.assignee.uid}/parts/${this.part.id}`).update({
           isConfirmed: false
         })

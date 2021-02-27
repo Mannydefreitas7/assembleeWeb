@@ -49,7 +49,6 @@ export class InvitePublisherComponent implements OnInit {
 
     // create user with email and pass
 
-
       this.forage.getItem<string>('congregationRef').then(path => {
         if (path) {
           let url: string = `https://assemblee.web.app/#/invite?cong=${path}&pub=${this.publisher.uid}`

@@ -1,17 +1,20 @@
 <div class="d-inline-flex align-items-center">
   <ng-container *ngIf="part.assignee; else assign">
     <button
-      class="btn btn-light rounded-pill d-inline-flex align-items-center"
+      [disabled]="part.isConfirmed"
+      class="btn btn-sm rounded-pill d-inline-flex align-items-center"
+      [ngClass]="{ 'btn-success': part.isConfirmed, 'btn-light': !part.isConfirmed }"
       (click)="remove('assignee')"
       *ngIf="part.assignee"
     >
       <span class="me-2">{{ part.assignee.firstName }} {{ part.assignee.lastName }}</span>
-      <svg-icon src="assets/images/c-remove.svg"></svg-icon>
+      <svg-icon *ngIf="part.isConfirmed" src="assets/images/check-white.svg"></svg-icon>
+      <svg-icon *ngIf="!part.isConfirmed" src="assets/images/c-remove.svg"></svg-icon>
     </button>
   </ng-container>
   <ng-template #assign>
     <button
-      class="btn btn-light rounded-pill d-inline-flex align-items-center"
+      class="btn btn-light btn-sm rounded-pill d-inline-flex align-items-center"
       *ngIf="!part.assignee"
       (click)="openSelectPublisherModal(part, 'assignee')"
     >
@@ -22,20 +25,22 @@
 
   <ng-container *ngIf="part.assistant; else assist">
     <button
-      class="btn btn-light rounded-pill ms-2 d-inline-flex align-items-center"
+      class="btn btn-sm rounded-pill ms-2 d-inline-flex align-items-center"
+      [ngClass]="{ 'btn-success': part.isConfirmed, 'btn-light': !part.isConfirmed }"
       (click)="remove('assistant')"
+      [disabled]="part.isConfirmed"
       *ngIf="part.assistant"
     >
       <span class="me-2"
         >{{ part.assistant.firstName }} {{ part.assistant.lastName }}</span
       >
-      <svg-icon src="assets/images/c-remove.svg"></svg-icon>
+      <svg-icon *ngIf="!part.isConfirmed" src="assets/images/c-remove.svg"></svg-icon>
     </button>
   </ng-container>
 
   <ng-template #assist>
     <button
-      class="btn btn-light ms-2 rounded-pill d-inline-flex align-items-center"
+      class="btn btn-light btn-sm ms-2 rounded-pill d-inline-flex align-items-center"
       *ngIf="part.parent == parentApply || part.parent == parentWt || part.parent == parentlife && part.hasAssistant"
       (click)="openSelectPublisherModal(part, 'assistant')"
     >
@@ -51,6 +56,8 @@
     <div ngbDropdownMenu>
       <button ngbDropdownItem class="py-2 btn-sm" (click)="openRenameModal(part)">Rename</button>
       <button *ngIf="user && part.parent == parentApply && part.assignee || user && part.parent == parentTreasures && part.index == 2 && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="copyEmail(part)">Copy Email</button>
+      <button *ngIf="user && part.parent == parentApply && part.assignee || user && part.parent == parentTreasures && part.index == 2 && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="copyEmail(part)">Copy App Link</button>
+      <button *ngIf="user && part.assignee || user && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="part.isConfirmed ? unconfirm(part) : confirm(part)">{{ part.isConfirmed ? 'Cancel' : 'Confirm' }}</button>
       <button *ngIf="user && part.parent == parentApply && part.assignee || user && part.parent == parentTreasures && part.index == 2 && part.assignee" ngbDropdownItem class="py-2 btn-sm" (click)="exportService.downloadPartPDF(part)">Download</button>
     </div>
   </div>

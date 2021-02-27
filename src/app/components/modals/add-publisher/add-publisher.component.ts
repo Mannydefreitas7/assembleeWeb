@@ -43,7 +43,6 @@ get gender() { return this.pubForm.get('gender') }
 
 addPublisher() {
 
-
   this.forage.getItem('congregationRef').then(path => {
     if (this.pubForm.valid) {
       let id = this.fireStore.fireStore.createId();

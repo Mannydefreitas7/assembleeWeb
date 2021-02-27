@@ -8,6 +8,7 @@ import moment, { WeekSpec } from 'moment';
 import { map, take } from 'rxjs/operators';
 import { NgbCarousel, NgbCarouselConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
+import { ExportService } from 'src/app/services/export.service';
 
 @Component({
   selector: 'app-board',
@@ -21,6 +22,7 @@ export class BoardComponent implements OnInit {
     public fireStore: FireStoreService,
     public forage: NgForage,
     public route: ActivatedRoute,
+
     public config: NgbCarouselConfig
   ) { 
     config.showNavigationArrows = false;
@@ -41,16 +43,15 @@ export class BoardComponent implements OnInit {
       if (data.length > 1) {
         let congID = data[2].path;
         this.fireStore.fireStore.doc<Congregation>(`congregations/${congID}`)
-        .valueChanges()
-        .pipe(take(1))
-        .subscribe(cong => this.congregation = cong)
+        .get()
+        .subscribe(cong => this.congregation = cong.data())
         this.loadWeeks(congID)
       }
     })
   }
 
   loadProgram(congID: String, weekID: string) : Observable<Part[]> {
-   return this.fireStore.fireStore.collection<Part>(`congregations/${congID}/parts`, ref => ref.where('week', '==', weekID)).valueChanges()
+   return this.fireStore.fireStore.collection<Part>(`congregations/${congID}/weeks/${weekID}/parts`).valueChanges()
   }
 
   get nextDate() : Date {
@@ -72,13 +73,25 @@ export class BoardComponent implements OnInit {
   }
 
 
+  onWeekChange(weeks: WeekProgram[]) {
+    
+    this.route.url.subscribe(data => {
+      console.log(this.active)
+      console.log(weeks)
+      if (data.length > 1) {
+        let congID = data[2].path;
+        this.loadProgram(congID, weeks[this.active].id).subscribe(parts => weeks[this.active].parts = parts)
+        }
+      })
+    }
 
+    
 
 
   loadWeeks(congID: String) {
       this.fireStore.fireStore
         .collection<WeekProgram>(`congregations/${congID}/weeks`, (ref) =>
-          ref.orderBy('date', 'asc')
+           ref.where('isSent', "==", true)
         )
         .valueChanges()
         .pipe(
@@ -86,17 +99,12 @@ export class BoardComponent implements OnInit {
             return weeks.filter(week => moment(week.date.toDate()).isAfter(moment(new Date()).subtract('1', 'week')))
           }),
           map(weeks => {
-             weeks.forEach(week => {
-              return this.loadProgram(congID, week.id).subscribe(parts => week.parts = parts)
-            })
-            return weeks 
-          }),
-       //   take(1)
+            return weeks.sort((a, b) => a.date.toDate() - b.date.toDate())
+          })
         )
         .subscribe((data) => {
           this.weeks = data;
-          
-         // console.log(this.weeks)
+          this.loadProgram(congID, data[this.active].id).subscribe(parts => data[this.active].parts = parts)
       });
   }
 

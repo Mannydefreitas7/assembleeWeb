@@ -1,4 +1,12 @@
-<h2 class="mb-4">{{ weekProgram?.range | titlecase }}</h2>
+<div class="d-flex justify-content-between align-items-center">
+  <h2 class="mb-4">{{ weekProgram?.range | titlecase }}</h2>
+  <button class="btn btn-light btn-sm" (click)="downloadPDF()">
+    <svg-icon src="assets/images/file-pdf.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }">
+    </svg-icon>
+    <span class="ms-2 align-middle">PDF</span>
+  </button>
+</div>
+
     <hr>
     <ng-container *ngIf="weekProgram?.parts && weekProgram?.parts.length > 0; else loading">
         <h3 class="mt-4">Réunion de Semaine</h3>

@@ -45,28 +45,27 @@ export class PartActionsComponent implements OnInit {
   user: User;
 
   ngOnInit(): void {
-
     this.forage.getItem<User>("fireUser").then(fireUser => this.user = fireUser)
-
   }
 
   remove(type: string) {
     this.forage.getItem('congregationRef').then(path => {
-      if (this.part)
-      this.partDocRef = this.fireStoreService.fireStore.doc<Part>(
-        `${path}/parts/${this.part.id}`
-      );
-      this.assigneeDocRef = this.fireStoreService.fireStore.doc<Part>(
-        `${path}/publishers/${this.part.assignee.uid}/parts/${this.part.id}`
-      );
-      this.assistantDocRef = this.fireStoreService.fireStore.doc<Part>(
-        `${path}/publishers/${this.part.assistant.uid}/parts/${this.part.id}`
-      );
+
+      if (this.part) {
+        this.partDocRef = this.fireStoreService.fireStore.doc<Part>(
+          `${path}/weeks/${this.part.week}/parts/${this.part.id}`
+        );
 
     switch (type) {
       case 'assignee':
         if (this.part.assignee) {
-          this.partDocRef.update({ assignee: null })
+          this.assigneeDocRef = this.fireStoreService.fireStore.doc<Part>(
+            `${path}/publishers/${this.part.assignee.uid}/parts/${this.part.id}`
+          );
+          this.partDocRef.update({ 
+            assignee: null,
+            isConfirmed: false
+           })
           .then(() => {
             this.assigneeDocRef.delete()
           }) 
@@ -74,12 +73,16 @@ export class PartActionsComponent implements OnInit {
          
       case 'assistant':
         if (this.part.assistant) {
+          this.assistantDocRef = this.fireStoreService.fireStore.doc<Part>(
+            `${path}/publishers/${this.part.assistant.uid}/parts/${this.part.id}`
+          );
           this.partDocRef.update({ assistant: null })
           .then(() => {
-            this.assigneeDocRef.delete()
+            this.assistantDocRef.delete()
           }) 
         }  
     }
+      }
     })
   }
 
@@ -91,6 +94,33 @@ export class PartActionsComponent implements OnInit {
   emailPart(part: Part, user: User) {
     this.exportService.emailPartPDF(part, user)
     this.toastService.success('Email sent successfully')
+  }
+  confirm(part: Part) {
+    if (part.assignee) {
+      this.forage.getItem('congregationRef').then(path => {
+        this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${part.week}/parts/${part.id}`).update({
+          isConfirmed: true
+        }).then(() => {
+          this.fireStoreService.fireStore.doc<Part>(`${path}/publishers/${part.assignee.uid}/parts/${part.id}`).update({
+            isConfirmed: true
+          })
+        })
+      })
+    }
+  }
+
+  unconfirm(part: Part) {
+    if (part.assignee) {
+      this.forage.getItem('congregationRef').then(path => {
+        this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${part.week}/parts/${part.id}`).update({
+          isConfirmed: false
+        }).then(() => {
+          this.fireStoreService.fireStore.doc<Part>(`${path}/publishers/${part.assignee.uid}/parts/${part.id}`).update({
+            isConfirmed: false
+          })
+        })
+      })
+    }
   }
 
   openRenameModal(part: Part) {

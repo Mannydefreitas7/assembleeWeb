@@ -4,7 +4,7 @@ Run `ng serve --proxy-config src/proxy.config.json` for a dev server. Navigate t
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `ng build --prod` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
 ## Firebase hosting
 

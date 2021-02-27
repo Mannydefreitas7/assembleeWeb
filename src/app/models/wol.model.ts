@@ -76,6 +76,7 @@ export interface Part {
    isSymposium?: boolean;
    talkNumber?: string;
    songNumber?: number;
+   parts?: Part[];
 }
 
 

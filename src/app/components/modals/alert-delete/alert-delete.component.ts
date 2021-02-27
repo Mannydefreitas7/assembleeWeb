@@ -53,13 +53,7 @@ export class AlertDeleteComponent implements OnInit {
       let filteredWeeks = this.weeks.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
       if (filteredWeeks.length > 0) {
         filteredWeeks.forEach(week => {
-
-          this.fireStoreService.fireStore.collection(`${path}/parts`, ref => ref.where('week', '==', week.id)).get().pipe(
-            take(1)
-          ).subscribe(parts => {
-            parts.forEach(part => part.exists ? this.fireStoreService.delete(`${path}/parts/${part.id}`) : '')
-          },console.log, () => this.fireStoreService.fireStore.doc(`${path}/weeks/${week.id}`).delete())
-
+          this.fireStoreService.fireStore.doc(`${path}/weeks/${week.id}`).delete()
         })
       }
     })
@@ -78,25 +72,7 @@ export class AlertDeleteComponent implements OnInit {
         if (this.publisher.isInvited) {
           this.fireStoreService.delete(`users/${this.publisher.uid}`)
         }
-        this.fireStoreService.delete(`${path}/publishers/${this.publisher.uid}`).then(() => {
-          this.fireStoreService.fireStore.collection<Part>(`${path}/parts`)
-          .get()
-          .pipe(map(data => {
-              return data.docs.filter(p => {
-              if (p.data().assistant) return p.data().assistant.uid == this.publisher.uid
-              if (p.data().assignee) return p.data().assignee.uid == this.publisher.uid
-            })
-          })).subscribe(parts => {
-            parts.forEach(part => {
-              if (part.data().assistant)
-              this.fireStoreService.fireStore.doc<Part>(`${path}/parts/${part.data().id}`)
-              .update({ assistant: null })
-              if (part.data().assignee)
-              this.fireStoreService.fireStore.doc<Part>(`${path}/parts/${part.data().id}`)
-              .update({ assignee: null })
-            })
-          })
-      })
+        this.fireStoreService.delete(`${path}/publishers/${this.publisher.uid}`)
       }
   })
 }

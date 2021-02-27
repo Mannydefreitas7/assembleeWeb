@@ -1,5 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs/operators';
 import { Parent, Part, WeekProgram } from 'src/app/models/wol.model';
+import { ExportService } from 'src/app/services/export.service';
+import { FireStoreService } from 'src/app/services/fire-store.service';
 
 @Component({
   selector: 'app-schedule',
@@ -8,7 +12,11 @@ import { Parent, Part, WeekProgram } from 'src/app/models/wol.model';
 })
 export class ScheduleComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    public exportService: ExportService,
+    public fireStore: FireStoreService,
+    public route: ActivatedRoute,
+  ) { }
 
   @Input('week') weekProgram: WeekProgram;
 
@@ -16,6 +24,30 @@ export class ScheduleComponent implements OnInit {
   ngOnInit(): void {
   
   }
+
+  downloadPDF() {
+    this.route.url.subscribe(data => {
+      if (data.length > 1) {
+        let congID = data[2].path;
+        this.loadProgram(congID, this.weekProgram.id).then(parts => {
+          let _week : WeekProgram = {
+            ...this.weekProgram,
+            parts: parts
+          }
+          this.exportService.downloadSinglePDF(_week)
+        })
+        }
+      })
+  }
+
+  loadProgram(congID: String, weekID: string) : Promise<Part[]> {
+    return this.fireStore.fireStore.collection<Part>(`congregations/${congID}/weeks/${weekID}/parts`)
+    .get()
+    .pipe(
+      map(data => data.docs)
+    )
+    .toPromise()
+   }
 
   get treasures() : Part[] { return this.weekProgram.parts.filter(part => part.parent == Parent.treasures).sort((a, b) => a.index - b.index) }
   get apply() : Part[] { return this.weekProgram.parts.filter(part => part.parent == Parent.apply).sort((a, b) => a.index - b.index) }

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { LocalStorageService } from 'ngx-webstorage';
 import { Observable, Subject } from 'rxjs';
 import { Congregation } from 'src/app/models/congregation.model';
-import { Privilege, Publisher, Speaker, Talk } from 'src/app/models/publisher.model';
+import { Permission, Privilege, Publisher, Speaker, Talk } from 'src/app/models/publisher.model';
 import { User } from 'src/app/models/user.model';
 import { Part } from 'src/app/models/wol.model';
 import { FireStoreService } from 'src/app/services/fire-store.service';
@@ -45,6 +45,7 @@ export class SpeakerDetailComponent implements OnInit {
   firstName: string;
   lastName: string;
   privilege: Privilege;
+  
   privileges: Privilege[] = [Privilege.elder, Privilege.ms, Privilege.pub, Privilege.talkCo]
   isEditing: boolean = false;
   authUser: firebase.default.User;
@@ -61,7 +62,7 @@ export class SpeakerDetailComponent implements OnInit {
     this.firstName = this.speaker.firstName;
     this.lastName = this.speaker.lastName;
     this.privilege = this.speaker.privilege;
-
+    
     if (this.speaker.congregation)
     this.congregationName = this.speaker.congregation.properties.orgName
 
@@ -83,6 +84,17 @@ export class SpeakerDetailComponent implements OnInit {
     })
   }
 
+  permissions(user: User) : boolean {
+    
+      switch (user) {
+        case user.permissions.includes(Permission.admin):
+          return true;
+        case user.permissions.includes(Permission.speakers):
+          return true;
+        default:
+          return false;
+      }
+  }
 
   saveTalk(talk: Talk, currentTalk: Talk) {
     this.forage.getItem<Congregation>('congregationRef').then(path => {
