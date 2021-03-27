@@ -14,6 +14,8 @@ import talks from './../../../../assets/talks.json'
 import { Congregation } from 'src/app/models/congregation.model';
 import { StoreService } from 'src/app/services/store.service';
 import { Talk } from 'src/app/models/publisher.model';
+import { AlertDeleteComponent } from 'src/app/components/modals/alert-delete/alert-delete.component';
+import { WolApiService } from 'src/app/services/wol-api.service';
 
 @AutoUnsubscribe()
 @Component({
@@ -30,6 +32,7 @@ export class ProgramDetailComponent implements OnInit, OnDestroy {
      public modalService: NgbModal,
      private storage: LocalStorageService,
      private forage: NgForage,
+     public wolApiService: WolApiService,
      public store: StoreService,
      private exportService: ExportService
      ) { }
@@ -113,12 +116,17 @@ public model: string;
     }
   }
 
-  deleteWeek(weekID: string) {
-    this.forage.getItem<Congregation>('congregation').then(congregation => {
-      this.fireStoreService
-      .delete(`congregations/${congregation.id}/weeks/${weekID}`)
-    })
-   
+
+
+  delete(week: WeekProgram) {
+    const modalRef = this.modalService.open(AlertDeleteComponent, {
+      centered: true,
+      size: 'sm',
+    });
+    modalRef.componentInstance.id = week.id;
+    modalRef.componentInstance.type = 'program';
+    modalRef.componentInstance.message =
+      'This will delete all parts for this week.';
   }
 
   search = (text$: Observable<string>) =>

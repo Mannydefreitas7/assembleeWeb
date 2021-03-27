@@ -18,9 +18,8 @@ export class AlertDeleteComponent implements OnInit {
   @Input('message') message: string;
   @Input('publisher') publisher: Publisher;
   @Input('type') type: string;
-  @Input('weeks') weeks: WeekProgram[];
   @Input('id') id: string;
-  @Input('monthData') monthData: MonthData;
+
 
 
   constructor(
@@ -35,7 +34,7 @@ export class AlertDeleteComponent implements OnInit {
       this.deletePublisher()
     }
     if (this.type == 'program') {
-      this.deleteMonth()
+      this.deleteWeek()
     }
     if (this.type == 'speaker') {
       this.deleteSpeaker()
@@ -48,14 +47,10 @@ export class AlertDeleteComponent implements OnInit {
   }
 
 
-  deleteMonth() {
+  deleteWeek() {
     this.forage.getItem('congregationRef').then(path => {
-      let filteredWeeks = this.weeks.filter(d => d.date.toDate().getMonth() == this.monthData.date.getMonth())
-      if (filteredWeeks.length > 0) {
-        filteredWeeks.forEach(week => {
-          this.fireStoreService.fireStore.doc(`${path}/weeks/${week.id}`).delete()
-        })
-      }
+      if (path)
+      this.fireStoreService.fireStore.doc(`${path}/weeks/${this.id}`).delete()
     })
    }
 

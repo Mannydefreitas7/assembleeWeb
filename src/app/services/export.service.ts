@@ -595,7 +595,7 @@ partDefinition = {
                 style: "part",
               },
               {
-                text: part && part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
+                text: part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
                 style: 'partValue'
               }
             ],
@@ -620,18 +620,18 @@ partDefinition = {
                   style: "part",
                 },
                 {
-                  text: part && part.assistant ? `Interlocuteur` : '',
+                  text: part.assistant ? `Interlocuteur` : '',
                   style: 'part'
                 }
               ],
               [
                 {
 
-                  text: part && part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
+                  text: part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
                   style: "partValue",
                 },
                 {
-                  text: part && part.assistant ? `${part.assistant.firstName} ${part.assistant.lastName}` : '',
+                  text: part.assistant ? `${part.assistant.firstName} ${part.assistant.lastName}` : '',
                   style: 'partValue'
                 }
               ]
@@ -656,18 +656,18 @@ partDefinition = {
                   style: "part",
                 },
                 {
-                  text: part && part.assistant ? `Lecteur` : '',
+                  text: part.assistant ? `Lecteur` : '',
                   style: 'part'
                 }
               ],
               [
                 {
 
-                  text: part && part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
+                  text: part.assignee ? `${part.assignee.firstName} ${part.assignee.lastName}` : '',
                   style: "partValue",
                 },
                 {
-                  text: part && part.assistant ? `${part.assistant.firstName} ${part.assistant.lastName}` : '',
+                  text: part.assistant ? `${part.assistant.firstName} ${part.assistant.lastName}` : '',
                   style: 'partValue'
                 }
               ]
@@ -795,31 +795,23 @@ partDefinition = {
   downloadSinglePDF(week: WeekProgram) : Promise<boolean> {
     this.docDefinition.content = []
     return new Promise((resolve, reject) => {
-
-
       this.docDefinition.info.title = `Schedule - ${week.range}.pdf`;
   
-      this.forage.getItem('congregationRef').then(path => {
-        this.forage.getItem('congregation').then(congregation => {
+        this.forage.getItem<Congregation>('congregation').then(congregation => {
   
-          this.fireStore.fireStore.collection<Part>(`${path}/weeks/${week.id}/parts`)
-          .valueChanges()
-          .pipe(
-            map(data => data.filter(p => p.week == week.id)),
-            take(1))
+          this.fireStore.fireStore.collection<Part>(`congregations/${congregation.id}/weeks/${week.id}/parts`)
+          .get()
+          .pipe(map(data => data.docs.map(d => d.data())))
           .subscribe(parts => {
-            if (parts) {
                this.parsePDFPage(congregation, week, parts)
-            }
           })
 
-  
         setTimeout(() => {
-          pdfMake.createPdf(this.docDefinition).download(`Schedule - ${moment(week.date.toDate()).format('MMMM yyyy')}.pdf`)
+          pdfMake.createPdf(this.docDefinition).download(`Schedule - ${moment(week.date.toDate()).format('DD MMMM yyyy')}.pdf`)
           resolve(true)
         }, 3000)
       })
-    })
+
   })
   }
 
@@ -827,31 +819,29 @@ partDefinition = {
     this.docDefinition.content = []
     return new Promise((resolve, reject) => {
 
-
     this.docDefinition.info.title = `Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`;
 
-    this.forage.getItem('congregationRef').then(path => {
-      this.forage.getItem('congregation').then(congregation => {
+      this.forage.getItem<Congregation>('congregation').then(congregation => {
 
       weeks.forEach(week => {
-        this.fireStore.fireStore.collection<Part>(`${path}/parts`)
-        .valueChanges()
-        .pipe(
-          map(data => data.filter(p => p.week == week.id)),
-          take(1))
+        this.fireStore.fireStore.collection<Part>(`congregations/${congregation.id}/weeks/${week.id}/parts`)
+        .get()
+        .pipe(map(data => {
+            if (!data.empty) return data.docs.map(d => d.data())
+        }))
         .subscribe(parts => {
+          console.log(parts)
           if (parts) {
              this.parseSinglePage(congregation, week, parts, weeks)
           }
         })
        })
-
+    
       setTimeout(() => {
         pdfMake.createPdf(this.docDefinition).download(`Schedule - ${moment(weeks[0].date.toDate()).format('MMMM yyyy')}.pdf`)
         resolve(true)
       }, 3000)
     })
-  })
 })
   }
 

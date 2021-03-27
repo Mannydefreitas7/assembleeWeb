@@ -154,6 +154,8 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     })
   }
 
+  
+
   addMonthProgram() {
     this.isLoading = true;
     const promises: Promise<any>[] = [];

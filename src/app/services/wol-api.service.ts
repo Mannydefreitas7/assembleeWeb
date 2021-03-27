@@ -9,6 +9,7 @@ import { Gender, Privilege } from '../models/publisher.model';
 import { Congregation } from '../models/congregation.model';
 import { NgForage } from 'ngforage';
 import { environment } from 'src/environments/environment';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class WolApiService {
    parse = new DOMParser()
   constructor(
      private http: HttpClient,
+     private toastService: ToastrService,
      private forage: NgForage,
      private fireStore: FireStoreService
      ) { }
@@ -428,6 +430,37 @@ export class WolApiService {
    } else {
       return null;
    }
+  }
+
+  downloadMidWeek(week: WeekProgram) {
+     this.forage.getItem<Congregation>('congregation').then(congregation => {
+      let path : string = `congregations/${congregation.id}`;
+      console.log(moment(week.date.toDate()))
+      let wolWeekPromise: Promise<WOLWeek> = this.getWeekProgram(
+        moment(week.date.toDate()).year(),
+        moment(week.date.toDate()).month() + 1,
+        week.date.toDate().getDate(),
+        congregation.fireLanguage.apiURL
+      )
+      .toPromise();
+
+      wolWeekPromise
+      .then((wolWeek) => {
+         if (wolWeek.items.length > 2) {
+            let midWeekPart : Part[] = this.parseMidWeek(wolWeek, week.date.toDate(), path, week.id)
+
+            midWeekPart.forEach(part => {
+                 this.fireStore.fireStore
+                   .doc<Part>(`${path}/weeks/${week.id}/parts/${part.id}`)
+                   .set(part)
+             })
+         }
+      })
+      .catch((error: Error) => { this.toastService.error(`${moment(week.date.toDate()).format('dd MMMM')} schedule not available yet`, `${error.message}`)})
+      .then(_ => {
+         this.toastService.success(`${moment(week.date.toDate()).format('DD MMMM')} schedule downloaded!`)
+      })
+     })
   }
 
 }

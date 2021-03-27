@@ -1,7 +1,12 @@
-<h3 class="mb-4">{{ weekProgram.range | titlecase }}</h3>
-<!-- <button class="btn btn-danger" (click)="deleteWeek(weekProgram.id)">
-    Delete
-</button> -->
+
+<h3 class="mb-4 d-flex justify-content-between">
+  {{ weekProgram.range | titlecase }}
+  <button *ngIf="weekProgram" class="btn btn-light btn-sm btn-delete" (click)="delete(weekProgram)">
+      <svg-icon src="assets/images/trash.svg" class="align-middle" [svgStyle]="{ 'width.px': 14 }"></svg-icon>
+      <span class="ms-2 align-middle">Delete</span>
+  </button>
+</h3>
+
 <ng-container *ngIf="parts">
 
    <ul ngbNav #nav="ngbNav" class="nav nav-pills">
@@ -53,7 +58,7 @@
           </ng-container>
           <ng-template #downloadMWB>
             <div class="py-4 d-flex justify-content-center">
-              <button class="btn btn-light btn-sm fw-bold">Download Schedule</button>
+              <button class="btn btn-light btn-sm fw-bold" (click)="wolApiService.downloadMidWeek(weekProgram)">Download Schedule</button>
             </div>
               
           </ng-template>

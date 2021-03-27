@@ -12,9 +12,7 @@
                     <select class="form-select mb-4 my-3" [(ngModel)]="active" (change)="onWeekChange(weeks)">
                         <option [value]="i" *ngFor="let week of weeks; index as i" >{{ week?.range }}</option>
                     </select>
-                    <div class="p-4 rounded bg-white shadow-sm">
                     <app-schedule [week]="weeks[active]"></app-schedule>
-                    </div>
                 </ng-template>
               </li>
             <li ngbNavItem>
@@ -34,7 +32,7 @@
                         </card-groups>
                 
                     <card-groups title="Jeudi" subtitle="Zoom">
-                        <em class="text-muted">6:00 PM</em>
+                        <strong>6:00 PM</strong>
                         </card-groups>
                 
                     <card-groups title="Vendredi" subtitle="Zoom">
@@ -113,10 +111,13 @@
                                 <li class="list-group-item">Karen De Freitas</li>
                                 <li class="list-group-item">Helen Durand</li>
                                 <li class="list-group-item">Johan Durand</li>
+                                <li class="list-group-item">Louis A. Edmond</li>
                                 <li class="list-group-item">Cheryl Gunter</li>
                                 <li class="list-group-item">Anthony Hanna</li>
                                 <li class="list-group-item">Jackie Stanojevic</li>
                                 <li class="list-group-item">Sam Stanojevic</li>
+                                <li class="list-group-item">Allie Togni</li>
+                                <li class="list-group-item">Jules Togni</li>
                                 <li class="list-group-item">Curtis Totten</li>
                                 <li class="list-group-item">Evelyn Totten</li>
                                 <li class="list-group-item">Jennifer Waite</li>
