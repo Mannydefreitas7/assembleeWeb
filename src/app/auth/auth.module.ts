@@ -18,12 +18,12 @@ import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 const routes: Routes = [
 
    { path: '', redirectTo: 'login', pathMatch: 'full' },
-   { path: 'signup', component: SignupComponent },
+   // { path: 'signup', component: SignupComponent },
    { path: 'reset', component: ResetComponent },
    { path: 'login', component: LoginComponent },
    { path: 'invite', component: InviteComponent },
    { path: 'confirm', component: ConfirmComponent },
-   { path: 'board/cong/:id', component: BoardComponent }
+   { path: 'board', component: BoardComponent }
  ];
 
 

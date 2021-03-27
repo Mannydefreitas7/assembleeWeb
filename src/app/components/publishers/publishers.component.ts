@@ -20,7 +20,6 @@ export class PublisherModalComponent implements OnInit {
     private fireStoreService: FireStoreService,
     private forage: NgForage,
     private modal: NgbActiveModal,
-
   ) {}
   congregation: Congregation;
   path: string;
@@ -44,9 +43,7 @@ export class PublisherModalComponent implements OnInit {
               this.part.gender.includes(pubs.gender)
           );
         }),
-        take(1)
       );
-
     })
   }
 

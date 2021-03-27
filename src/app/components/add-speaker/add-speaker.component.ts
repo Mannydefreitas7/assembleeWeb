@@ -37,7 +37,7 @@ export class AddSpeakerComponent implements OnInit {
     })
     this.forage.getItem('congregationRef').then(path => {
       this.fireStore.fireStore.doc<Congregation>(`${path}`)
-      .valueChanges().pipe(take(1))
+      .valueChanges()
       .subscribe(cong => {
         this.congregation.setValue(cong.properties.orgName)
       })

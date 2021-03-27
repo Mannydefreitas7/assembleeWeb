@@ -62,14 +62,12 @@ export class SpeakersComponent implements OnInit {
 
       this.fireStoreService.fireStore.doc<Congregation>(`${path}`)
       .valueChanges()
-      .pipe(take(1))
       .subscribe(cong => {
         this.fireStoreService.fireStore
       .collection<Publisher>(`${path}/publishers`)
       .valueChanges()
       .pipe(
         map(data => data.filter(p => p.gender == Gender.brother && p.privilege == Privilege.elder || p.privilege == Privilege.ms)),
-        take(1)
         ).subscribe(brothers => {
           brothers.forEach(brother => {
             this.fireStoreService.fireStore.doc<Speaker>(`${path}/speakers/${brother.uid}`)

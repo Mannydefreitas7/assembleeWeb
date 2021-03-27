@@ -31,6 +31,7 @@ export interface WeekProgram {
    range?: string;
    date?: any;
    isCOVisit?: boolean;
+   isAssemblee?: boolean;
    parts?: Part[];
    isSent?: boolean;
 }

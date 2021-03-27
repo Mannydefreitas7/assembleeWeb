@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { Parent, Part, WeekProgram } from 'src/app/models/wol.model';
 import { ExportService } from 'src/app/services/export.service';
 import { FireStoreService } from 'src/app/services/fire-store.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-schedule',
@@ -26,9 +27,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   downloadPDF() {
-    this.route.url.subscribe(data => {
-      if (data.length > 1) {
-        let congID = data[2].path;
+        let congID = environment.cong;
         this.loadProgram(congID, this.weekProgram.id).then(parts => {
           let _week : WeekProgram = {
             ...this.weekProgram,
@@ -36,8 +35,6 @@ export class ScheduleComponent implements OnInit {
           }
           this.exportService.downloadSinglePDF(_week)
         })
-        }
-      })
   }
 
   loadProgram(congID: String, weekID: string) : Promise<Part[]> {

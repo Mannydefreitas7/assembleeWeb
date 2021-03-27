@@ -60,14 +60,6 @@ export class AuthService {
     .then(() => this.afAuth.signOut().then(() => {
       this.router.navigateByUrl('/login')
     }))
-
-      // this.afAuth.signOut().then(value => {
-      //    this.router.navigateByUrl('/login')
-      //    .then(() => {
-
-      //      this.removeAllStoredKeys()
-      //    })
-      // })
    }
 
    removeAllStoredKeys() {
@@ -222,17 +214,24 @@ export class AuthService {
                   if (fireUser) {
                     this.toastr.success("Login success")
                      // already exists
-                     if (fireUser.congregation) {
+                  //   if (fireUser.congregation) {
                         // already has congregation setup
                         this.ngZone.run(() => this.router.navigate(['/home/dashboard']));
-                     } else {
-                        this.ngZone.run(() => this.router.navigate(['/setup']));
-                     }
+                   //  } else {
+                       // this.ngZone.run(() => this.router.navigate(['/setup']));
+                  //   }
+                  } else {
+                     this.afAuth.signOut().then(() => {
+                        this.toastr.error("User not found")
+                        console.warn("login not found")
+                       })
                   }
                })
               } else {
-                this.toastr.error("User not found")
-                console.warn("login not found")
+                 this.afAuth.signOut().then(() => {
+                  this.toastr.error("User not found")
+                  console.warn("login not found")
+                 })
               }
          })
        .catch(console.log);

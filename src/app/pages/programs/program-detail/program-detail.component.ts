@@ -102,7 +102,6 @@ public model: string;
       this.forage.getItem<Congregation>('congregationRef').then(path => {
       this.fireStoreService.fireStore.doc<Part>(`${path}/weeks/${this.weekProgram.id}/parts/${talkParts[0].id}`)
       .valueChanges()
-      .pipe(take(1))
       .subscribe(talkChanges => {
         if (talkChanges.assignee) {
           this.fireStoreService.fireStore.collection<Talk>(`${path}/speakers/${talkChanges.assignee.uid}/talks`)

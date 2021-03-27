@@ -62,6 +62,9 @@ import { TalkActionsComponent } from './components/talk-actions/talk-actions.com
 import { SpeakerDetailComponent } from './pages/speakers/speaker-detail/speaker-detail.component';
 import { SpeakerRowComponent } from './components/speaker-row/speaker-row.component'; 
 import { SelectSpeakerComponent } from './components/modals/select-speaker/select-speaker.component';
+import { GroupsComponent } from './components/groups/groups.component';
+import { FieldServiceComponent } from './components/field-service/field-service.component';
+import { CardGroupComponent } from './components/card-group/card-group.component';
 
 registerLocaleData(en);
 
@@ -107,6 +110,9 @@ registerLocaleData(en);
       PartInfoComponent,
       SpeakerRowComponent,
       TalkActionsComponent,
+      GroupsComponent,
+      FieldServiceComponent,
+      CardGroupComponent,
 
   ],
   imports: [

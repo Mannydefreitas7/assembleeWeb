@@ -29,7 +29,7 @@ export class PublisherPartsComponent implements OnInit {
   }
 
   getPublisherParts() {
-    if (this.publisher.parts && this.publisher.parts.length > 0) {
+
       this.forage.getItem('congregationRef').then(path => {
         if (path) {
           this.$parts = this.fireStoreService.fireStore
@@ -38,7 +38,6 @@ export class PublisherPartsComponent implements OnInit {
           .pipe(takeUntil(this.ngUnsubscribe))
         }
       })
-      }
   }
 
   ngOnDestroy() {

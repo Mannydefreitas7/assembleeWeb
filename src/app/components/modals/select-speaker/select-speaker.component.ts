@@ -47,7 +47,6 @@ export class SelectSpeakerComponent implements OnInit {
       .valueChanges()
       .pipe(
         map(data => data.sort((a, b) => a.lastName.localeCompare(b.lastName))),
-        take(1)
         );
     })
   }

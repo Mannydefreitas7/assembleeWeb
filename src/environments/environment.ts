@@ -15,6 +15,7 @@ const firebaseConfig = {
 
 export const environment = {
   production: false,
+  cong: '0927216B-2451-4AB5-AD08-11AC5777CCB1',
   firebaseConfig: firebaseConfig,
   wolApiUrl: 'http://localhost:4200/',
   meetingUrl: 'http://localhost:4200/api',

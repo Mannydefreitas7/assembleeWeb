@@ -85,7 +85,7 @@
             <div class="input-group-sm d-flex col-sm-12 col-md-5 col-lg-5">
               <label for="prayer1" class="col-form-label" *ngIf="talk[0].assignee && talk[0].title">{{ talk[0].title }}</label>
               <select class="form-select form-select-sm" *ngIf="!talk[0].title" [disabled]="!talk[0].assignee" [(ngModel)]="selectedTalk" (change)="saveTalk(selectedTalk, talk[0])">
-                <option disabled selected class="fw-bold">Select talk outline</option>
+                <option selected class="fw-bold">Select talk outline</option>
                 <option *ngFor="let t of talks" [selected]="talk[0].title == t.title" [ngValue]="t" class="p-1">{{ t.title }}</option>
               </select>
             </div>

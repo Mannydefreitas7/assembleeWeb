@@ -146,7 +146,6 @@ openDeleteAlert() {
 loadTalks() {
   this.fireStoreService.fireStore.collection<Talk>('languages/F/talks')
   .valueChanges()
-  .pipe(take(1))
   .subscribe(talks => this.allTalks = talks)
 }
 

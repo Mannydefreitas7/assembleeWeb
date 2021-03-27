@@ -9,6 +9,7 @@ import { map, take } from 'rxjs/operators';
 import { NgbCarousel, NgbCarouselConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { ExportService } from 'src/app/services/export.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-board',
@@ -39,15 +40,10 @@ export class BoardComponent implements OnInit {
 
   ngOnInit(): void {
     
-    this.route.url.subscribe(data => {
-      if (data.length > 1) {
-        let congID = data[2].path;
-        this.fireStore.fireStore.doc<Congregation>(`congregations/${congID}`)
+        this.fireStore.fireStore.doc<Congregation>(`congregations/${environment.cong}`)
         .get()
         .subscribe(cong => this.congregation = cong.data())
-        this.loadWeeks(congID)
-      }
-    })
+        this.loadWeeks(environment.cong)
   }
 
   loadProgram(congID: String, weekID: string) : Observable<Part[]> {
@@ -74,15 +70,7 @@ export class BoardComponent implements OnInit {
 
 
   onWeekChange(weeks: WeekProgram[]) {
-    
-    this.route.url.subscribe(data => {
-      console.log(this.active)
-      console.log(weeks)
-      if (data.length > 1) {
-        let congID = data[2].path;
-        this.loadProgram(congID, weeks[this.active].id).subscribe(parts => weeks[this.active].parts = parts)
-        }
-      })
+      this.loadProgram(environment.cong, weeks[this.active].id).subscribe(parts => weeks[this.active].parts = parts)
     }
 
     

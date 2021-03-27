@@ -69,7 +69,7 @@ export class ImportComponent implements OnInit {
     let publisherColRef = this.fireStoreService.fireStore.collection<Publisher>(`${path}/publishers`)
     console.log(file)
     this.ngxCsvParser.parse(file, { header: this.header, delimiter: ',' })
-    .pipe(take(1)).subscribe((result: Array<HourglassModel>) => {
+    .subscribe((result: Array<HourglassModel>) => {
       console.log(result)
         result.forEach(r => {
           let id = this.fireStoreService.fireStore.createId();

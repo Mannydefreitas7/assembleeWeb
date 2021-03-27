@@ -797,7 +797,7 @@ partDefinition = {
     return new Promise((resolve, reject) => {
 
 
-      this.docDefinition.info.title = `Schedule - ${moment(week.date.toDate()).format('MMMM yyyy')}.pdf`;
+      this.docDefinition.info.title = `Schedule - ${week.range}.pdf`;
   
       this.forage.getItem('congregationRef').then(path => {
         this.forage.getItem('congregation').then(congregation => {
