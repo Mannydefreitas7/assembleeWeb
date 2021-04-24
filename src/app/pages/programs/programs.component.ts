@@ -161,8 +161,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
     const promises: Promise<any>[] = [];
     let mondays = this.storeService.getMondays(this.monthData.date);
     this.forage.getItem<Congregation>('congregation').then((congregation) => {
-      this.forage.getItem<string>('congregationRef').then((path) => {
-
+      let path : string = `congregations/${congregation.id}`;
         mondays.forEach((monday) => {
           let wolWeekPromise: Promise<WOLWeek> = this.wolApiService
             .getWeekProgram(
@@ -192,14 +191,14 @@ export class ProgramsComponent implements OnInit, OnDestroy {
                 prayers.forEach(prayer => {
                   promises.push(
                     this.fireStoreService.fireStore
-                      .doc<Part>(`${path}/parts/${prayer.id}`)
+                      .doc<Part>(`${path}/weeks/${week.id}/parts/${prayer.id}`)
                       .set(prayer)
                   );
                 })
                 chairmans.forEach(chairman => {
                   promises.push(
                     this.fireStoreService.fireStore
-                      .doc<Part>(`${path}/parts/${chairman.id}`)
+                      .doc<Part>(`${path}/weeks/${week.id}/parts/${chairman.id}`)
                       .set(chairman)
                   );
                 })
@@ -212,14 +211,14 @@ export class ProgramsComponent implements OnInit, OnDestroy {
                     weekEndPart.forEach(part => {
                       promises.push(
                         this.fireStoreService.fireStore
-                          .doc<Part>(`${path}/parts/${part.id}`)
+                          .doc<Part>(`${path}/weeks/${week.id}/parts/${part.id}`)
                           .set(part)
                       );
                     })
                     midWeekPart.forEach(part => {
                       promises.push(
                         this.fireStoreService.fireStore
-                          .doc<Part>(`${path}/parts/${part.id}`)
+                          .doc<Part>(`${path}/weeks/${week.id}/parts/${part.id}`)
                           .set(part)
                       );
                     })
@@ -232,7 +231,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
                     weekEndPart.forEach(part => {
                       promises.push(
                         this.fireStoreService.fireStore
-                          .doc<Part>(`${path}/parts/${part.id}`)
+                          .doc<Part>(`${path}/weeks/${week.id}/parts/${part.id}`)
                           .set(part)
                       );
                     })
@@ -248,7 +247,7 @@ export class ProgramsComponent implements OnInit, OnDestroy {
              // setTimeout(() => this.isLoading = false, 3000) 
             })
         });
-      });
+
     });
   }
 
