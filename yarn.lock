@@ -1411,12 +1411,28 @@
   resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@firebase/webchannel-wrapper/-/webchannel-wrapper-0.4.1.tgz#600f2275ff54739ad5ac0102f1467b8963cd5f71"
   integrity sha1-YA8idf9Uc5rVrAEC8UZ7iWPNX3E=
 
+"@fluentui/date-time-utilities@^7.9.1":
+  version "7.9.1"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@fluentui/date-time-utilities/-/date-time-utilities-7.9.1.tgz#bb486dc0a0fff33ef5803adabbf95e2cbf4be7be"
+  integrity sha1-u0htwKD/8z71gDrau/leLL9L574=
+  dependencies:
+    "@uifabric/set-version" "^7.0.24"
+    tslib "^1.10.0"
+
 "@fluentui/date-time-utilities@^8.0.3":
   version "8.0.3"
   resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@fluentui/date-time-utilities/-/date-time-utilities-8.0.3.tgz#f5246303bc562e2739bfeec9f758ff8757c45b83"
   integrity sha1-9SRjA7xWLic5v+7J91j/h1fEW4M=
   dependencies:
     "@fluentui/set-version" "^8.0.3"
+    tslib "^1.10.0"
+
+"@fluentui/dom-utilities@^1.1.2":
+  version "1.1.2"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@fluentui/dom-utilities/-/dom-utilities-1.1.2.tgz#1a53e51e1ab1d40696ae7d355a970c68d496845f"
+  integrity sha1-GlPlHhqx1AaWrn01WpcMaNSWhF8=
+  dependencies:
+    "@uifabric/set-version" "^7.0.24"
     tslib "^1.10.0"
 
 "@fluentui/dom-utilities@^2.0.3":
@@ -1447,7 +1463,7 @@
     "@fluentui/utilities" "^8.0.5"
     tslib "^1.10.0"
 
-"@fluentui/keyboard-key@^0.2.17":
+"@fluentui/keyboard-key@^0.2.12", "@fluentui/keyboard-key@^0.2.17":
   version "0.2.17"
   resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@fluentui/keyboard-key/-/keyboard-key-0.2.17.tgz#61c037c3a596986926ad8812b58e9e5cebf9f972"
   integrity sha1-YcA3w6WWmGkmrYgStY6eXOv5+XI=
@@ -1460,6 +1476,18 @@
   integrity sha1-Ypn/isDxrS5HfJ5NEezUM5Pxfwc=
   dependencies:
     "@fluentui/set-version" "^8.0.3"
+    tslib "^1.10.0"
+
+"@fluentui/react-focus@^7.17.6":
+  version "7.17.6"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@fluentui/react-focus/-/react-focus-7.17.6.tgz#aa23413c56d27615fdc8363bf8b8c70d5817c929"
+  integrity sha1-qiNBPFbSdhX9yDY7+LjHDVgXySk=
+  dependencies:
+    "@fluentui/keyboard-key" "^0.2.12"
+    "@uifabric/merge-styles" "^7.19.2"
+    "@uifabric/set-version" "^7.0.24"
+    "@uifabric/styling" "^7.19.0"
+    "@uifabric/utilities" "^7.33.5"
     tslib "^1.10.0"
 
 "@fluentui/react-focus@^8.0.8":
@@ -1482,6 +1510,14 @@
     "@fluentui/react-window-provider" "^2.0.3"
     "@fluentui/set-version" "^8.0.3"
     "@fluentui/utilities" "^8.0.5"
+    tslib "^1.10.0"
+
+"@fluentui/react-window-provider@^1.0.2":
+  version "1.0.2"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@fluentui/react-window-provider/-/react-window-provider-1.0.2.tgz#634f1f2e77fca9b3e8dbff9599d0c86d6c77dd73"
+  integrity sha1-Y08fLnf8qbPo2/+VmdDIbWx33XM=
+  dependencies:
+    "@uifabric/set-version" "^7.0.24"
     tslib "^1.10.0"
 
 "@fluentui/react-window-provider@^2.0.3":
@@ -1528,6 +1564,16 @@
     "@fluentui/theme" "^2.0.5"
     "@fluentui/utilities" "^8.0.5"
     "@microsoft/load-themed-styles" "^1.10.26"
+    tslib "^1.10.0"
+
+"@fluentui/theme@^1.7.4":
+  version "1.7.4"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@fluentui/theme/-/theme-1.7.4.tgz#8582bab5a7445585c631d05d44b5ebb56f18b6ba"
+  integrity sha1-hYK6tadEVYXGMdBdRLXrtW8Ytro=
+  dependencies:
+    "@uifabric/merge-styles" "^7.19.2"
+    "@uifabric/set-version" "^7.0.24"
+    "@uifabric/utilities" "^7.33.5"
     tslib "^1.10.0"
 
 "@fluentui/theme@^2.0.5":
@@ -2533,6 +2579,74 @@
   dependencies:
     "@typescript-eslint/types" "4.15.2"
     eslint-visitor-keys "^2.0.0"
+
+"@uifabric/foundation@^7.9.26":
+  version "7.9.26"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@uifabric/foundation/-/foundation-7.9.26.tgz#483e4199d0ce8c25ea94910054c68abf2d3a27ce"
+  integrity sha1-SD5BmdDOjCXqlJEAVMaKvy06J84=
+  dependencies:
+    "@uifabric/merge-styles" "^7.19.2"
+    "@uifabric/set-version" "^7.0.24"
+    "@uifabric/styling" "^7.19.0"
+    "@uifabric/utilities" "^7.33.5"
+    tslib "^1.10.0"
+
+"@uifabric/icons@^7.5.23":
+  version "7.5.23"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@uifabric/icons/-/icons-7.5.23.tgz#5244bbe901406d1d44ff13322264270a0ab94f2c"
+  integrity sha1-UkS76QFAbR1E/xMyImQnCgq5Tyw=
+  dependencies:
+    "@uifabric/set-version" "^7.0.24"
+    "@uifabric/styling" "^7.19.0"
+    tslib "^1.10.0"
+
+"@uifabric/merge-styles@^7.19.2":
+  version "7.19.2"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@uifabric/merge-styles/-/merge-styles-7.19.2.tgz#e020adc2f9b238f0feb855274dfeedaf6d5822a7"
+  integrity sha1-4CCtwvmyOPD+uFUnTf7tr21YIqc=
+  dependencies:
+    "@uifabric/set-version" "^7.0.24"
+    tslib "^1.10.0"
+
+"@uifabric/react-hooks@^7.14.0":
+  version "7.14.0"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@uifabric/react-hooks/-/react-hooks-7.14.0.tgz#f9a1ee54eea0f09c84cf79102329063408e146d6"
+  integrity sha1-+aHuVO6g8JyEz3kQIykGNAjhRtY=
+  dependencies:
+    "@fluentui/react-window-provider" "^1.0.2"
+    "@uifabric/set-version" "^7.0.24"
+    "@uifabric/utilities" "^7.33.5"
+    tslib "^1.10.0"
+
+"@uifabric/set-version@^7.0.24":
+  version "7.0.24"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@uifabric/set-version/-/set-version-7.0.24.tgz#8c67d8f1d67c1636a170efa8b622132da2d294a9"
+  integrity sha1-jGfY8dZ8FjahcO+otiITLaLSlKk=
+  dependencies:
+    tslib "^1.10.0"
+
+"@uifabric/styling@^7.19.0":
+  version "7.19.0"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@uifabric/styling/-/styling-7.19.0.tgz#10bef6152cc94bd72c22da923f766b8197f63652"
+  integrity sha1-EL72FSzJS9csItqSP3ZrgZf2NlI=
+  dependencies:
+    "@fluentui/theme" "^1.7.4"
+    "@microsoft/load-themed-styles" "^1.10.26"
+    "@uifabric/merge-styles" "^7.19.2"
+    "@uifabric/set-version" "^7.0.24"
+    "@uifabric/utilities" "^7.33.5"
+    tslib "^1.10.0"
+
+"@uifabric/utilities@^7.33.5":
+  version "7.33.5"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/@uifabric/utilities/-/utilities-7.33.5.tgz#4e7ed4bab725c054005e9ac37b0f01d743089be4"
+  integrity sha1-Tn7UurclwFQAXprDew8B10MIm+Q=
+  dependencies:
+    "@fluentui/dom-utilities" "^1.1.2"
+    "@uifabric/merge-styles" "^7.19.2"
+    "@uifabric/set-version" "^7.0.24"
+    prop-types "^15.7.2"
+    tslib "^1.10.0"
 
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
@@ -8214,6 +8328,11 @@ modern-normalize@^1.0.0:
   resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/modern-normalize/-/modern-normalize-1.0.0.tgz#539d84a1e141338b01b346f3e27396d0ed17601e"
   integrity sha1-U52EoeFBM4sBs0bz4nOW0O0XYB4=
 
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha1-sr52n6MZQL6e7qZGnAdeNQBvo9M=
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -8599,6 +8718,25 @@ office-ui-fabric-core@^11.0.0:
   version "11.0.0"
   resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/office-ui-fabric-core/-/office-ui-fabric-core-11.0.0.tgz#73f43c8d1bd40e87971c7cda0ff1aa7bfa246410"
   integrity sha1-c/Q8jRvUDoeXHHzaD/Gqe/okZBA=
+
+office-ui-fabric-react@^7.168.0:
+  version "7.168.0"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/office-ui-fabric-react/-/office-ui-fabric-react-7.168.0.tgz#3c589c399b37a600f342e30636dec9f3f4b3c2a8"
+  integrity sha1-PFicOZs3pgDzQuMGNt7J8/Szwqg=
+  dependencies:
+    "@fluentui/date-time-utilities" "^7.9.1"
+    "@fluentui/react-focus" "^7.17.6"
+    "@fluentui/react-window-provider" "^1.0.2"
+    "@microsoft/load-themed-styles" "^1.10.26"
+    "@uifabric/foundation" "^7.9.26"
+    "@uifabric/icons" "^7.5.23"
+    "@uifabric/merge-styles" "^7.19.2"
+    "@uifabric/react-hooks" "^7.14.0"
+    "@uifabric/set-version" "^7.0.24"
+    "@uifabric/styling" "^7.19.0"
+    "@uifabric/utilities" "^7.33.5"
+    prop-types "^15.7.2"
+    tslib "^1.10.0"
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -10098,6 +10236,11 @@ react-error-overlay@^6.0.9:
   version "6.0.9"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.9.tgz#3c743010c9359608c375ecd6bc76f35d93995b0a"
   integrity sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==
+
+react-firebase-hooks@^3.0.4:
+  version "3.0.4"
+  resolved "https://packages.bethel.jw.org/artifactory/api/npm/npm-meps/react-firebase-hooks/-/react-firebase-hooks-3.0.4.tgz#2185357d2bd6f7292552bc65f2459bbf9364e673"
+  integrity sha1-IYU1fSvW9yklUrxl8kWbv5Nk5nM=
 
 react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"

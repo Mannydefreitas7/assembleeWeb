@@ -1,19 +1,28 @@
 import React from 'react'
 import { Label, Pivot, PivotItem } from '@fluentui/react';
-import BoardView from '../components/BoardView';
-
+import MeetingView from '../components/MeetingView';
+import { NeutralColors } from '@fluentui/theme';
 export default function Board() {
     
-      const PivotTabsExample = () => (
+      const PivotTabs = () => (
         <div className="container mx-auto py-10">
-          <Pivot styles={{
-              root: {
-                  
+          <h1 className="leading-5 my-5 font-semibold text-gray-400">
+            Tableau d'Affichage <br/>
+            <span className="text-2xl text-black">West Hudson French - Airmont NY (USA)</span>
+          </h1>
+          <Pivot 
+          styles={{
+              linkIsSelected: {
+                fontWeight: 'bold'
+              },
+              link: {
+                  fontWeight: 'bold',
+                  backgroundColor: NeutralColors.gray10
               }
           }}
-          linkFormat="tabs">
+          linkFormat="links">
             <PivotItem headerText="Réunions">
-              <BoardView />
+              <MeetingView />
             </PivotItem>
             <PivotItem headerText="Prédication">
               <Label>Pivot #2</Label>
@@ -28,5 +37,5 @@ export default function Board() {
         </div>
       );
 
-    return PivotTabsExample()
+    return PivotTabs()
 }

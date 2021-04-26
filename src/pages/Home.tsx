@@ -1,11 +1,10 @@
 
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import firebase from "firebase/app";
 import {
     BrowserRouter as Router,
     Switch,
-    Route,
-    Link
+    Route
   } from "react-router-dom";
 import Board from './Board';
 
@@ -20,8 +19,7 @@ export default function Home() {
     }, [])
 
     const signIn = async () => {
-        let anonymousResult = await firebase.auth().signInAnonymously();
-        if (anonymousResult) console.log(anonymousResult.user)
+        return await firebase.auth().signInAnonymously();
     }   
 
     return (
