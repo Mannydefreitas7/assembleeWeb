@@ -1,9 +1,0 @@
-<p class="text-md-end text-sm-start lh-base mb-0">
-    <span class="me-2 fst-italic fw-bolder">{{ part.assignee?.firstName }} {{ part.assignee?.lastName }}</span> <br>
-    <ng-container *ngIf="part.assistant">
-    <span class="me-2 text-muted fw-bolder fst-italic">{{ part.assistant?.firstName }} {{ part.assistant?.lastName }}</span>
-    </ng-container>
-    <ng-container *ngIf="part.assignee && part.parent == 'talk' && part.assignee.speaker">
-        <span class="me-2 text-muted fw-bolder fst-italic">{{ part.assignee.speaker.congregation.properties.orgName }}</span>
-    </ng-container>
-</p>

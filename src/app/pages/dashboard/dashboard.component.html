@@ -1,9 +1,0 @@
-<mat-sidenav-container hasBackdrop="true" class="nav-container" (backdropClick)="storeService.isNavToggled = false">
-   <mat-sidenav #sidenav mode="over" [opened]="storeService.isNavToggled">
-      <ab-sidebar></ab-sidebar>
-   </mat-sidenav>
-   <mat-sidenav-content>
-      <ab-topbar></ab-topbar>
-      <router-outlet></router-outlet>
-   </mat-sidenav-content>
-</mat-sidenav-container>
