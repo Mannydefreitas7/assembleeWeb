@@ -1,12 +1,18 @@
 
 import React, { useEffect } from 'react';
 import firebase from "firebase/app";
+import 'firebase/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
+
 import {
     BrowserRouter as Router,
     Switch,
-    Route
+    Route,
+    Redirect
   } from "react-router-dom";
 import Board from './Board';
+import Login from './Login';
+import Admin from './Admin';
 
 export default function Home() {
 
@@ -20,7 +26,9 @@ export default function Home() {
 
     const signIn = async () => {
         return await firebase.auth().signInAnonymously();
-    }   
+    }  
+    const auth = firebase.auth()
+    const [ user ] = useAuthState(auth);
 
     return (
         <>
@@ -28,6 +36,16 @@ export default function Home() {
             <Switch>
             <Route path="/" exact={true}>
                 <Board />
+            </Route>
+            <Route path="/admin" exact={true}>
+                {
+                    user && user?.isAnonymous ? 
+                    <Redirect to="/" exact={true} /> :
+                    <Admin />
+                }
+            </Route>
+            <Route path="/login" exact={true}>
+                <Login />
             </Route>
             </Switch>
         </Router>

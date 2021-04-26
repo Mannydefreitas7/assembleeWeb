@@ -6,7 +6,7 @@ import {
     LOAD_WEEKS,
     CHANGE_WEEK
 } from './ActionTypes';
-import { Part, WeekProgram } from '../models/wol.model';
+import { Part, WeekProgram } from '../models/wol';
 import { CONG_ID } from '../constants';
 import { IDropdownOption } from '@fluentui/react';
 

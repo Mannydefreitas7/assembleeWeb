@@ -4,7 +4,7 @@ import firebase from "firebase/app";
 import 'firebase/auth';
 import 'firebase/firestore';
 import Home from './pages/Home';
-import { NeutralColors } from '@fluentui/theme';
+import {Helmet} from "react-helmet";
 import { config } from './constants';
 import { GlobalProvider } from './store/GlobalState';
 
@@ -16,11 +16,13 @@ if (!firebase.apps.length) {
 
 function App() {
   return (
-    <div style={{ backgroundColor: NeutralColors.gray10, height: '100vh' }}>
       <GlobalProvider>
+        <Helmet>
+            <title>West Hudson French - Airmont NY (USA)</title>
+            <body className="bg-gray-50" />
+        </Helmet>
         <Home />
       </GlobalProvider>
-    </div>
   );
 }
 

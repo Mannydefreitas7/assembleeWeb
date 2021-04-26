@@ -2,8 +2,8 @@ import React, { useContext } from 'react'
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { Stack } from '@fluentui/react/lib/Stack';
 import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
-import { Part, WeekProgram } from '../models/wol.model';
-import { apply, chairmans, life, prayers, treasures } from '../shared/methods';
+import { Part, WeekProgram } from '../models/wol';
+import { apply, chairmans, life, prayers, talk, treasures, wt } from '../shared/methods';
 import { GlobalContext } from '../store/GlobalState';
 
 export default function MeetingView() {
@@ -47,7 +47,7 @@ const WeekSchedule = () => {
   return (
     <>
       <Stack>
-        <div className="p-4 rounded bg-white shadow-sm my-4">
+        <div className="p-10 rounded bg-white shadow my-4">
           <h3 className="mt-0 text-xl font-semibold">Réunion de Semaine</h3>
           <div className="mt-3 flex pl-4 flex-wrap justify-between items-center">
             <label className="text-gray-400">Président</label>
@@ -103,18 +103,21 @@ const WeekSchedule = () => {
             <PartInfo part={prayers(parts)[1]} />
           </div>
         </div>
-        <div className="p-4 rounded bg-white shadow-sm mt-4">
+        <div className="p-10 rounded bg-white shadow mt-4">
           <h3 className="mt-0 text-xl font-semibold">Réunion Publique</h3>
           <div className="mt-3 ps-4 flex justify-between items-center">
             <label className="text-gray-400">Président</label>
+            <PartInfo part={chairmans(parts)[1]} />
           </div>
           <h4 className="my-3 fw-bold weekend">DISCOURS PUBLIC</h4>
           <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
-            <label className="col-sm-12 col-md-6 col-lg-6 col-form-label"> </label>
+            <label className="">{talk(parts)[0].title}</label>
+            <PartInfo part={talk(parts)[0]} />
           </div>
           <h4 className="my-3 fw-bold weekend">ÉTUDE DE LA TOUR DE GARDE</h4>
           <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
-            <label className="col-sm-12 col-md-6 col-lg-6 col-form-label"></label>
+            <label className="">{wt(parts)[0].title}</label>
+            <PartInfo part={wt(parts)[0]} />
           </div>
           <div className="mt-3 ps-4 flex justify-between items-center">
             <label className="col-sm-12 col-md-6 col-lg-6 text-gray-400">Priere</label>

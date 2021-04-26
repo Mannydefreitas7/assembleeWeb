@@ -1,7 +1,7 @@
 
 import { AnyARecord } from "dns";
-import { Congregation } from "./congregation.model";
-import { Part } from "./wol.model";
+import { Congregation } from "./congregation";
+import { Part } from "./wol";
 
 export class Publisher {
 	uid?: string;

@@ -1,4 +1,4 @@
-import { CongLanguage, CongregationData } from './congregation.model'
+import { CongLanguage, CongregationData } from './congregation'
 
 export class Address {
    id?: string

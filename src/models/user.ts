@@ -1,6 +1,6 @@
 
-import { Congregation } from "./congregation.model";
-import { Permission } from "./publisher.model";
+import { Congregation } from "./congregation";
+import { Permission } from "./publisher";
 
 export class User {
 	uid?: string;

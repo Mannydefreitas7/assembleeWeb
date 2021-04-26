@@ -1,5 +1,5 @@
 
-import { Gender, Privilege, Publisher } from "./publisher.model";
+import { Gender, Privilege, Publisher } from "./publisher";
 
 export interface WOLWeek {
    items: Item[];

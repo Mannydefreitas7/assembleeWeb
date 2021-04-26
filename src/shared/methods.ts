@@ -1,4 +1,4 @@
-import { Parent, Part } from "../models/wol.model";
+import { Parent, Part } from "../models/wol";
 
 export const prayers = (parts: Part[]) : Part[] => {
     return parts

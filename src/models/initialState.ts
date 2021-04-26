@@ -1,4 +1,4 @@
-import { Part, WeekProgram } from "./wol.model";
+import { Part, WeekProgram } from "./wol";
 
 export interface InitialState {
   week: WeekProgram;

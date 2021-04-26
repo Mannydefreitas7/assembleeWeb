@@ -1,6 +1,6 @@
-import { GeoCity, GeoZip } from "./address.model";
-import { CongLanguage, CongregationData } from "./congregation.model";
-import { WOLWeek } from "./wol.model";
+import { GeoCity, GeoZip } from "./address";
+import { CongLanguage, CongregationData } from "./congregation";
+import { WOLWeek } from "./wol";
 
 export class Convert {
    public static toWOLWeek(json: string): WOLWeek {
