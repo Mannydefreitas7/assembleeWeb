@@ -4,7 +4,7 @@ import { Publisher } from '../models/publisher';
 
 export default function PublisherTile({ publisher, isConfirmed } : { publisher: Publisher, isConfirmed?: boolean }) {
     const persona: IPersonaSharedProps = {
-        imageInitials: 'AL',
+        imageInitials: `${publisher.lastName?.charAt(0)}${publisher.firstName?.charAt(0)}`,
         imageUrl: publisher.photoURL ? publisher.photoURL : '',
         text: `${publisher.lastName} ${publisher.firstName}`,
         secondaryText: publisher.privilege?.toUpperCase(),
