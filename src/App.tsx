@@ -1,21 +1,19 @@
 import React from 'react';
 import './App.css';
-import firebase from "firebase/app";
-import 'firebase/auth';
-import 'firebase/firestore';
 import Home from './pages/Home';
 import {Helmet} from "react-helmet";
-import { config } from './constants';
 import { GlobalProvider } from './store/GlobalState';
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(config)
-}
-
-// const auth = firebase.auth();
+import { transitions, Provider as AlertProvider } from 'react-alert'
+import AlertTemplate from './components/message/Alert'
 
 function App() {
   return (
+    <AlertProvider
+    offset='30px'
+    timeout={5000}
+    transition={transitions.FADE}
+    template={AlertTemplate}>
       <GlobalProvider>
         <Helmet>
             <title>West Hudson French - Airmont NY (USA)</title>
@@ -23,6 +21,7 @@ function App() {
         </Helmet>
         <Home />
       </GlobalProvider>
+    </AlertProvider>
   );
 }
 

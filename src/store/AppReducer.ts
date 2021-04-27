@@ -24,6 +24,18 @@ const reducer = (
          ...state,
          parts: action.payload
       };
+      case actionTypes.SELECT_PUBLISHER:
+      return {
+         ...state,
+         publisher: action.payload.publisher,
+         part: action.payload.part,
+         week: action.payload.week
+      };
+      case actionTypes.VIEW_PUBLISHER_PARTS:
+      return {
+         ...state,
+         modalChildren: action.payload
+      };
       case actionTypes.CHANGE_WEEK:
       return {
          ...state,

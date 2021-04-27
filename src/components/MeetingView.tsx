@@ -5,6 +5,8 @@ import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 import { Part, WeekProgram } from '../models/wol';
 import { apply, chairmans, life, prayers, talk, treasures, wt } from '../shared/methods';
 import { GlobalContext } from '../store/GlobalState';
+import { Link } from 'react-router-dom';
+import { SharedColors } from '@fluentui/theme';
 
 export default function MeetingView() {
   const { weeks, week, parts, changeWeek } = useContext(GlobalContext)
@@ -123,6 +125,12 @@ const WeekSchedule = () => {
             <label className="col-sm-12 col-md-6 col-lg-6 text-gray-400">Priere</label>
           </div>
         </div>
+        <Link 
+            style={{ color: SharedColors.green20}}
+            className="py-4 text-center"
+            to="/login">
+            Login
+        </Link>
       </Stack>
     </>
   )
@@ -132,7 +140,7 @@ interface PartInfoProp {
   part: Part
 }
 
-const PartInfo = ({ part }: PartInfoProp) => {
+export const PartInfo = ({ part }: PartInfoProp) => {
   return (
     <>
       {
@@ -141,7 +149,7 @@ const PartInfo = ({ part }: PartInfoProp) => {
             <span className="mr-2 italic font-bold">{part.assignee?.firstName} {part.assignee?.lastName}</span> <br />
             {
               part.assistant ?
-                <span className="mr-2 text-gray-400 font-bold italic">{part.assistant?.firstName} {part.assistant?.lastName}</span> : null
+                <span className="mr-2 text-gray-400 font-normal italic">{part.assistant?.firstName} {part.assistant?.lastName}</span> : null
             }
             {
               part.assignee && part.parent === 'talk' && part.assignee.speaker ?

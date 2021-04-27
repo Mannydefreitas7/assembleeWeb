@@ -1,26 +1,67 @@
 import { PrimaryButton, Separator, Text, TextField } from '@fluentui/react'
-import React, { useState } from 'react'
+import React, { FormEvent, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from './../assets/logo.jpg'
 import apple from './../assets/apple.svg'
 import google from './../assets/google.svg'
 import firebase from "firebase/app";
 import 'firebase/auth';
-import { useAuthState, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useHistory } from "react-router-dom";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { GlobalContext } from '../store/GlobalState'
+import { useAlert } from 'react-alert'
 
 export default function Login() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const auth = firebase.auth()
+    const { auth, firestore } = useContext(GlobalContext)
+    let history = useHistory();
     const [
-        signInWithEmailAndPassword,
-        user,
-        loading,
-        error,
-      ] = useSignInWithEmailAndPassword(auth);
+        user
+      ] = useAuthState(auth);
+
+   
+    const alert = useAlert()
+
+    const loginWithEmailAndPassword = async () => {
+        try {
+            if (email.length > 0 && password.length > 0) {
+                if (user && user?.isAnonymous) {
+                    const newCredential = await auth.signInWithEmailAndPassword(email, password)
+                    if (newCredential.credential) {
+                            const userCredential = await auth.currentUser?.linkWithCredential(newCredential?.credential)
+                            if (userCredential?.user) {
+                                history.push("/admin")
+                            }
+                        }
+                    }
+                }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const loginWithProvider = async (provider: string) => {
+        try {
+            const _provider = provider === 'google' ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.OAuthProvider('apple');
+                let result = await auth.signInWithPopup(_provider)
+                if (result) {
+                    let userDoc = await firestore.doc(`users/${result.user?.uid}`).get()
+                    if (userDoc.exists) {
+                        history.push("/admin")
+                    } else {
+                        result.user?.delete()
+                        .then((_: any) => alert.show('Oops, user account does not exist.'))
+                    }
+                }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
+        <>
         <div className="flex h-screen w-full justify-center items-center">
             <div className="w-96 mx-auto p-10">
                 <div className="w-full flex justify-center mb-5">
@@ -28,11 +69,15 @@ export default function Login() {
                 </div>
                 <h2 className="font-bold text-2xl">LOGIN</h2>
                 <div className="flex justify-start flex-wrap">
-                    <button className="inline-flex mt-2 google w-full items-center justify-center p-2">
+                    <button 
+                    onClick={() => loginWithProvider('google')}
+                    className="inline-flex mt-2 google w-full items-center justify-center p-2">
                         <img src={google} alt="google"/>
                         <span className="ml-2">Login with Google</span>
                     </button>
-                    <button className="inline-flex my-2 bg-black w-full items-center justify-center p-2">
+                    <button 
+                    onClick={() => loginWithProvider('apple')}
+                    className="inline-flex my-2 bg-black w-full items-center justify-center p-2">
                         <img src={apple} alt="apple"/>
                         <span className="ml-2 text-white">Sign in with Apple</span>
                     </button>
@@ -43,22 +88,19 @@ export default function Login() {
                         background: 'inherit'
                     }
                 }} className="bg-gray-50">OR</Separator>
-                <form onSubmit={(e) => {
-                    e.preventDefault()
-                    if (email.length > 0 && password.length > 0) {
-                        signInWithEmailAndPassword(email, password)
-                    }
-                }}>
+
                     <div className="mb-3">
                        <TextField
-                        value={email}
+                        defaultValue={email}
+                        onChange={(event : FormEvent, value) => setEmail(value ?? "")}
                         label="Email"
                         type="email"
                         required/>
                     </div>
                     <TextField
-                        value={password}
+                        defaultValue={password}
                         label="Password"
+                        onChange={(event : FormEvent, value) => setPassword(value ?? "")}
                         type="password"
                         canRevealPassword
                         revealPasswordAriaLabel="Show password"
@@ -68,12 +110,14 @@ export default function Login() {
                     </Link>
                     <PrimaryButton 
                     text="Login" 
-                    onClick={() => {}}
+                    onClick={() => loginWithEmailAndPassword()}
                     className="mt-5"
                     allowDisabledFocus 
                     disabled={false}/>
-                </form>
             </div>
         </div>
+        </>
     )
 }
+
+

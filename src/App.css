@@ -24,3 +24,7 @@
   border-color: #356ac0;
   color: white;
 }
+
+*:focus {
+  outline: none !important;
+}

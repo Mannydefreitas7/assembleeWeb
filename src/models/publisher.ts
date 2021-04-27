@@ -1,5 +1,4 @@
 
-import { AnyARecord } from "dns";
 import { Congregation } from "./congregation";
 import { Part } from "./wol";
 
