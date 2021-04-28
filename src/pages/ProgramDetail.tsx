@@ -97,7 +97,7 @@ export default function ProgramDetail() {
                                                             <PublisherTile publisher={publisher.data()} />
                                                             <div className="inline-flex items-center">
                                                                 <Link
-                                                                to={`${url}/publishers/${publisher.id}/parts`}>
+                                                                    to={`${url}/publishers/${publisher.id}/parts`}>
                                                                     <Text className="mr-5 text-green-700">See Parts</Text>
                                                                 </Link>
                                                                 <DefaultButton text="Select" onClick={() => { }} allowDisabledFocus />
@@ -105,6 +105,17 @@ export default function ProgramDetail() {
                                                         </div>
                                                     </Route>
                                                     <Route path={`${path}/publishers/${publisher.id}/parts`}>
+                                                        <div className="flex items-center justify-between">
+                                                            <h3 className="font-semibold text-xl mt-5 mb-2">
+                                                                <ActionButton
+                                                                    className="font-normal text-base"
+                                                                    onClick={() => history.goBack()}
+                                                                    iconProps={{ iconName: 'ChromeBack' }} allowDisabledFocus>
+                                                                    Publishers</ActionButton> <br />
+                                                                {`${publisher.data().lastName}, ${publisher.data().firstName} Parts`}
+                                                            </h3>
+                                                            <DefaultButton text="Select" onClick={() => { }} allowDisabledFocus />
+                                                        </div>
                                                         <PublisherPartsView publisher={publisher.data()} />
                                                     </Route>
                                                 </div>

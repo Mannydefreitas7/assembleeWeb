@@ -9,7 +9,7 @@ export default function PartTile({ part } : { part: Part }) {
             <div className="flex flex-1 justify-between items-center">
             <div className="block">
                 <span className="text-gray-600 text-sm">Part Title</span> <br/>
-                <span className="text-lg font-semibold">{part.title}</span>
+                <span className="text-base font-semibold leading-5 w-2/3">{part.title}</span>
             </div>
             <span 
                     className="text-white px-2 py-1 text-xs border font-semibold rounded-full"
