@@ -4,13 +4,15 @@ import reducer from './AppReducer';
 import firebase from 'firebase/app';
 import 'firebase/auth'
 import 'firebase/firestore'
+import 'firebase/functions'
+
 import {
     LOAD_WEEKS,
     CHANGE_WEEK,
     SELECT_PUBLISHER,
     VIEW_PUBLISHER_PARTS
 } from './ActionTypes';
-import { Part, WeekProgram } from '../models/wol';
+import { Part, PartType, WeekProgram } from '../models/wol';
 import { config, CONG_ID } from '../constants';
 import { IDropdownOption } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
@@ -22,18 +24,24 @@ type GlobalProps = {
 
 
 const _firebase = firebase.initializeApp(config)
+if (process.env.NODE_ENV === 'development') {
+    _firebase.functions().useEmulator("localhost", 5001)
+}
+
 
 const initialState: InitialState = {
     parts: [],
     weeks: [],
     auth: _firebase.auth(),
     firestore: _firebase.firestore(),
+    functions: _firebase.functions(),
     week: {},
     part: {},
     publisher: {},
     loading: true,
     isPanelOpen: false,
     changeWeek: null,
+    type: PartType.assignee,
     openPanel: null,
     dismissPanel: null,
     isModalOpen: false,
@@ -41,8 +49,16 @@ const initialState: InitialState = {
     openModal: null,
     dismissModal: null,
     modalChildren: null,
-    viewPublisherParts: null
+    viewPublisherParts: null,
+    assignPublisher: null
 }
+
+const test = {
+    "from": "info@assemblee.web.app",
+    "subject": "test",
+    "text": "TEST",
+    "to": "manny.defreitas7@gmail.com"
+} 
 
 export const GlobalContext = createContext(initialState)
 
@@ -50,7 +66,9 @@ export const GlobalProvider = (props: GlobalProps) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
     const [isModalOpen, { setTrue: openModal, setFalse: dismissModal }] = useBoolean(false);
+    const deleteAllAnymomous = state.functions.httpsCallable('deleteAllAnymomous')
     useEffect(() => {
+     //   deleteAllAnymomous()
         if (state.weeks.length === 0) {
             loadWeeks()
         }
@@ -89,39 +107,61 @@ export const GlobalProvider = (props: GlobalProps) => {
 
     const loadWeekParts = async (option: IDropdownOption) => {
         try {
-                let parts: Part[] = await _firebase.firestore()
-                    .collection(`congregations/${CONG_ID}/weeks/${option.key}/parts`)
-                    .orderBy('index')
-                    .get()
-                    .then(_ => _.docs.map(d => d.data()))
-                if (parts && parts.length > 0) {
-                    dispatch({
-                        type: CHANGE_WEEK,
-                        payload: {
-                            parts,
-                            week: state.weeks.filter(w => w.id === option.key)[0]
-                        }
-                    })
-                }
+            let parts: Part[] = await _firebase.firestore()
+                .collection(`congregations/${CONG_ID}/weeks/${option.key}/parts`)
+                .orderBy('index')
+                .get()
+                .then(_ => _.docs.map(d => d.data()))
+            if (parts && parts.length > 0) {
+                dispatch({
+                    type: CHANGE_WEEK,
+                    payload: {
+                        parts,
+                        week: state.weeks.filter(w => w.id === option.key)[0]
+                    }
+                })
+            }
         } catch (error) {
             console.log(error)
         }
     }
 
     const changeWeek = (option: IDropdownOption) => {
-        loadWeekParts(option); 
+        loadWeekParts(option);
     }
 
-    const selectPublisher = (week: WeekProgram, part: Part, publisher: Publisher) => {
+    const selectPublisher = (week: WeekProgram, part: Part, type: PartType, publisher?: Publisher) => {
         dispatch({
             type: SELECT_PUBLISHER,
             payload: {
                 week,
+                type,
                 part,
-                publisher 
+                publisher
             }
         })
     }
+
+    async function assignPublisher(week: WeekProgram, part: Part, newPublisher: Publisher, type: PartType, oldPublisher?: Publisher) {
+        try {
+            const partDocument = state.firestore.doc(`congregations/${CONG_ID}/weeks/${week.id}/parts/${part.id}`);
+            if (oldPublisher) {
+                state.firestore.doc(`congregations/${CONG_ID}/publishers/${oldPublisher.uid}/parts/${part.id}`).delete();
+            }
+            if (type === PartType.assignee) {
+                partDocument.update({
+                    assignee: newPublisher
+                }).then(dismissPanel)
+            } else {
+                partDocument.update({
+                    assistant: newPublisher
+                }).then(dismissPanel)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     const viewPublisherParts = (component: ReactNode) => {
         dispatch({
@@ -139,6 +179,7 @@ export const GlobalProvider = (props: GlobalProps) => {
             part: state.part,
             publisher: state.publisher,
             firestore: state.firestore,
+            functions: state.functions,
             auth: state.auth,
             week: state.week,
             isPanelOpen: isOpen,
@@ -150,8 +191,10 @@ export const GlobalProvider = (props: GlobalProps) => {
             loading: state.loading,
             changeWeek,
             selectPublisher,
+            type: state.type,
             modalChildren: state.modalChildren,
-            viewPublisherParts
+            viewPublisherParts,
+            assignPublisher
         }}>
             {props.children}
         </GlobalContext.Provider>

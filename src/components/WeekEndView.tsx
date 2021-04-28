@@ -1,11 +1,13 @@
 import { Stack } from '@fluentui/react'
-import React from 'react'
-import { Part } from './../models/wol';
-import { PartInfo } from './../components/MeetingView'
-import { chairmans, talk, wt } from '../shared/methods';
+import React, { useContext } from 'react'
+import { Part, PartType, WeekProgram } from './../models/wol';
+import { chairmans, prayers, talk, wt } from '../shared/methods';
+import PartRemoveButton from './PartRemoveButton';
+import PartAssigneeButton from './PartAssigneeButton';
+import { GlobalContext } from '../store/GlobalState';
 
-export default function WeekEndView({ parts }: { parts: Part[] }) {
-
+export default function WeekEndView({ parts, week }: { parts: Part[], week: WeekProgram }) {
+    const { openPanel, selectPublisher } = useContext(GlobalContext)
     return (
         <div>
             <Stack>
@@ -13,20 +15,90 @@ export default function WeekEndView({ parts }: { parts: Part[] }) {
                     <h3 className="mt-0 text-xl font-semibold">Réunion Publique</h3>
                     <div className="mt-3 ps-4 flex justify-between items-center">
                         <label className="text-gray-400">Président</label>
-                        <PartInfo part={chairmans(parts)[1]} />
+                        {
+                            chairmans(parts).length > 1 && chairmans(parts)[1].assignee ?
+                            <PartRemoveButton 
+                            action={() => {
+                                selectPublisher(week, chairmans(parts)[1], PartType.assignee, chairmans(parts)[1].assignee)
+                                openPanel()
+                            }}
+                            part={chairmans(parts)[1]} 
+                            publisher={chairmans(parts)[1].assignee ?? {}} /> :
+                            <PartAssigneeButton text="Assignee" action={() => {
+                                selectPublisher(week, chairmans(parts)[1], PartType.assignee, null)
+                                openPanel()
+                            }} />
+                        }
                     </div>
                     <h4 className="my-3 fw-bold weekend">DISCOURS PUBLIC</h4>
                     <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
                         <label className="">{talk(parts)[0].title}</label>
-                        <PartInfo part={talk(parts)[0]} />
+                        {
+                            talk(parts).length > 0 && talk(parts)[0].assignee ?
+                            <PartRemoveButton 
+                            action={() => {
+                                selectPublisher(week, talk(parts)[0], PartType.assignee, talk(parts)[0].assignee)
+                                openPanel()
+                            }}
+                            part={talk(parts)[0]} 
+                            publisher={talk(parts)[0].assignee ?? {}} /> :
+                            <PartAssigneeButton text="Speaker" action={() => {
+                                selectPublisher(week, talk(parts)[0], PartType.assignee,  null)
+                                openPanel()
+                            }} />
+                        }
                     </div>
                     <h4 className="my-3 fw-bold weekend">ÉTUDE DE LA TOUR DE GARDE</h4>
                     <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
                         <label className="">{wt(parts)[0].title}</label>
-                        <PartInfo part={wt(parts)[0]} />
+                         <div className="inline-flex items-center my-1">
+                            {
+                                wt(parts).length > 0 && wt(parts)[0].assignee  ?
+                                <PartRemoveButton 
+                                action={() => {
+                                    selectPublisher(week, wt(parts)[0], PartType.assignee, wt(parts)[0].assignee)
+                                    openPanel()
+                                }}
+                                part={wt(parts)[0]} 
+                                publisher={wt(parts)[0].assignee ?? {}} /> :
+                                <PartAssigneeButton text="Conductor" action={() => {
+                                    selectPublisher(week, wt(parts)[0], PartType.assignee, null)
+                                    openPanel()
+                                }} />
+                            }
+                            <span className="text-gray-200 mx-1">-</span>
+                            {
+                                wt(parts)[0] && wt(parts)[0].assistant ?
+                                <PartRemoveButton 
+                                action={() => {
+                                    selectPublisher(week, wt(parts)[0], PartType.assistant, wt(parts)[0].assistant)
+                                    openPanel()
+                                }}
+                                part={wt(parts)[0]} 
+                                publisher={wt(parts)[0].assistant ?? {}} /> :
+                                <PartAssigneeButton text="Reader" action={() => {
+                                    selectPublisher(week, wt(parts)[0], PartType.assistant, null)
+                                    openPanel()
+                                }} />
+                            }
+                        </div>
                     </div>
                     <div className="mt-3 ps-4 flex justify-between items-center">
                         <label className="col-sm-12 col-md-6 col-lg-6 text-gray-400">Priere</label>
+                        {
+                            prayers(parts).length > 3 && prayers(parts)[3].assignee ?
+                            <PartRemoveButton 
+                            action={() => {
+                                selectPublisher(week, prayers(parts)[3], PartType.assignee, prayers(parts)[3].assignee)
+                                openPanel()
+                            }}
+                            part={prayers(parts)[3]} 
+                            publisher={prayers(parts)[3].assignee ?? {}} /> :
+                            <PartAssigneeButton text="Assignee" action={() => {
+                                selectPublisher(week, prayers(parts)[3], PartType.assignee, null)
+                                openPanel()
+                            }} />
+                        }
                     </div>
                 </div>
             </Stack>

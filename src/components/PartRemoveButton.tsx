@@ -1,4 +1,4 @@
-import { Icon, IPersonaSharedProps, Persona, PersonaPresence, PersonaSize } from '@fluentui/react'
+import { IPersonaSharedProps, Persona, PersonaPresence, PersonaSize } from '@fluentui/react'
 import React from 'react'
 import { Publisher } from '../models/publisher'
 import { Part } from '../models/wol';

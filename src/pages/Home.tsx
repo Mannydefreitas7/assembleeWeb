@@ -28,8 +28,6 @@ export default function Home() {
     useEffect(() => {
         if (!user) {
             signIn() 
-        } else {
-            console.log(user)
         }
     })
 

@@ -29,6 +29,7 @@ const reducer = (
          ...state,
          publisher: action.payload.publisher,
          part: action.payload.part,
+         type: action.payload.type,
          week: action.payload.week
       };
       case actionTypes.VIEW_PUBLISHER_PARTS:

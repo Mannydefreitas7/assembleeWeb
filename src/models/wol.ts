@@ -81,6 +81,11 @@ export interface Part {
 }
 
 
+export enum PartType {
+   assignee = "assignee",
+   assistant = "assistant"
+}
+
 export enum Parent {
    treasures = 'treasures',
    apply = 'apply',

@@ -16,8 +16,18 @@ export class User {
 };
 
 export interface Attachment {
-  content: string;
-  filename: string;
+  content?: string;
+  filename?: string;
   type?: string;
 }
 
+export class EmailMessage {
+    to?: string[];
+    from?: string;
+    fromName?: string;
+    subject?: string;
+    text?: string;
+    cc?: string;
+    html?: string;
+    attachments?: Attachment[]
+}
