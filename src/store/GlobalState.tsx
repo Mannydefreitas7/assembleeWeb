@@ -10,13 +10,18 @@ import {
     LOAD_WEEKS,
     CHANGE_WEEK,
     SELECT_PUBLISHER,
-    VIEW_PUBLISHER_PARTS
+    VIEW_PUBLISHER_PARTS,
+    ADD_PROGRAM,
+    OPEN_PUBLISHER_MODAL
 } from './ActionTypes';
 import { Part, PartType, WeekProgram } from '../models/wol';
 import { config, CONG_ID } from '../constants';
 import { IDropdownOption } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Publisher } from '../models/publisher';
+import { Congregation } from '../models/congregation';
+import AddProgramView from '../components/AddProgramView';
+import AddPublisherView from '../components/AddPublisherView';
 
 type GlobalProps = {
     children: ReactNode
@@ -25,7 +30,25 @@ type GlobalProps = {
 
 const _firebase = firebase.initializeApp(config)
 if (process.env.NODE_ENV === 'development') {
+    let congregation: Congregation = {
+        id: '0927216B-2451-4AB5-AD08-11AC5777CCB1',
+        fireLanguage: {
+            apiURL: "wol/dt/r30/lp-f/",
+            languageCode: "F"
+        },
+        language: {
+            isSignLanguage: false,
+            languageCode: 'F',
+            languageName: 'Francais',
+            scriptDirection: 'LTR',
+            writtenLanguageCode: ['fr']
+        }
+
+    }
+
     _firebase.functions().useEmulator("localhost", 5001)
+    _firebase.firestore().useEmulator("localhost", 8080)
+    _firebase.firestore().doc(`congregations/${congregation.id}`).set(congregation)
 }
 
 
@@ -50,7 +73,9 @@ const initialState: InitialState = {
     dismissModal: null,
     modalChildren: null,
     viewPublisherParts: null,
-    assignPublisher: null
+    assignPublisher: null,
+    addProgram: null,
+    openPublisherModal: null
 }
 
 const test = {
@@ -142,11 +167,29 @@ export const GlobalProvider = (props: GlobalProps) => {
         })
     }
 
+    const addProgram = () => {
+        dispatch({
+            type: ADD_PROGRAM,
+            payload: <AddProgramView />
+        })
+    }
+
+    const openPublisherModal = () => {
+        openModal()
+        dispatch({
+            type: OPEN_PUBLISHER_MODAL,
+            payload: <AddPublisherView />
+        })
+    }
+
     async function assignPublisher(week: WeekProgram, part: Part, newPublisher: Publisher, type: PartType, oldPublisher?: Publisher) {
         try {
             const partDocument = state.firestore.doc(`congregations/${CONG_ID}/weeks/${week.id}/parts/${part.id}`);
-            if (oldPublisher) {
+            if (oldPublisher && oldPublisher.uid !== newPublisher.uid) {
                 state.firestore.doc(`congregations/${CONG_ID}/publishers/${oldPublisher.uid}/parts/${part.id}`).delete();
+            } else {
+                state.firestore.doc(`congregations/${CONG_ID}/publishers/${newPublisher.uid}/parts/${part.id}`)
+                .set(part)
             }
             if (type === PartType.assignee) {
                 partDocument.update({
@@ -194,7 +237,9 @@ export const GlobalProvider = (props: GlobalProps) => {
             type: state.type,
             modalChildren: state.modalChildren,
             viewPublisherParts,
-            assignPublisher
+            assignPublisher,
+            addProgram,
+            openPublisherModal
         }}>
             {props.children}
         </GlobalContext.Provider>

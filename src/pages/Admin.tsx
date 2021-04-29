@@ -7,6 +7,7 @@ import ModalView from '../components/ModalView';
 import TopBar from '../components/TopBar';
 import ProgramDetail from './ProgramDetail';
 import Programs from './Programs';
+import Publishers from './Publishers';
 
 export default function Admin() {
     let { path } = useRouteMatch();
@@ -24,7 +25,7 @@ export default function Admin() {
                         <ProgramDetail />
                     </Route>
                     <Route path={path + '/publishers'} >
-                        <h1>PUBLISHERS</h1>
+                        <Publishers />
                     </Route>
                     <Route path={path + '/speakers'}>
                         <h1>SPEAKERS</h1>

@@ -8,15 +8,20 @@ import { Icon } from '@fluentui/react/lib/Icon';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 export default function Programs() {
-    const { firestore } = useContext(GlobalContext)
+    const { firestore, openModal, addProgram } = useContext(GlobalContext)
     const [ value, loading ] = useCollection(firestore.collection(`congregations/${CONG_ID}/weeks`).orderBy('date'))
     let { path } = useRouteMatch();
     return (
         <div className="container mx-auto p-8">
             <div className="mb-2 flex justify-between items-center">
                 <h1 className="font-semibold text-2xl inline-flex items-center"> <Icon iconName="ScheduleEventAction" className="mr-2"/>Programs</h1>
-                <ActionButton iconProps={{ iconName: 'Add' }} allowDisabledFocus>
-                    Add Week
+                <ActionButton 
+                onClick={() => {
+                    addProgram()
+                    openModal()
+                } }
+                iconProps={{ iconName: 'Add' }} allowDisabledFocus>
+                    Add Program
                 </ActionButton>
             </div>
             {

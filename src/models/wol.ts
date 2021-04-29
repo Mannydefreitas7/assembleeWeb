@@ -57,7 +57,7 @@ export interface WeekProgram {
 export interface Part {
    date?: any;
    id?: string;
-   privilege?: Privilege[];
+   privilege?: Privilege[] | string[];
    assignee?: Publisher;
    gender?: Gender[],
    hasAssistant?: boolean;

@@ -1,5 +1,5 @@
 import { ActionButton, Pivot, PivotItem, Spinner, SpinnerSize } from '@fluentui/react';
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { useCollection, useDocument } from 'react-firebase-hooks/firestore';
 import { useHistory, useParams } from 'react-router';
 import { CONG_ID } from '../constants';
@@ -19,12 +19,11 @@ export default function ProgramDetail() {
         ...documentSnapshot?.data()
     }
 
-    useEffect(() => {
-
-        return () => {
-
-        }
-    }, [])
+    const deleteProgram = () => {
+        collection?.docs.forEach(async doc => await doc.ref.delete())
+        documentSnapshot?.ref.delete()
+        .then(() => history.goBack())
+    }
 
     return (
         <div className="container mx-auto p-8">
@@ -44,6 +43,7 @@ export default function ProgramDetail() {
                     </ActionButton>
                     <ActionButton
                         className="text-red-500"
+                        onClick={deleteProgram}
                         iconProps={{ iconName: 'Delete', className: 'text-red-500 hover:text-red-900' }} allowDisabledFocus>
                         Delete
                     </ActionButton>

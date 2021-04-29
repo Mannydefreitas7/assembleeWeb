@@ -26,4 +26,6 @@ export interface InitialState {
   modalChildren: ReactNode;
   viewPublisherParts: any; 
   assignPublisher: any;
+  addProgram: any;
+  openPublisherModal: any;
 }

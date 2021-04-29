@@ -8,8 +8,8 @@ export class Publisher {
 	photoURL?: string;
    firstName?: string;
    lastName?: string;
-   privilege?:Privilege;
-   gender?: Gender;
+   privilege?:any;
+   gender?: Gender | string;
    isInvited?: boolean;
    isWTConductor?: boolean;
    speaker?: Speaker;
@@ -22,7 +22,7 @@ export class Speaker {
    firstName?: string;
    lastName?: string;
    email?: string;
-   privilege?:Privilege;
+   privilege?:Privilege | string;
    isOutGoing?: boolean;
    photoURL?: string;
    congregation?: Congregation;
