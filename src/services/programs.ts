@@ -1,7 +1,6 @@
 import moment from "moment";
 import { Congregation } from "../models/congregation";
 import { Part, WeekProgram, WOLWeek } from "../models/wol";
-import { FireStoreService } from "./firestore";
 import { WOLApi } from "./wol";
 import firebase from 'firebase/app'
 

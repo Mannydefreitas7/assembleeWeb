@@ -47,6 +47,7 @@ export default function Login() {
             const _provider = provider === 'google' ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.OAuthProvider('apple');
                 let result = await auth.signInWithPopup(_provider)
                 if (result) {
+                    console.log(result.user)
                     let userDoc = await firestore.doc(`users/${result.user?.uid}`).get()
                     if (userDoc.exists) {
                         history.push("/admin")

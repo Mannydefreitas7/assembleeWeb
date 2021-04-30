@@ -17,6 +17,7 @@ const reducer = (
          ...state,
          weeks: action.payload.weeks,
          week: action.payload.week,
+         congregation: action.payload.congregation,
          parts: action.payload.parts
       };
       case actionTypes.LOAD_PARTS:
@@ -49,6 +50,11 @@ const reducer = (
             modalChildren: action.payload
       };
       case actionTypes.OPEN_PUBLISHER_MODAL:
+         return {
+            ...state,
+            modalChildren: action.payload
+      };
+      case actionTypes.OPEN_EXPORT_MODAL:
          return {
             ...state,
             modalChildren: action.payload

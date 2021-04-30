@@ -9,7 +9,7 @@ export default function ModalView({ titleId } : {
     return (
         <div>
             <Modal
-            isClickableOutsideFocusTrap={false}
+                isClickableOutsideFocusTrap={false}
                 titleAriaId={titleId}
                 isOpen={isModalOpen}
                 onDismiss={dismissModal}

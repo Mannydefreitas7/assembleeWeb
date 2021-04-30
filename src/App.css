@@ -28,3 +28,12 @@
 *:focus {
   outline: none !important;
 }
+.route-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.route-wrapper > div {
+  position: absolute;
+  width: 100%;
+}

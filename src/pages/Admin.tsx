@@ -9,27 +9,38 @@ import ProgramDetail from './ProgramDetail';
 import Programs from './Programs';
 import Publishers from './Publishers';
 
+
 export default function Admin() {
     let { path } = useRouteMatch();
+
+
     return (
         <div>
             <TopBar />
                 <div className="pt-10">
-                    <Route path={path} exact>
+                    <Route 
+
+                    path={path} exact>
                         ADMIN
                     </Route>
-                    <Route path={`${path}/programs`} exact >
+                    <Route 
+
+                    path={`${path}/programs`} exact >
                         <Programs />
-                    </Route>
-                    <Route path={`${path}/programs/:id`} >
+                        </Route>
+                    <Route 
+      
+                    path={`${path}/programs/:id`} >
                         <ProgramDetail />
-                    </Route>
-                    <Route path={path + '/publishers'} >
+                        </Route>
+                    <Route 
+                    path={path + '/publishers'} >
                         <Publishers />
-                    </Route>
-                    <Route path={path + '/speakers'}>
+                        </Route>
+                    <Route 
+                    path={path + '/speakers'}>
                         <h1>SPEAKERS</h1>
-                    </Route>
+                        </Route>
                 </div>
                 <ModalView titleId={path} />
         </div>

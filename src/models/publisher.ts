@@ -17,6 +17,21 @@ export class Publisher {
    isReader?: boolean;
 };
 
+export class SafePublisher {
+	uid?: string;
+   email?: string;
+	photoURL?: string;
+   firstName?: string;
+   lastName?: string;
+   privilege?:any;
+   gender?: Gender | string;
+   isInvited?: boolean;
+   isWTConductor?: boolean;
+   speaker?: Speaker;
+   parts?: Part[];
+   isReader?: boolean;
+};
+
 export class Speaker {
    id?: string
    firstName?: string;

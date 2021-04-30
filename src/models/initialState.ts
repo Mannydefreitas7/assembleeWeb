@@ -3,11 +3,13 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import { Publisher } from "./publisher";
 import { ReactNode } from "react";
+import { Congregation } from "./congregation";
 
 export interface InitialState {
   week: WeekProgram;
   weeks: WeekProgram[];
   parts: Part[];
+  congregation: Congregation;
   auth: firebase.auth.Auth;
   firestore: firebase.firestore.Firestore;
   functions: firebase.functions.Functions;
@@ -28,4 +30,5 @@ export interface InitialState {
   assignPublisher: any;
   addProgram: any;
   openPublisherModal: any;
+  openExportModal: any;
 }

@@ -2,7 +2,6 @@ import { ActionButton, Spinner, SpinnerSize } from '@fluentui/react';
 import React, { useContext } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { CONG_ID } from '../constants';
-import { WeekProgram } from '../models/wol';
 import { GlobalContext } from '../store/GlobalState';
 import { Icon } from '@fluentui/react/lib/Icon';
 import { Link, useRouteMatch } from 'react-router-dom';

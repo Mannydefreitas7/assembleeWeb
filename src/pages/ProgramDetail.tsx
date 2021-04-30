@@ -8,9 +8,11 @@ import { GlobalContext } from '../store/GlobalState';
 import WeekEndView from '../components/WeekEndView';
 import MidWeekView from '../components/MidWeekView';
 import SelectPublisherPanel from '../components/SelectPublisherPanel';
+import { ExportService } from '../services/export';
+
 
 export default function ProgramDetail() {
-    const { firestore } = useContext(GlobalContext)
+    const { firestore, congregation } = useContext(GlobalContext)
     const { id } = useParams<{ id: string }>();
     const [documentSnapshot] = useDocument(firestore.doc(`congregations/${CONG_ID}/weeks/${id}`))
     const [collection, loading] = useCollection(firestore.collection(`congregations/${CONG_ID}/weeks/${id}/parts`).orderBy('index'));
@@ -18,7 +20,8 @@ export default function ProgramDetail() {
     let document: WeekProgram = {
         ...documentSnapshot?.data()
     }
-
+    const exportService = new ExportService()
+   
     const deleteProgram = () => {
         collection?.docs.forEach(async doc => await doc.ref.delete())
         documentSnapshot?.ref.delete()
@@ -38,7 +41,9 @@ export default function ProgramDetail() {
                     {document.range}
                 </h1>
                 <div className="inline-flex">
-                    <ActionButton iconProps={{ iconName: 'DownloadDocument' }} allowDisabledFocus>
+                    <ActionButton 
+                    onClick={() => exportService.downloadPDF([document], congregation, firestore)}
+                    iconProps={{ iconName: 'DownloadDocument' }} allowDisabledFocus>
                         Download
                     </ActionButton>
                     <ActionButton

@@ -6,15 +6,18 @@ import { WeekProgram } from '../models/wol';
 import { GlobalContext } from '../store/GlobalState';
 import { Icon } from '@fluentui/react/lib/Icon';
 import { Link, useRouteMatch } from 'react-router-dom';
+import ExportMenu from '../components/ExportMenu';
 
 export default function Programs() {
     const { firestore, openModal, addProgram } = useContext(GlobalContext)
-    const [ value, loading ] = useCollection(firestore.collection(`congregations/${CONG_ID}/weeks`).orderBy('date'))
+    const [ value, loading ] = useCollection(firestore.collection(`congregations/${CONG_ID}/weeks`).orderBy('date'));
+  //  const [ congregationDocs ] = useDocumentOnce(firestore.doc(`congregations/${CONG_ID}`));
     let { path } = useRouteMatch();
     return (
         <div className="container mx-auto p-8">
             <div className="mb-2 flex justify-between items-center">
                 <h1 className="font-semibold text-2xl inline-flex items-center"> <Icon iconName="ScheduleEventAction" className="mr-2"/>Programs</h1>
+                <div className="inline-flex items-center">
                 <ActionButton 
                 onClick={() => {
                     addProgram()
@@ -23,6 +26,9 @@ export default function Programs() {
                 iconProps={{ iconName: 'Add' }} allowDisabledFocus>
                     Add Program
                 </ActionButton>
+                <ExportMenu />
+                </div>
+               
             </div>
             {
                 loading ? <Spinner className="pt-10" size={SpinnerSize.large} /> :

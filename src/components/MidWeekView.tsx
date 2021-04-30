@@ -1,45 +1,18 @@
-import { IconButton, IContextualMenuProps, IIconProps, Stack } from '@fluentui/react'
+import { IconButton, IIconProps, Stack } from '@fluentui/react'
 import React, { useContext } from 'react'
 import { Part, PartType, WeekProgram } from './../models/wol';
 import { apply, chairmans, life, prayers, treasures } from '../shared/methods';
 import PartAssigneeButton from './PartAssigneeButton';
 import { GlobalContext } from '../store/GlobalState';
 import PartRemoveButton from './PartRemoveButton';
-import { EmailMessage } from './../models/user';
-import Mail from 'nodemailer/lib/mailer';
+import { EmailService } from '../services/email';
 
 export default function MidWeekView({ parts, week }: { parts: Part[], week: WeekProgram }) {
 
-    const sendEmail = async () => {
-        try {
-            let msg : Mail.Options = {
-                subject: "test",
-                text: "TEST",
-                to: "manny.defreitas7@me.com"
-            }
-           const res = await send(msg)
-        } catch (error) {console.log(error)}
-    }
-    
-    const { openPanel, selectPublisher, functions } = useContext(GlobalContext)
-    const send = functions.httpsCallable('emailData')
+
+     const emailService = new EmailService()
+    const { openPanel, selectPublisher, functions, congregation } = useContext(GlobalContext)
     const emojiIcon: IIconProps = { iconName: 'MoreVertical' };
-    const menuProps: IContextualMenuProps = {
-    items: [
-        {
-        key: 'emailMessage',
-        onClick: () => { sendEmail() },
-        text: 'Email message',
-        iconProps: { iconName: 'Mail' },
-        },
-        {
-        key: 'calendarEvent',
-        text: 'Calendar event',
-        iconProps: { iconName: 'Calendar' },
-        },
-    ],
-    directionalHintFixed: true,
-    };
     return (
         <div>
             <Stack>
@@ -101,7 +74,14 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                                             }} />
                                     }
                                         <IconButton
-                                            menuProps={menuProps}
+                                            menuProps={{
+                                                items: [{
+                                                    key: 'emailMessage',
+                                                    onClick: () => { emailService.emailPartPDF(part, { name: 'Manuel De Freitas', address: 'manny.defreitas7@gmail.com' }, congregation, functions ) },
+                                                    text: 'Email Part'
+                                                }]
+                                                
+                                            }}
                                             iconProps={emojiIcon}
                                             title="Emoji"
                                         />

@@ -30,13 +30,12 @@ export default function Home() {
             signIn() 
         }
     })
-
  
 
     return (
         <>
         <Router>
-            <Switch>
+        <Switch>
             <Route path="/" exact>
                 <Board />
             </Route>

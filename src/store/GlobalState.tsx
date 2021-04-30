@@ -12,7 +12,8 @@ import {
     SELECT_PUBLISHER,
     VIEW_PUBLISHER_PARTS,
     ADD_PROGRAM,
-    OPEN_PUBLISHER_MODAL
+    OPEN_PUBLISHER_MODAL,
+    OPEN_EXPORT_MODAL
 } from './ActionTypes';
 import { Part, PartType, WeekProgram } from '../models/wol';
 import { config, CONG_ID } from '../constants';
@@ -22,6 +23,7 @@ import { Publisher } from '../models/publisher';
 import { Congregation } from '../models/congregation';
 import AddProgramView from '../components/AddProgramView';
 import AddPublisherView from '../components/AddPublisherView';
+import ExportOptionsView from '../components/ExportOptionsView';
 
 type GlobalProps = {
     children: ReactNode
@@ -30,25 +32,26 @@ type GlobalProps = {
 
 const _firebase = firebase.initializeApp(config)
 if (process.env.NODE_ENV === 'development') {
-    let congregation: Congregation = {
-        id: '0927216B-2451-4AB5-AD08-11AC5777CCB1',
-        fireLanguage: {
-            apiURL: "wol/dt/r30/lp-f/",
-            languageCode: "F"
-        },
-        language: {
-            isSignLanguage: false,
-            languageCode: 'F',
-            languageName: 'Francais',
-            scriptDirection: 'LTR',
-            writtenLanguageCode: ['fr']
-        }
+    // let congregation: Congregation = {
+    //     id: '0927216B-2451-4AB5-AD08-11AC5777CCB1',
+    //     fireLanguage: {
+    //         apiURL: "wol/dt/r30/lp-f/",
+    //         languageCode: "F"
+    //     },
+    //     language: {
+    //         isSignLanguage: false,
+    //         languageCode: 'F',
+    //         languageName: 'Francais',
+    //         scriptDirection: 'LTR',
+    //         writtenLanguageCode: ['fr']
+    //     }
 
-    }
+    // }
 
     _firebase.functions().useEmulator("localhost", 5001)
     _firebase.firestore().useEmulator("localhost", 8080)
-    _firebase.firestore().doc(`congregations/${congregation.id}`).set(congregation)
+  //  _firebase.auth().useEmulator("localhost", 8080)
+  //  _firebase.firestore().doc(`congregations/${congregation.id}`).set(congregation)
 }
 
 
@@ -59,6 +62,7 @@ const initialState: InitialState = {
     firestore: _firebase.firestore(),
     functions: _firebase.functions(),
     week: {},
+    congregation: {},
     part: {},
     publisher: {},
     loading: true,
@@ -75,15 +79,16 @@ const initialState: InitialState = {
     viewPublisherParts: null,
     assignPublisher: null,
     addProgram: null,
-    openPublisherModal: null
+    openPublisherModal: null,
+    openExportModal: null
 }
 
-const test = {
-    "from": "info@assemblee.web.app",
-    "subject": "test",
-    "text": "TEST",
-    "to": "manny.defreitas7@gmail.com"
-} 
+// const test = {
+//     "from": "info@assemblee.web.app",
+//     "subject": "test",
+//     "text": "TEST",
+//     "to": "manny.defreitas7@gmail.com"
+// } 
 
 export const GlobalContext = createContext(initialState)
 
@@ -91,7 +96,7 @@ export const GlobalProvider = (props: GlobalProps) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
     const [isModalOpen, { setTrue: openModal, setFalse: dismissModal }] = useBoolean(false);
-    const deleteAllAnymomous = state.functions.httpsCallable('deleteAllAnymomous')
+ //   const deleteAllAnymomous = state.functions.httpsCallable('deleteAllAnymomous')
     useEffect(() => {
      //   deleteAllAnymomous()
         if (state.weeks.length === 0) {
@@ -101,6 +106,7 @@ export const GlobalProvider = (props: GlobalProps) => {
 
     const loadWeeks = async () => {
         try {
+            let congregation : Congregation =  await _firebase.firestore().doc(`congregations/${CONG_ID}`).get()
             let weeks: WeekProgram[] = await _firebase.firestore()
                 .collection(`congregations/${CONG_ID}/weeks`)
                 .limit(8)
@@ -120,6 +126,7 @@ export const GlobalProvider = (props: GlobalProps) => {
                         payload: {
                             weeks,
                             parts,
+                            congregation,
                             week: weeks[0]
                         }
                     })
@@ -175,11 +182,19 @@ export const GlobalProvider = (props: GlobalProps) => {
     }
 
     const openPublisherModal = () => {
-        openModal()
         dispatch({
             type: OPEN_PUBLISHER_MODAL,
             payload: <AddPublisherView />
         })
+        openModal()
+    }
+
+    const openExportModal = () => {
+        dispatch({
+            type: OPEN_EXPORT_MODAL,
+            payload: <ExportOptionsView />
+        })
+        openModal()
     }
 
     async function assignPublisher(week: WeekProgram, part: Part, newPublisher: Publisher, type: PartType, oldPublisher?: Publisher) {
@@ -224,6 +239,7 @@ export const GlobalProvider = (props: GlobalProps) => {
             firestore: state.firestore,
             functions: state.functions,
             auth: state.auth,
+            congregation: state.congregation,
             week: state.week,
             isPanelOpen: isOpen,
             dismissPanel,
@@ -239,7 +255,8 @@ export const GlobalProvider = (props: GlobalProps) => {
             viewPublisherParts,
             assignPublisher,
             addProgram,
-            openPublisherModal
+            openPublisherModal,
+            openExportModal
         }}>
             {props.children}
         </GlobalContext.Provider>

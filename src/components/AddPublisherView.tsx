@@ -1,4 +1,4 @@
-import { ChoiceGroup, Dropdown, IChoiceGroupOption, Icon, IconButton, IDropdownOption, PrimaryButton, Separator, Spinner, TextField } from '@fluentui/react'
+import { Dropdown, Icon, IconButton, IDropdownOption, PrimaryButton, Separator, TextField } from '@fluentui/react'
 import React, { useContext } from 'react'
 import { Gender, Privilege, Publisher } from '../models/publisher';
 import { GlobalContext } from '../store/GlobalState';
@@ -36,7 +36,7 @@ export default function AddPublisherView() {
                return setErrorMsg({ email:  'Not a valid email'})
             }
         }
-        if (publisher?.firstName && publisher?.firstName?.length < 2 || publisher?.lastName && publisher?.lastName?.length < 2) {
+        if ((publisher?.firstName && publisher?.firstName?.length < 2) || (publisher?.lastName && publisher?.lastName?.length < 2)) {
             setLoading(true)
             return setErrorMsg({ firstName: 'Please enter full Name'})
         }
