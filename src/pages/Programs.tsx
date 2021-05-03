@@ -38,7 +38,7 @@ export default function Programs() {
                         <Link 
                         to={`${path}/${week.id}`}
                         key={week.id}
-                        className="px-4 py-3 bg-white text-black my-2 flex items-center hover:bg-gray-10 hover:bg-opacity-50 cursor-pointer">
+                        className="px-4 py-3 rounded bg-white text-black my-2 flex items-center hover:bg-gray-10 hover:bg-opacity-50 cursor-pointer">
                             <Icon iconName="Calendar" className="mr-4"/>
                             <div className="block">
                                 <span className="text-sm text-gray-400">Week Range</span> <br/>

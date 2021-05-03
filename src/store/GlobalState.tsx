@@ -1,10 +1,11 @@
-import React, { createContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useReducer, useEffect, ReactNode, useState } from 'react';
 import { InitialState } from '../models/initialState';
 import reducer from './AppReducer';
 import firebase from 'firebase/app';
 import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
+import 'firebase/storage'
 
 import {
     LOAD_WEEKS,
@@ -13,7 +14,8 @@ import {
     VIEW_PUBLISHER_PARTS,
     ADD_PROGRAM,
     OPEN_PUBLISHER_MODAL,
-    OPEN_EXPORT_MODAL
+    OPEN_EXPORT_MODAL,
+    INITIAL_LOAD
 } from './ActionTypes';
 import { Part, PartType, WeekProgram } from '../models/wol';
 import { config, CONG_ID } from '../constants';
@@ -32,26 +34,32 @@ type GlobalProps = {
 
 const _firebase = firebase.initializeApp(config)
 if (process.env.NODE_ENV === 'development') {
-    // let congregation: Congregation = {
-    //     id: '0927216B-2451-4AB5-AD08-11AC5777CCB1',
-    //     fireLanguage: {
-    //         apiURL: "wol/dt/r30/lp-f/",
-    //         languageCode: "F"
-    //     },
-    //     language: {
-    //         isSignLanguage: false,
-    //         languageCode: 'F',
-    //         languageName: 'Francais',
-    //         scriptDirection: 'LTR',
-    //         writtenLanguageCode: ['fr']
-    //     }
+    let congregation: Congregation = {
+        id: '0927216B-2451-4AB5-AD08-11AC5777CCB1',
+        fireLanguage: {
+            apiURL: "wol/dt/r30/lp-f/",
+            languageCode: "F"
+        },
+        language: {
+            isSignLanguage: false,
+            languageCode: 'F',
+            languageName: 'Francais',
+            scriptDirection: 'LTR',
+            writtenLanguageCode: ['fr']
+        },
+        properties: {
+            orgName: 'West Hudson French - NY (USA)',
+            orgGuid: '0927216B-2451-4AB5-AD08-11AC5777CCB1'
+        }
 
-    // }
+    }
 
     _firebase.functions().useEmulator("localhost", 5001)
     _firebase.firestore().useEmulator("localhost", 8080)
-  //  _firebase.auth().useEmulator("localhost", 8080)
-  //  _firebase.firestore().doc(`congregations/${congregation.id}`).set(congregation)
+    _firebase.auth().useEmulator("http://localhost:9099");
+    _firebase.firestore().doc(`congregations/${congregation.id}`).set(congregation);
+  //  let provider = new firebase.auth.GoogleAuthProvider()
+  //  _firebase.auth().signInWithPopup(provider)
 }
 
 
@@ -61,6 +69,7 @@ const initialState: InitialState = {
     auth: _firebase.auth(),
     firestore: _firebase.firestore(),
     functions: _firebase.functions(),
+    storage: _firebase.storage(),
     week: {},
     congregation: {},
     part: {},
@@ -80,15 +89,10 @@ const initialState: InitialState = {
     assignPublisher: null,
     addProgram: null,
     openPublisherModal: null,
-    openExportModal: null
+    openExportModal: null,
+    user: {},
+    listener: null
 }
-
-// const test = {
-//     "from": "info@assemblee.web.app",
-//     "subject": "test",
-//     "text": "TEST",
-//     "to": "manny.defreitas7@gmail.com"
-// } 
 
 export const GlobalContext = createContext(initialState)
 
@@ -98,43 +102,62 @@ export const GlobalProvider = (props: GlobalProps) => {
     const [isModalOpen, { setTrue: openModal, setFalse: dismissModal }] = useBoolean(false);
  //   const deleteAllAnymomous = state.functions.httpsCallable('deleteAllAnymomous')
     useEffect(() => {
-     //   deleteAllAnymomous()
-        if (state.weeks.length === 0) {
-            loadWeeks()
-        }
-    }, [state.weeks.length])
+        load();
+        return () => { 
+            if (state.listener) state.listener()
+         }
+    }, [])
 
-    const loadWeeks = async () => {
+    const load = async () => {
         try {
-            let congregation : Congregation =  await _firebase.firestore().doc(`congregations/${CONG_ID}`).get()
-            let weeks: WeekProgram[] = await _firebase.firestore()
-                .collection(`congregations/${CONG_ID}/weeks`)
-                .limit(8)
-                .orderBy('date')
-                .where('isSent', '==', true)
-                .get()
-                .then(data => data.docs && data.docs.map(d => d.data()));
-            if (weeks && weeks.length > 0) {
-                let parts: Part[] = await _firebase.firestore()
-                    .collection(`congregations/${CONG_ID}/weeks/${weeks[0].id}/parts`)
-                    .orderBy('index')
-                    .get()
-                    .then(_ => _.docs.map(d => d.data()))
-                if (parts && parts.length > 0) {
-                    dispatch({
-                        type: LOAD_WEEKS,
-                        payload: {
-                            weeks,
-                            parts,
-                            congregation,
-                            week: weeks[0]
-                        }
-                    })
-                }
-            }
-        } catch (error) {
-            console.log(error)
-        }
+            let congregation : Congregation =  await _firebase.firestore().doc(`congregations/${CONG_ID}`).get();
+             
+            let _weeks = await _firebase.firestore()
+            .collection(`congregations/${CONG_ID}/weeks`)
+            .limit(8)
+            .orderBy('date')
+            .where('isSent', '==', true)
+            .get();
+         
+            let weeks: WeekProgram[] = _weeks.docs.map(d => d.data());
+            let parts: Part[] = weeks && weeks.length > 0 ? await _firebase.firestore()
+            .collection(`congregations/${CONG_ID}/weeks/${weeks[0].id}/parts`)
+            .orderBy('index')
+            .get()
+            .then(_ => _.docs.map(d => d.data())) : []
+
+            let listener = _firebase.auth().onAuthStateChanged(async user => {
+                if (user) {
+                   // let userDoc: firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData> = await _firebase.firestore().doc(`users/${_user.uid}`).get();
+                    if (!user.isAnonymous) {
+                      //  let user = userDoc.data();
+                        dispatch({
+                            type: INITIAL_LOAD,
+                            payload: {
+                                weeks,
+                                parts,
+                                congregation,
+                                week: weeks[0],
+                                user,
+                                listener
+                            }
+                        })
+                    } else {
+                        dispatch({
+                            type: INITIAL_LOAD,
+                            payload: {
+                                weeks,
+                                parts,
+                                congregation,
+                                week: weeks[0],
+                                user: null,
+                                listener
+                            }
+                        })
+                    }
+                } 
+            })
+        } catch (error) { console.log(error) }
     }
 
     const loadWeekParts = async (option: IDropdownOption) => {
@@ -232,8 +255,10 @@ export const GlobalProvider = (props: GlobalProps) => {
 
     return (
         <GlobalContext.Provider value={{
+            listener: state.listener,
             parts: state.parts,
             weeks: state.weeks,
+            storage: state.storage,
             part: state.part,
             publisher: state.publisher,
             firestore: state.firestore,
@@ -251,6 +276,7 @@ export const GlobalProvider = (props: GlobalProps) => {
             changeWeek,
             selectPublisher,
             type: state.type,
+            user: state.user,
             modalChildren: state.modalChildren,
             viewPublisherParts,
             assignPublisher,

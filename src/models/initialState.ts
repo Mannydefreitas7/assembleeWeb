@@ -4,6 +4,7 @@ import 'firebase/auth';
 import { Publisher } from "./publisher";
 import { ReactNode } from "react";
 import { Congregation } from "./congregation";
+import { User } from "./user";
 
 export interface InitialState {
   week: WeekProgram;
@@ -13,6 +14,7 @@ export interface InitialState {
   auth: firebase.auth.Auth;
   firestore: firebase.firestore.Firestore;
   functions: firebase.functions.Functions;
+  storage: firebase.storage.Storage;
   loading: boolean;
   part: Part;
   publisher: Publisher;
@@ -31,4 +33,6 @@ export interface InitialState {
   addProgram: any;
   openPublisherModal: any;
   openExportModal: any;
+  user: User;
+  listener: firebase.Unsubscribe | null;
 }

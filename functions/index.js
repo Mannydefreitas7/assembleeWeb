@@ -9,7 +9,7 @@ exports.emailData = functions.https.onCall((req, context) => {
     var data = req;
     sendEmail(data)
   } catch(error) {
-    throw new functions.https.HttpsError('unknown', error.message, error)
+      console.log(error)
   }
 })
 
@@ -18,35 +18,31 @@ exports.deleteAllAnymomous = functions.https.onCall(() => {
 })
 
 const sendEmail = (message) => {
-  try {
-    var transporter = nodemailer.createTransport({
-      service: 'gmail',
-      port: 465,
-      secure: true,
-      logger: true,
-      debug: true,
-      secureConnection: false,
-        auth: {
-            user: 'assemblee.app@gmail.com',
-            pass: 'lufamulhqpcimijt'
-        },
-          tls: {
-            rejectUnAuthorized:true
+    return new Promise((resolve, reject) => {
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        port: 465,
+        secure: true,
+        logger: true,
+        debug: true,
+        secureConnection: false,
+          auth: {
+              user: 'assemblee.app@gmail.com',
+              pass: 'lufamulhqpcimijt'
+          },
+            tls: {
+              rejectUnAuthorized:true
+          }
+        });
+      transporter.verify((error, success) => {
+        if (error) {
+          console.log(error);
+          reject(error)
+        } else {
+          transporter.sendMail(message).then(() => resolve(success))
         }
       });
-    transporter.verify((error, success) => {
-      if (error) {
-        console.log(error);
-      } else {
-        transporter.sendMail(message)
-        console.log(`Server is ready to take our messages ${success}`);
-      }
-    });
-
-  } catch(error) {
-    console.error('ERROR', error);
-  }
- 
+    })
 }
 
 const deleteAnymomous = async () => {

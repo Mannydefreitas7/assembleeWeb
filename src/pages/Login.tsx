@@ -17,9 +17,7 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const { auth, firestore } = useContext(GlobalContext)
     let history = useHistory();
-    const [
-        user
-      ] = useAuthState(auth);
+    const [ user, loading ] = useAuthState(auth);
 
    
     const alert = useAlert()
@@ -27,16 +25,18 @@ export default function Login() {
     const loginWithEmailAndPassword = async () => {
         try {
             if (email.length > 0 && password.length > 0) {
-                if (user && user?.isAnonymous) {
                     const newCredential = await auth.signInWithEmailAndPassword(email, password)
-                    if (newCredential.credential) {
+                    if (newCredential.credential && process.env.NODE_ENV === 'production') {
                             const userCredential = await auth.currentUser?.linkWithCredential(newCredential?.credential)
                             if (userCredential?.user) {
-                                history.push("/admin")
+                               history.push("/admin")
                             }
-                        }
+                    } else {
+                        history.push("/admin")
                     }
-                }
+                    
+                    }
+                
         } catch (error) {
             console.log(error)
         }

@@ -11,15 +11,17 @@ import Board from './Board';
 import Login from './Login';
 import Admin from './Admin';
 import { GlobalContext } from '../store/GlobalState';
+import SignUp from './SignUp';
+import ProtectedRoute from '../components/ProtectedRoute';
 
 export default function Home() {
 
     const { auth } = useContext(GlobalContext)
     const [ user ] = useAuthState(auth);
 
-    const signIn = () => {
+    const signIn = async () => {
         try {
-            auth.signInAnonymously()
+            await auth.signInAnonymously()
         } catch (error) {
             console.log(error)
         }
@@ -39,14 +41,23 @@ export default function Home() {
             <Route path="/" exact>
                 <Board />
             </Route>
-            <Route 
+            <ProtectedRoute 
                 path="/admin" 
-                component={Admin} 
-                strict={(!user?.isAnonymous)}>
-            </Route>
+                redirectTo="/login"
+                exact={false}
+                >
+                <Admin />
+            </ProtectedRoute>
             <Route path="/login">
                 <Login />
             </Route>
+            {
+                process.env.NODE_ENV === 'development' ?
+                <Route path="/signup">
+                    <SignUp />
+                </Route> : null
+            }
+         
             </Switch>
         </Router>
         </>

@@ -8,14 +8,14 @@ export default function PublisherTile({ publisher, isConfirmed } : { publisher: 
         imageUrl: publisher.photoURL ? publisher.photoURL : '',
         text: `${publisher.lastName} ${publisher.firstName}`,
         secondaryText: publisher.privilege?.toUpperCase(),
-        tertiaryText: publisher.uid,
+        tertiaryText: publisher.uid ?? '',
       };
     return (
-        <div className="my-4">
+        <div className="my-4 rounded">
          <Persona
             {...persona}
             className="p-4"
-            size={PersonaSize.size40}
+            size={PersonaSize.size48}
             presence={isConfirmed ? PersonaPresence.online : PersonaPresence.none}
             imageAlt={`${publisher.lastName} ${publisher.firstName}`}
         />

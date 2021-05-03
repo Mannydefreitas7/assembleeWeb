@@ -91,6 +91,8 @@ export class ProgramsService {
                                     promises.push(fireStore.doc(`${path}/weeks/${week.id}/parts/${part.id}`).set(part));
                                 })
                             }) 
+                        } else {
+                            
                         }
                     }
                 }

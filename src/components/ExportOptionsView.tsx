@@ -80,11 +80,12 @@ export default function ExportOptionsView() {
             let _weeks: WeekProgram[] = weeks.filter(w => moment(w.date.toDate()).month() === moment(month?.data).month());
             let result = await exportService.downloadPDF(_weeks, congregation, firestore)
             if (result) {  setLoading(false) }
-        } else {
-                let _weeks: WeekProgram[] = weeks.filter(w => moment(w.date.toDate()).month() === moment(month?.data).month());
-                let result = await emailService.emailSchedulePDF(_weeks, emails, { name: "Manuel De Freitas", address: 'manny.defreitas7@gmail.com' }, congregation, firestore, functions)
-                if (result) {  setLoading(false) }
-            }
+        } 
+        // else {
+        //         let _weeks: WeekProgram[] = weeks.filter(w => moment(w.date.toDate()).month() === moment(month?.data).month());
+        //         let result = await emailService.emailSchedulePDF(_weeks, emails, { name: "Manuel De Freitas", address: 'manny.defreitas7@gmail.com' }, congregation, firestore, functions)
+        //         if (result) {  setLoading(false) }
+        //     }
     }
 
     return (
@@ -110,13 +111,7 @@ export default function ExportOptionsView() {
                             onChange={(e, o) => setMonth(o)}
                             selectedKey={month?.key ?? months[0].key}
                         /> : <Spinner />
-                }
-                <ChoiceGroup 
-                onChange={(e, option) => selectDelivery(option!)}
-                label="Delivery Options" 
-                defaultSelectedKey={delivery} 
-                options={options} />
-                
+                }        
                 <div className="flex items-center justify-center mt-4">
                 {
                     loading ? 

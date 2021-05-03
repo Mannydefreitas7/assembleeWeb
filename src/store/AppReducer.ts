@@ -12,13 +12,15 @@ const reducer = (
 ): InitialState => {
    switch(action.type) {
      
-      case actionTypes.LOAD_WEEKS:
+      case actionTypes.INITIAL_LOAD:
       return {
          ...state,
          weeks: action.payload.weeks,
          week: action.payload.week,
          congregation: action.payload.congregation,
-         parts: action.payload.parts
+         parts: action.payload.parts,
+         user: action.payload.user,
+         listener: action.payload.listener
       };
       case actionTypes.LOAD_PARTS:
       return {

@@ -30,7 +30,7 @@ export default function Publishers() {
                         <Link 
                         to={`${path}/${publisher.uid}`}
                         key={publisher.uid}
-                        className="px-4 py-3 bg-white text-black my-2 flex items-center hover:bg-gray-10 hover:bg-opacity-50 cursor-pointer">
+                        className="px-4 py-3 bg-white rounded text-black my-2 flex items-center hover:bg-gray-10 hover:bg-opacity-50 cursor-pointer">
                             <PublisherTile publisher={publisher} />
                         </Link>
                     )

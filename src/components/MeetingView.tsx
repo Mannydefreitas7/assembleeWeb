@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { Stack } from '@fluentui/react/lib/Stack';
 import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
@@ -7,15 +7,19 @@ import { apply, chairmans, life, prayers, talk, treasures, wt } from '../shared/
 import { GlobalContext } from '../store/GlobalState';
 import { Link } from 'react-router-dom';
 import { SharedColors } from '@fluentui/theme';
+import { DefaultButton } from '@fluentui/react';
+import { ExportService } from '../services/export';
 
 export default function MeetingView() {
   const { weeks, week, parts, changeWeek } = useContext(GlobalContext)
 
+
   return (
-    <>
+    <div className="">
       <Stack>
-        <Dropdown
-          placeholder="Select an option"
+        {
+          week ? <Dropdown
+          placeholder="Select a week"
           defaultSelectedKey={week.id}
           className="mt-4"
           onChange={(e, option: any) => changeWeek(option)}
@@ -30,26 +34,43 @@ export default function MeetingView() {
                 return option
               })
           }
-        />
+        /> : null
+        }
+
         {
           parts && parts.length > 0 ?
             <WeekSchedule /> :
             <Spinner
               className="pt-20"
+              title="Loading Schedules, please wait..."
               size={SpinnerSize.large} />
         }
       </Stack>
-    </>
+    </div>
   )
 }
 
 const WeekSchedule = () => {
 
-  const { parts } = useContext(GlobalContext)
+  const { parts, week, congregation, firestore } = useContext(GlobalContext)
+  const exportService = new ExportService();
+  const [isDownloading, setIsDownloading] = useState(false);
+  const downloadPDF = () => {
+    setIsDownloading(true);
+    exportService.downloadPDF([week], congregation, firestore)
+    .then(value => setIsDownloading(!value))
+}
   return (
     <>
       <Stack>
-        <div className="p-10 rounded bg-white shadow my-4">
+        <div className="px-10 pb-10 pt-8 rounded bg-white shadow my-4">
+          <div className="flex justify-end">
+            {
+              isDownloading ? <Spinner label="Downloading..." labelPosition="right" /> : 
+              <DefaultButton onClick={downloadPDF} text="Download" className="mb-4" iconProps={{ iconName: 'PDF' }} />
+            }
+          </div>
+       
           <h3 className="mt-0 text-xl font-semibold">Réunion de Semaine</h3>
           <div className="mt-3 flex pl-4 flex-wrap justify-between items-center">
             <label className="text-gray-400">Président</label>

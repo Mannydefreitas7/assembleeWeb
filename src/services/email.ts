@@ -21,6 +21,7 @@ export class EmailService {
   ): Promise<firebase.functions.HttpsCallableResult> {
     const exportService = new ExportService();
     const send = functions.httpsCallable('emailData');
+
     return new Promise(async (resolve, reject) => {
       if (part.assignee) {
         let content: Content = exportService.parsePart(part);
@@ -31,6 +32,7 @@ export class EmailService {
         pdfDocGenerator.getBase64((data) => {
           if (part?.assignee?.email) {
             try {
+             
               let email: Mail.Address = {
                 name: `${part?.assignee?.firstName} ${part?.assignee?.lastName}`,
                 address: part.assignee.email,
@@ -39,9 +41,10 @@ export class EmailService {
                 name: `${part?.assistant?.firstName} ${part?.assistant?.lastName}`,
                 address: part?.assistant?.email ?? '',
               };
+              console.log(email)
               let message: Mail.Options = {
                 from: sending,
-                cc: part.assignee ? cc : '',
+                cc: part.assistant ? cc : undefined,
                 subject: exportService.partDefinition.info?.title,
                 to: email,
                 html: `<p>Hello ${part.assignee.lastName} ${

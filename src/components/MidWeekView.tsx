@@ -73,18 +73,6 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                                                 openPanel()
                                             }} />
                                     }
-                                        <IconButton
-                                            menuProps={{
-                                                items: [{
-                                                    key: 'emailMessage',
-                                                    onClick: () => { emailService.emailPartPDF(part, { name: 'Manuel De Freitas', address: 'manny.defreitas7@gmail.com' }, congregation, functions ) },
-                                                    text: 'Email Part'
-                                                }]
-                                                
-                                            }}
-                                            iconProps={emojiIcon}
-                                            title="Emoji"
-                                        />
                                     </div>
 
                                 </div>

@@ -1,10 +1,16 @@
-import { Icon } from '@fluentui/react'
-import React from 'react'
-import { NavLink, useRouteMatch } from 'react-router-dom'
+import { Icon, IconButton, Persona, PersonaSize, Spinner } from '@fluentui/react'
+import React, { useContext, useEffect, useState } from 'react'
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { Link, NavLink, useRouteMatch } from 'react-router-dom'
+import { User } from '../models/user';
+import { GlobalContext } from '../store/GlobalState';
 import logo from './../assets/logo.jpg'
 
 export default function TopBar() {
     let { url } = useRouteMatch();
+    const { auth, user, firestore } = useContext(GlobalContext);
+    const [userState, loading] = useAuthState(auth);
+    const [userInfo, setUserInfo] = useState<User>();
     const links = [
         {
             path: `${url}`,
@@ -28,8 +34,20 @@ export default function TopBar() {
         }
     ]
 
+    useEffect(() => {
+        loadUser()
+      }, [])
+
+    const loadUser = async () => {
+        if (!loading) {
+            let _res = await firestore.doc(`users/${userState?.uid}`).get();
+            let _user = _res.exists ? _res.data() : {}
+            setUserInfo(_user)
+        }
+    }
+
     return (
-        <div className="w-full flex justify-between items-center bg-gray-800 fixed z-10">
+        <div className="w-full flex justify-between items-center bg-gray-800 fixed z-10 pr-5">
             <div className="inline-flex">
                 <img src={logo} className="mr-6 w-14" alt="West Hudson French" />
                 {
@@ -48,6 +66,20 @@ export default function TopBar() {
                     })
                 }
             </div>
+            {
+                user === null ? <Spinner /> :
+                <> 
+                    <Link to={url + '/me'}>
+                    <Persona
+                        size={PersonaSize.size32}
+                        hidePersonaDetails={true}
+                        imageUrl={userInfo?.photoURL}
+                        text={`${userInfo?.firstName} ${userInfo?.lastName}`}
+                    />
+                    </Link>
+                </>
+            }
+            
         </div>
     )
 }

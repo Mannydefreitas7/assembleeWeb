@@ -197,8 +197,8 @@ export class ExportService {
           {
             text: `${
               part.assignee
-                ? part?.assignee?.firstName?.slice(0, 1) +
-                  '. ' +
+                ? part?.assignee?.firstName +
+                  ' ' +
                   part.assignee.lastName
                 : ''
             }`,
@@ -215,7 +215,7 @@ export class ExportService {
           },
           {
             text: `${part.assistant ?
-              part.assistant?.firstName?.slice(0, 1) +
+              part.assistant?.firstName?.slice(0, 1).toUpperCase() +
               '. ' +
               part?.assistant?.lastName : ''
             }`,

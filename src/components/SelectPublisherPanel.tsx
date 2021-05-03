@@ -27,7 +27,7 @@ export default function SelectPublisherPanel() {
                 isLightDismiss={false}
                 headerText="Select Publisher"
             >
-                <p className="mb-5">{week.range}</p>
+                <p className="mb-5">{week?.range ?? ""}</p>
                 <PartTile part={part} publisher={publisher} />
                 <SearchBox
                     className="mt-5"
