@@ -1,6 +1,6 @@
-import { IPersonaSharedProps, Persona, PersonaPresence, PersonaSize } from '@fluentui/react'
+import { IPersonaSharedProps, Persona, PersonaInitialsColor, PersonaPresence, PersonaSize } from '@fluentui/react'
 import React from 'react'
-import { Publisher } from '../models/publisher'
+import { Gender, Publisher } from '../models/publisher'
 import { Part } from '../models/wol';
 
 export default function PartRemoveButton({ publisher, part, action } : { publisher: Publisher, part: Part, action: () => void }) {
@@ -17,6 +17,7 @@ export default function PartRemoveButton({ publisher, part, action } : { publish
                 <Persona
                     {...persona}
                     className="p-1"
+                    initialsColor={publisher.gender === Gender.brother ? PersonaInitialsColor.darkBlue : PersonaInitialsColor.pink}
                     size={PersonaSize.size24}
                     presence={part.isConfirmed ? PersonaPresence.online : PersonaPresence.none}
                     imageAlt={`${publisher.lastName} ${publisher.firstName}`}

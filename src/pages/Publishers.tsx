@@ -1,5 +1,5 @@
-import { ActionButton, Spinner, SpinnerSize } from '@fluentui/react';
-import React, { useContext } from 'react'
+import { ActionButton, SearchBox, Spinner, SpinnerSize } from '@fluentui/react';
+import React, { useContext, useState } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { CONG_ID } from '../constants';
 import { GlobalContext } from '../store/GlobalState';
@@ -12,6 +12,7 @@ export default function Publishers() {
     const { firestore, openPublisherModal } = useContext(GlobalContext)
     const [ value, loading ] = useCollection(firestore.collection(`congregations/${CONG_ID}/publishers`).orderBy('lastName'))
     let { path } = useRouteMatch();
+    const [search, setSearch] = useState('');
     return (
         <div className="container mx-auto p-8">
             <div className="mb-2 flex justify-between items-center">
@@ -23,8 +24,19 @@ export default function Publishers() {
                 </ActionButton>
             </div>
             {
+                   value?.docs && value?.docs.map(p => p.data()).length > 0 ?
+                    <SearchBox
+                    className="mt-5"
+                    placeholder="Search Publishers" onKeyDown={(newValue) => setSearch(newValue.currentTarget.value)} /> : null
+                }
+            {
                 loading ? <Spinner className="pt-10" size={SpinnerSize.large} /> :
-                value?.docs.map(data => {
+                value?.docs
+                .filter(p => {
+                    let publisher : Publisher = p.data()
+                    return publisher.firstName?.toLowerCase().includes(search.toLowerCase()) || publisher.lastName?.toLowerCase().includes(search.toLowerCase())
+                })
+                .map(data => {
                     let publisher : Publisher = data.data() 
                     return (
                         <Link 

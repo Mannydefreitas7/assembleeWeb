@@ -1,6 +1,6 @@
-import { IPersonaSharedProps, Persona, PersonaPresence, PersonaSize } from '@fluentui/react';
+import { IPersonaSharedProps, Persona, PersonaInitialsColor, PersonaPresence, PersonaSize } from '@fluentui/react';
 import React from 'react'
-import { Publisher } from '../models/publisher';
+import { Gender, Publisher } from '../models/publisher';
 
 export default function PublisherTile({ publisher, isConfirmed } : { publisher: Publisher, isConfirmed?: boolean }) {
     const persona: IPersonaSharedProps = {
@@ -15,6 +15,7 @@ export default function PublisherTile({ publisher, isConfirmed } : { publisher: 
          <Persona
             {...persona}
             className="p-4"
+            initialsColor={publisher.gender === Gender.brother ? PersonaInitialsColor.darkBlue : PersonaInitialsColor.pink}
             size={PersonaSize.size48}
             presence={isConfirmed ? PersonaPresence.online : PersonaPresence.none}
             imageAlt={`${publisher.lastName} ${publisher.firstName}`}

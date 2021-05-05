@@ -1,19 +1,16 @@
-import { IconButton, IIconProps, Stack } from '@fluentui/react'
+import { Stack } from '@fluentui/react'
 import React, { useContext } from 'react'
 import { Part, PartType, WeekProgram } from './../models/wol';
 import { apply, chairmans, life, prayers, treasures } from '../shared/methods';
 import PartAssigneeButton from './PartAssigneeButton';
 import { GlobalContext } from '../store/GlobalState';
 import PartRemoveButton from './PartRemoveButton';
-import { EmailService } from '../services/email';
+import PartContextMenu from './PartContextMenu';
 
 
 export default function MidWeekView({ parts, week }: { parts: Part[], week: WeekProgram }) {
 
-
-     const emailService = new EmailService()
-    const { openPanel, selectPublisher, functions, congregation } = useContext(GlobalContext)
-    const emojiIcon: IIconProps = { iconName: 'MoreVertical' };
+    const { openPanel, selectPublisher } = useContext(GlobalContext)
     return (
         <div>
             <Stack>
@@ -21,23 +18,30 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                     <h3 className="mt-0 text-xl font-semibold">Réunion de Semaine</h3>
                     <div className="mt-3 flex pl-4 flex-wrap justify-between items-center">
                         <label className="text-gray-400">Président</label>
-                        {
-                            chairmans(parts).length > 0 && chairmans(parts)[0].assignee ?
-                                <PartRemoveButton
-                                    action={() => {
-                                        selectPublisher(week, chairmans(parts)[0], PartType.assignee, chairmans(parts)[0].assignee)
+                        <div className="inline-flex items-center my-2">
+                            {
+                                chairmans(parts).length > 0 && chairmans(parts)[0].assignee ?
+                                    <PartRemoveButton
+                                        action={() => {
+                                            selectPublisher(week, chairmans(parts)[0], PartType.assignee, chairmans(parts)[0].assignee)
+                                            openPanel()
+                                        }}
+                                        part={chairmans(parts)[0]}
+                                        publisher={chairmans(parts)[0].assignee ?? {}} /> :
+                                    <PartAssigneeButton text="Assignee" action={() => {
+                                        selectPublisher(week, chairmans(parts)[0], PartType.assignee, null)
                                         openPanel()
-                                    }}
-                                    part={chairmans(parts)[0]}
-                                    publisher={chairmans(parts)[0].assignee ?? {}} /> :
-                                <PartAssigneeButton text="Assignee" action={() => {
-                                    selectPublisher(week, chairmans(parts)[0], PartType.assignee, null)
-                                    openPanel()
-                                }} />
-                        }
+                                    }} />
+                            }
+                            {
+                                chairmans(parts) && chairmans(parts).length > 0 ? 
+                                <PartContextMenu part={chairmans(parts)[0]} /> : null
+                            }
+                        </div>
                     </div>
                     <div className="mt-3 flex pl-4 flex-wrap justify-between items-center">
                         <label className="text-gray-400">Priere</label>
+                        <div className="inline-flex items-center my-2">
                         {
                             prayers(parts).length > 0 && prayers(parts)[0].assignee ?
                                 <PartRemoveButton
@@ -52,6 +56,11 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                                     openPanel()
                                 }} />
                         }
+                        {
+                            prayers(parts) && prayers(parts).length > 0 ? 
+                            <PartContextMenu part={prayers(parts)[0]} /> : null
+                        }
+                        </div>
                     </div>
                     <h4 className="my-3 font-semibold text-lg treasures">JOYAUX DE LA PAROLE DE DIEU</h4>
                     {
@@ -59,7 +68,7 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                             return (
                                 <div className="mt-3 pl-4 flex flex-wrap justify-between items-center" key={part.id}>
                                     <label>{part.title}</label>
-                                    <div className="inline-flex items-center">
+                                    <div className="inline-flex items-center my-2">
                                     {
                                         part && part.assignee ?
                                             <PartRemoveButton
@@ -74,6 +83,9 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                                                 openPanel()
                                             }} />
                                     }
+                                    {
+                                        part ? <PartContextMenu part={part} /> : null
+                                    }
                                     </div>
 
                                 </div>
@@ -87,7 +99,7 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                             return (
                                 <div className="mt-3 pl-4 flex flex-wrap justify-between items-center" key={part.id}>
                                     <label className="w-2/3">{part.title}</label>
-                                    <div className="inline-flex items-center my-1">
+                                    <div className="inline-flex items-center my-2">
                                         {
                                             part && part.assignee ?
                                                 <PartRemoveButton
@@ -107,7 +119,7 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                                             part && part.assistant ?
                                                 <PartRemoveButton
                                                     action={() => {
-                                                        selectPublisher(week, part, PartType.assistant, part.assignee)
+                                                        selectPublisher(week, part, PartType.assistant, part.assistant)
                                                         openPanel()
                                                     }}
                                                     part={part}
@@ -116,6 +128,9 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                                                     selectPublisher(week, part, PartType.assistant, null)
                                                     openPanel()
                                                 }} />
+                                        }
+                                        {
+                                            part ? <PartContextMenu part={part} /> : null
                                         }
                                     </div>
                                 </div>
@@ -129,6 +144,7 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                             return (
                                 <div className="mt-3 pl-4 flex flex-wrap justify-between items-center" key={part.id}>
                                     <label className="w-2/3">{part.title}</label>
+                                    <div className="inline-flex items-center my-2">
                                     {
                                         part && part.index !== life(parts).length ?
                                             part.assignee ?
@@ -142,45 +158,50 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                                                 <PartAssigneeButton text="Assignee" action={() => {
                                                     selectPublisher(week, part, PartType.assignee, null)
                                                     openPanel()
-                                                }} /> :
-                                            <div className="inline-flex items-center my-1">
-                                                {
-                                                    part.assignee ?
-                                                        <PartRemoveButton
-                                                            action={() => {
-                                                                selectPublisher(week, part, PartType.assignee, part.assignee)
-                                                                openPanel()
-                                                            }}
-                                                            part={part}
-                                                            publisher={part.assignee ?? {}} /> :
-                                                        <PartAssigneeButton text="Assignee" action={() => {
-                                                            selectPublisher(week, part, PartType.assignee, null)
+                                                }} /> :   
+                                        <>
+                                            {  
+                                                part.assignee ?
+                                                    <PartRemoveButton
+                                                        action={() => {
+                                                            selectPublisher(week, part, PartType.assignee, part.assignee)
                                                             openPanel()
-                                                        }} />
-                                                }
+                                                        }}
+                                                        part={part}
+                                                        publisher={part.assignee ?? {}} /> :
+                                                    <PartAssigneeButton text="Assignee" action={() => {
+                                                        selectPublisher(week, part, PartType.assignee, null)
+                                                        openPanel()
+                                                    }} />
+                                            }
                                                 <span className="text-gray-200 mx-1">-</span>
-                                                {
-                                                    part && part.assistant ?
-                                                        <PartRemoveButton
-                                                            action={() => {
-                                                                selectPublisher(week, part, PartType.assistant, part.assistant)
-                                                                openPanel()
-                                                            }}
-                                                            part={part}
-                                                            publisher={part.assistant ?? {}} /> :
-                                                        <PartAssigneeButton text="Reader" action={() => {
-                                                            selectPublisher(week, part, PartType.assistant, null)
+                                            {
+                                                part && part.assistant ?
+                                                    <PartRemoveButton
+                                                        action={() => {
+                                                            selectPublisher(week, part, PartType.assistant, part.assistant)
                                                             openPanel()
-                                                        }} />
-                                                }
-                                            </div>
+                                                        }}
+                                                        part={part}
+                                                        publisher={part.assistant ?? {}} /> :
+                                                    <PartAssigneeButton text="Reader" action={() => {
+                                                        selectPublisher(week, part, PartType.assistant, null)
+                                                        openPanel()
+                                                    }} />
+                                            }
+                                        </>
                                     }
+                                    {
+                                        part ? <PartContextMenu part={part} /> : null
+                                    }
+                                    </div>
                                 </div>
                             )
                         })
                     }
                     <div className="mt-3 pl-4 flex justify-between items-center">
                         <label className="text-gray-400">Priere</label>
+                        <div className="inline-flex items-center my-2">
                         {
                             prayers(parts).length > 1 && prayers(parts)[1].assignee ?
                                 <PartRemoveButton
@@ -195,6 +216,11 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                                     openPanel()
                                 }} />
                         }
+                        {
+                            prayers(parts) && prayers(parts).length > 1 ? 
+                            <PartContextMenu part={prayers(parts)[1]} /> : null
+                        }
+                        </div>
                     </div>
                 </div>
             </Stack>

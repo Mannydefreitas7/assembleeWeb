@@ -15,7 +15,9 @@ import {
     ADD_PROGRAM,
     OPEN_PUBLISHER_MODAL,
     OPEN_EXPORT_MODAL,
-    INITIAL_LOAD
+    INITIAL_LOAD,
+    OPEN_RENAME_MODAL,
+    RELOAD_WEEKS
 } from './ActionTypes';
 import { Part, PartType, WeekProgram } from '../models/wol';
 import { config, CONG_ID } from '../constants';
@@ -26,6 +28,7 @@ import { Congregation } from '../models/congregation';
 import AddProgramView from '../components/AddProgramView';
 import AddPublisherView from '../components/AddPublisherView';
 import ExportOptionsView from '../components/ExportOptionsView';
+import RenamePartView from '../components/RenamePartView';
 
 type GlobalProps = {
     children: ReactNode
@@ -91,7 +94,9 @@ const initialState: InitialState = {
     openPublisherModal: null,
     openExportModal: null,
     user: {},
-    listener: null
+    listener: null,
+    openRenameModal: null,
+    reloadWeeks: null
 }
 
 export const GlobalContext = createContext(initialState)
@@ -126,36 +131,20 @@ export const GlobalProvider = (props: GlobalProps) => {
             .get()
             .then(_ => _.docs.map(d => d.data())) : []
 
-            let listener = _firebase.auth().onAuthStateChanged(async user => {
-                if (user) {
-                   // let userDoc: firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData> = await _firebase.firestore().doc(`users/${_user.uid}`).get();
-                    if (!user.isAnonymous) {
-                      //  let user = userDoc.data();
-                        dispatch({
-                            type: INITIAL_LOAD,
-                            payload: {
-                                weeks,
-                                parts,
-                                congregation,
-                                week: weeks[0],
-                                user,
-                                listener
-                            }
-                        })
-                    } else {
-                        dispatch({
-                            type: INITIAL_LOAD,
-                            payload: {
-                                weeks,
-                                parts,
-                                congregation,
-                                week: weeks[0],
-                                user: null,
-                                listener
-                            }
-                        })
+            let listener = state.auth
+            .onAuthStateChanged(user => {
+                console.log(user)
+                dispatch({
+                    type: INITIAL_LOAD,
+                    payload: {
+                        weeks,
+                        parts,
+                        congregation,
+                        week: weeks[0],
+                        user,
+                        listener
                     }
-                } 
+                })
             })
         } catch (error) { console.log(error) }
     }
@@ -173,6 +162,28 @@ export const GlobalProvider = (props: GlobalProps) => {
                     payload: {
                         parts,
                         week: state.weeks.filter(w => w.id === option.key)[0]
+                    }
+                })
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const reloadWeeks = async () => {
+        try {
+            let weeks: WeekProgram[] = await state.firestore
+                .collection(`congregations/${CONG_ID}/weeks`)
+                .orderBy('date')
+                .where('isSent', '==', true)
+                .get()
+                .then(_ => _.docs.map(d => d.data()))
+            if (weeks && weeks.length > 0) {
+                dispatch({
+                    type: RELOAD_WEEKS,
+                    payload: {
+                        weeks,
+                        week: weeks[0]
                     }
                 })
             }
@@ -216,6 +227,14 @@ export const GlobalProvider = (props: GlobalProps) => {
         dispatch({
             type: OPEN_EXPORT_MODAL,
             payload: <ExportOptionsView />
+        })
+        openModal()
+    }
+
+    const openRenameModal = (part : Part) => {
+        dispatch({
+            type: OPEN_RENAME_MODAL,
+            payload: <RenamePartView part={part} />
         })
         openModal()
     }
@@ -282,7 +301,9 @@ export const GlobalProvider = (props: GlobalProps) => {
             assignPublisher,
             addProgram,
             openPublisherModal,
-            openExportModal
+            openExportModal,
+            openRenameModal,
+            reloadWeeks
         }}>
             {props.children}
         </GlobalContext.Provider>

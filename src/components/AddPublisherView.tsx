@@ -15,10 +15,10 @@ export default function AddPublisherView() {
         email: ''
     });
     const [errorMsg, setErrorMsg] = React.useState<{
-        firstName?: string,
-        lastName?: string,
-        email?: string,
-        gender?: string
+        firstName?: string | undefined,
+        lastName?: string | undefined,
+        email?: string | undefined,
+        gender?: string | undefined
     }>();
     const genders: IDropdownOption[] = [
         { key: Gender.brother, text: Gender.brother },
@@ -31,20 +31,18 @@ export default function AddPublisherView() {
     ];  
 
     const valiations = () => {
-        if (publisher?.email && publisher?.email?.length > 3) {
-            if (!EmailValidator.validate(publisher?.email)) {
-               return setErrorMsg({ email:  'Not a valid email'})
-            }
+        if (publisher.email && publisher.email.length > 3) {
+            if (!EmailValidator.validate(publisher.email)) {
+                setLoading(true)
+                return setErrorMsg({ email:  'Not a valid email'})
+            } 
+            if ((publisher.firstName && publisher.firstName.length < 2) && (publisher.lastName && publisher.lastName.length < 2)) {
+                setLoading(true)
+                return setErrorMsg({ firstName: 'Please enter full Name'})
+            } 
+            setErrorMsg({})
+            return setLoading(false)
         }
-        if ((publisher?.firstName && publisher?.firstName?.length < 2) || (publisher?.lastName && publisher?.lastName?.length < 2)) {
-            setLoading(true)
-            return setErrorMsg({ firstName: 'Please enter full Name'})
-        }
-        if (!publisher?.gender || !publisher.privilege) {
-            setLoading(true)
-            return setErrorMsg({ gender: 'Please enter gender' })
-        }
-        setLoading(false)
     }
 
     const addPublisher = () => {
@@ -94,7 +92,7 @@ export default function AddPublisherView() {
                             ...publisher,
                             firstName: e.currentTarget.value
                         })
-                        valiations() }}
+                     }}
                     className="mr-2" 
                     placeholder="Charles" 
                     label="First Name" 
@@ -152,7 +150,7 @@ export default function AddPublisherView() {
                         }}
                         label="Privilege"
                         className="flex-1"
-                        options={privileges}
+                        options={publisher.gender === Gender.brother ? privileges : privileges.filter(p => p.key === Privilege.pub)}
                     />
                </div>
                <div className="flex py-4 justify-center">

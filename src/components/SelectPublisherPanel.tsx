@@ -13,7 +13,8 @@ import PublisherTile from './PublisherTile';
 export default function SelectPublisherPanel() {
     const { firestore, dismissPanel, isPanelOpen, week, part, publisher, assignPublisher, type } = useContext(GlobalContext)
     let { path, url } = useRouteMatch();
-    const [publishersCollection, publishersLoading] = useCollection(firestore.collection(`congregations/${CONG_ID}/publishers`).orderBy('lastName'));
+    const [publishersCollection, publishersLoading] = useCollection(firestore.collection(`congregations/${CONG_ID}/publishers`)
+    .orderBy('lastName').where('privilege', 'in', (part?.privilege?.length ?? 0) > 0 ? part.privilege : [Privilege.pub]));
     const [search, setSearch] = useState('');
     let history = useHistory();
 
@@ -29,9 +30,13 @@ export default function SelectPublisherPanel() {
             >
                 <p className="mb-5">{week?.range ?? ""}</p>
                 <PartTile part={part} publisher={publisher} />
-                <SearchBox
+                {
+                   publishersCollection?.docs && publishersCollection?.docs.map(p => p.data()).length > 0 ?
+                    <SearchBox
                     className="mt-5"
-                    placeholder="Search Publishers" onKeyDown={(newValue) => setSearch(newValue.currentTarget.value)} />
+                    placeholder="Search Publishers" onKeyDown={(newValue) => setSearch(newValue.currentTarget.value)} /> : null
+                }
+                
                 {
                     publishersLoading ? <Spinner className="pt-10" size={SpinnerSize.large} /> :
                         publishersCollection?.docs

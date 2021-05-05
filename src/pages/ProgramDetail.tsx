@@ -1,5 +1,5 @@
-import { ActionButton, Pivot, PivotItem, Spinner, SpinnerSize } from '@fluentui/react';
-import React, { useContext } from 'react'
+import { ActionButton, Pivot, PivotItem, Spinner, SpinnerSize, Toggle } from '@fluentui/react';
+import React, { useContext, useState } from 'react'
 import { useCollection, useDocument } from 'react-firebase-hooks/firestore';
 import { useHistory, useParams } from 'react-router';
 import { CONG_ID } from '../constants';
@@ -12,20 +12,30 @@ import { ExportService } from '../services/export';
 
 
 export default function ProgramDetail() {
-    const { firestore, congregation } = useContext(GlobalContext)
+    const { firestore, congregation, reloadWeeks } = useContext(GlobalContext)
     const { id } = useParams<{ id: string }>();
-    const [documentSnapshot] = useDocument(firestore.doc(`congregations/${CONG_ID}/weeks/${id}`))
+    const [documentSnapshot, weekLoading] = useDocument(firestore.doc(`congregations/${CONG_ID}/weeks/${id}`))
     const [collection, loading] = useCollection(firestore.collection(`congregations/${CONG_ID}/weeks/${id}/parts`).orderBy('index'));
     let history = useHistory();
+    
+    const [isDownloading, setIsDownloading] = useState(false)
     let document: WeekProgram = {
         ...documentSnapshot?.data()
     }
+    const [isChecked, setIsChecked] = useState<boolean>(document.isSent ?? false)
     const exportService = new ExportService()
    
     const deleteProgram = () => {
         collection?.docs.forEach(async doc => await doc.ref.delete())
         documentSnapshot?.ref.delete()
         .then(() => history.goBack())
+    }
+
+    function _onChange(ev: React.MouseEvent<HTMLElement>, checked?: boolean) {
+       
+        firestore.doc(`congregations/${CONG_ID}/weeks/${id}`).update({ isSent: checked })
+        .then(() => reloadWeeks())
+        setIsChecked(checked!)
     }
 
     return (
@@ -40,12 +50,32 @@ export default function ProgramDetail() {
                     </ActionButton> <br />
                     {document.range}
                 </h1>
-                <div className="inline-flex">
-                    <ActionButton 
-                    onClick={() => exportService.downloadPDF([document], congregation, firestore)}
-                    iconProps={{ iconName: 'DownloadDocument' }} allowDisabledFocus>
-                        Download
-                    </ActionButton>
+                <div className="flex items-center">
+                    {
+                        weekLoading ? <Spinner /> : 
+                        <Toggle 
+                            defaultChecked={document.isSent}
+                            className="mb-0" 
+                            label="Pin on Board?" 
+                            inlineLabel 
+                            onText="Yes" 
+                            offText="No" 
+                            onChange={_onChange} />
+                    }
+                    {
+                        isDownloading ?
+                        <Spinner label="Downloading..." labelPosition={'right'} /> :
+                        <ActionButton 
+                        onClick={() => {
+                            setIsDownloading(true)
+                            exportService.downloadPDF([document], congregation, firestore)
+                            .then(value => setIsDownloading(false))
+                        }}
+                        iconProps={{ iconName: 'DownloadDocument' }} allowDisabledFocus>
+                            Download
+                        </ActionButton>
+                    }
+
                     <ActionButton
                         className="text-red-500"
                         onClick={deleteProgram}

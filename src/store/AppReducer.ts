@@ -46,6 +46,12 @@ const reducer = (
          parts: action.payload.parts,
          week: action.payload.week
       };
+      case actionTypes.RELOAD_WEEKS:
+      return {
+         ...state,
+         weeks: action.payload.weeks,
+         week: action.payload.week
+      };
       case actionTypes.ADD_PROGRAM:
          return {
             ...state,
@@ -61,7 +67,11 @@ const reducer = (
             ...state,
             modalChildren: action.payload
       };
-       
+      case actionTypes.OPEN_RENAME_MODAL:
+         return {
+            ...state,
+            modalChildren: action.payload
+      };
    }
    return state
 }

@@ -548,11 +548,13 @@ async downloadPDF(
         })
 
         let all = await Promise.all(promises);
+        console.log(all)
         let arrayOfContent = all.map(a => {
           let parts : Part[] = a.docs.map(d => d.data());
           let week : WeekProgram = weeks.filter(w => w.id === parts[0].week)[0]
           return this.parsePDFPage(congregation, week, parts)
         });
+
         if (arrayOfContent.length > 0) {
 
           docDefinition.content = weeks.length > 1 ? 

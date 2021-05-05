@@ -1,4 +1,4 @@
-import { Icon, IconButton, Persona, PersonaSize, Spinner } from '@fluentui/react'
+import { Icon, Persona, PersonaSize, Spinner } from '@fluentui/react'
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Link, NavLink, useRouteMatch } from 'react-router-dom'
@@ -31,9 +31,14 @@ export default function TopBar() {
             path: `${url}/speakers`,
             text: 'Speakers',
             icon: 'PublishCourse'
+        },
+        {
+            path: '/',
+            text: 'Board',
+            icon: 'Questionnaire'
         }
     ]
-
+    // @ts-ignore
     useEffect(() => {
         loadUser()
       }, [])

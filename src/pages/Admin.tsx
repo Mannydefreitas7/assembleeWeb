@@ -8,6 +8,7 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import TopBar from '../components/TopBar';
 import UserView from '../components/UserView';
 import { GlobalContext } from '../store/GlobalState';
+import Dashboard from './Dashboard';
 import ProgramDetail from './ProgramDetail';
 import Programs from './Programs';
 import PublisherDetail from './PublisherDetail';
@@ -26,7 +27,7 @@ export default function Admin() {
                     exact={true}
                     redirectTo="/login"
                     path={path}>
-                    ADMIN
+                    <Dashboard />
                     </ProtectedRoute>
                 <ProtectedRoute
                     exact={true}

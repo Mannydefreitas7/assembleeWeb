@@ -1,31 +1,22 @@
-import { ChoiceGroup, Dropdown, IChoiceGroupOption, Icon, IconButton, IDropdownOption, PrimaryButton, Spinner } from '@fluentui/react'
+import { Dropdown, Icon, IconButton, IDropdownOption, PrimaryButton, Spinner } from '@fluentui/react'
 import moment from 'moment';
-import Mail from 'nodemailer/lib/mailer';
 import React, { useContext, useEffect, useState } from 'react'
 import { CONG_ID } from '../constants';
 
 import { WeekProgram } from '../models/wol';
-import { EmailService } from '../services/email';
 import { ExportService } from '../services/export';
 import { GlobalContext } from '../store/GlobalState';
 
 
 export default function ExportOptionsView() {
-    const { firestore, dismissModal, congregation, functions } = useContext(GlobalContext);
-    const options: IChoiceGroupOption[] = [
-        { key: 'download', text: 'Download', iconProps: { iconName: 'PDF' } },
-        { key: 'email', text: 'Email', iconProps: { iconName: 'Send' } }
-    ];
+    const { firestore, dismissModal, congregation } = useContext(GlobalContext);
     const [months, setMonths] = useState<IDropdownOption[]>()
 
     const [month, setMonth] = useState<IDropdownOption>()
     const [weeks, setWeeks] = useState<WeekProgram[]>([])
-    const [emails, setEmails] = useState<Mail.Address[]>([])
-    const [delivery, setDelivery] = useState('download');
     const [loading, setLoading] = useState(false);
     const exportService = new ExportService()
-    const emailService = new EmailService()
-
+    // @ts-ignore
     const load = async () => {
         try {
             let weeks = await firestore.collection(`congregations/${CONG_ID}/weeks`)
@@ -43,49 +34,20 @@ export default function ExportOptionsView() {
                     })
                 }
             })
-
-
-
            setMonths(_months)  
         } catch (err) { console.log(err) }
     }
 
-
+    // @ts-ignore
     useEffect(() => {
         load()
     }, [])
 
-    const selectDelivery = async (option: IChoiceGroupOption) => {
-        setDelivery(option.key)
-        // if (option.key === 'email') {
-        //     if (emails.length === 0) {
-        //         let _publishers = await firestore.collection(`congregations/${CONG_ID}/publishers`).where('gender', '==', 'brother').get()
-        //         let publishers : Publisher[] = _publishers.docs.map(d => d.data());
-        //         if (publishers) {
-        //             setEmails(publishers.map(pub => {
-        //                 let address : Mail.Address = {
-        //                     address: pub.email ?? "",
-        //                     name: pub?.firstName + ' ' + pub?.lastName
-        //                 }
-        //                 return address
-        //             }))
-        //         }
-        //     }
-        // } 
-    }
-
     const exportSchedule = async () => {
         setLoading(true)
-        if (delivery === 'download') {
-            let _weeks: WeekProgram[] = weeks.filter(w => moment(w.date.toDate()).month() === moment(month?.data).month());
-            let result = await exportService.downloadPDF(_weeks, congregation, firestore)
-            if (result) {  setLoading(false) }
-        } 
-        // else {
-        //         let _weeks: WeekProgram[] = weeks.filter(w => moment(w.date.toDate()).month() === moment(month?.data).month());
-        //         let result = await emailService.emailSchedulePDF(_weeks, emails, { name: "Manuel De Freitas", address: 'manny.defreitas7@gmail.com' }, congregation, firestore, functions)
-        //         if (result) {  setLoading(false) }
-        //     }
+        let _weeks: WeekProgram[] = weeks.filter(w => moment(w.date.toDate()).month() === moment(month ? month.data : weeks[0].date.toDate()).month());
+        let result = await exportService.downloadPDF(_weeks, congregation, firestore)
+        if (result) {  setLoading(false) }
     }
 
     return (
@@ -115,7 +77,7 @@ export default function ExportOptionsView() {
                 <div className="flex items-center justify-center mt-4">
                 {
                     loading ? 
-                    <Spinner label="Please Wait, ..." labelPosition="right" /> : 
+                    <Spinner label="Please Wait..." labelPosition="right" /> : 
                     <PrimaryButton className="w-full" text="Submit" onClick={exportSchedule} />
                 }
                 </div>

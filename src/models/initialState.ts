@@ -10,7 +10,7 @@ export interface InitialState {
   week: WeekProgram;
   weeks: WeekProgram[];
   parts: Part[];
-  congregation: Congregation;
+  congregation: Congregation; 
   auth: firebase.auth.Auth;
   firestore: firebase.firestore.Firestore;
   functions: firebase.functions.Functions;
@@ -35,4 +35,6 @@ export interface InitialState {
   openExportModal: any;
   user: User;
   listener: firebase.Unsubscribe | null;
+  openRenameModal: any;
+  reloadWeeks: any;
 }

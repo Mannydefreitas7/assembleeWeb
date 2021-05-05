@@ -1,9 +1,9 @@
-import { ActionButton, ChoiceGroup, DefaultButton, Persona, PersonaSize, Spinner, TextField } from '@fluentui/react'
+import { ActionButton, ChoiceGroup, DefaultButton, Persona, PersonaInitialsColor, PersonaSize, Spinner, TextField } from '@fluentui/react'
 import React, { useContext, useState } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 import { CONG_ID } from '../constants';
-import { Privilege, Publisher } from '../models/publisher';
+import { Gender, Privilege, Publisher } from '../models/publisher';
 import { useHistory, useParams } from 'react-router';
 import SmallPartTile from '../components/SmallPartTile';
 import { Part } from '../models/wol';
@@ -51,6 +51,7 @@ export default function PublisherDetail() {
                                 documentSnapshot?.exists ? <Persona
                                     text={`${publisher.lastName} ${publisher.firstName}`}
                                     secondaryText={publisher.email}
+                                    initialsColor={publisher.gender === Gender.brother ? PersonaInitialsColor.darkBlue : PersonaInitialsColor.pink}
                                     tertiaryText={publisher.privilege}
                                     imageUrl={publisher.photoURL}
                                     size={PersonaSize.size100}
@@ -127,11 +128,13 @@ export default function PublisherDetail() {
                                 },
                                 {
                                     key: Privilege.ms,
-                                    text: 'Servant'
+                                    text: 'Servant',
+                                    disabled: publisher.gender === Gender.sister
                                 },
                                 {
                                     key: Privilege.elder,
-                                    text: 'Elder'
+                                    text: 'Elder',
+                                    disabled: publisher.gender === Gender.sister
                                 },
                             ]} />
                         </div>

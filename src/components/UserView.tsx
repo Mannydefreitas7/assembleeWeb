@@ -1,30 +1,29 @@
-import { ActionButton, DefaultButton, Icon, IconButton, Persona, PersonaSize, Spinner, TextField } from '@fluentui/react'
+import { ActionButton, Persona, PersonaSize, Spinner, TextField } from '@fluentui/react'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
-import { FileRejection, useDropzone } from 'react-dropzone'
-import firebase from 'firebase/app';
+import {  useDropzone } from 'react-dropzone'
 import 'firebase/auth'
 import 'firebase/firestore'
 import { User } from '../models/user';
 import { CONG_ID } from '../constants';
-import { Permission, Publisher } from '../models/publisher';
+import { Permission } from '../models/publisher';
 
 export default function UserView() {
-    const { auth, user, storage, firestore } = useContext(GlobalContext);
+    const { auth, storage, firestore } = useContext(GlobalContext);
     const [ userState, loading ] = useAuthState(auth);
     const [userInfo, setUserInfo] = useState<User>();
     const [passwords, setPasswords] = useState<{ password: string, confirm: string }>();
     const [ users, usersLoading ] = useCollectionOnce(firestore.collection('users').where('congregation', '==', CONG_ID))
-    const onDrop = useCallback(async (acceptedFiles: File[], fileRejection: FileRejection[]) => {
-            if (acceptedFiles[0].type == 'image/jpeg' || acceptedFiles[0].type == 'image/png') {
+    const onDrop = useCallback(async (acceptedFiles: File[]) => {
+            if (acceptedFiles[0].type === 'image/jpeg' || acceptedFiles[0].type === 'image/png') {
                let ref = storage.ref().child(`users/${acceptedFiles[0].name}`);
                let buffer = await acceptedFiles[0].arrayBuffer();
                    let task = await ref.put(buffer);
                    let url = await task.ref.getDownloadURL();
-                   let res = await firestore.doc(`users/${userState?.uid}`).update({ photoURL: url })
-                   let publiserRes = await firestore.doc(`congregations/${CONG_ID}/publishers/${userState?.uid}`).update({ photoURL: url })
+                   firestore.doc(`users/${userState?.uid}`).update({ photoURL: url })
+                   firestore.doc(`congregations/${CONG_ID}/publishers/${userState?.uid}`).update({ photoURL: url })
             }
       }, [])
 

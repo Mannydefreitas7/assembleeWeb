@@ -5,14 +5,12 @@ import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 import { Part, WeekProgram } from '../models/wol';
 import { apply, chairmans, life, prayers, talk, treasures, wt } from '../shared/methods';
 import { GlobalContext } from '../store/GlobalState';
-import { Link } from 'react-router-dom';
-import { SharedColors } from '@fluentui/theme';
 import { DefaultButton } from '@fluentui/react';
 import { ExportService } from '../services/export';
 
-export default function MeetingView() {
-  const { weeks, week, parts, changeWeek } = useContext(GlobalContext)
 
+export default function MeetingView() {
+  const { weeks, week, parts, changeWeek } = useContext(GlobalContext);
 
   return (
     <div className="">
@@ -38,9 +36,9 @@ export default function MeetingView() {
         }
 
         {
-          parts && parts.length > 0 ?
-            <WeekSchedule /> :
-            <Spinner
+          parts ?
+          parts.length > 0 ? <WeekSchedule /> : null
+          :  <Spinner
               className="pt-20"
               title="Loading Schedules, please wait..."
               size={SpinnerSize.large} />
@@ -146,12 +144,6 @@ const WeekSchedule = () => {
             <label className="col-sm-12 col-md-6 col-lg-6 text-gray-400">Priere</label>
           </div>
         </div>
-        <Link 
-            style={{ color: SharedColors.green20}}
-            className="py-4 text-center"
-            to="/login">
-            Login
-        </Link>
       </Stack>
     </>
   )

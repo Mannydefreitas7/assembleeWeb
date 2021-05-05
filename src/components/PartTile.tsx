@@ -1,54 +1,9 @@
-import { DefaultButton, Icon, IconButton, IContextualMenuProps, Persona, PersonaPresence, PersonaSize, SharedColors, TextField } from '@fluentui/react'
-import Mail from 'nodemailer/lib/mailer'
-import React, { useContext, useState } from 'react'
+import { Icon, Persona, PersonaPresence, PersonaSize, SharedColors } from '@fluentui/react'
 import { Publisher } from '../models/publisher'
 import { Parent, Part } from '../models/wol'
-import { EmailService } from '../services/email';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { GlobalContext } from '../store/GlobalState'
-import { useAlert } from 'react-alert'
 
 export default function PartTile({ part, publisher }: { part: Part, publisher?: Publisher }) {
-    const emailService = new EmailService();
-    const { auth, congregation, functions, dismissPanel } = useContext(GlobalContext)
-    const [isEditing, setIsEditing] = useState(false)
-    const [ user, loading ] = useAuthState(auth)
-    const alert = useAlert()
-    let sending : Mail.Address = {
-        name: 'West Hudson French',
-        address: loading ? 'assemblee.app@gmail.com' : user?.email ?? "manny.defreitas7@gmail.com"
-    }
-    const menuProps: IContextualMenuProps = {
-        items: [
-          {
-            key: 'email',
-            text: 'Email',
-            disabled: !part.assignee || !publisher,
-            onClick: () => {
-                dismissPanel()
-                emailService
-                .emailPartPDF(part, sending, congregation, functions)
-                .then(result => {
-                    if (result) {
-                        setTimeout(() =>  alert.success('Email sent'), 2000)
-                    }
-                })
-            },
-            iconProps: { iconName: 'Mail' },
-          },
-          {
-            key: 'rename',
-            text: 'Rename',
-            onClick: () => { setIsEditing(!isEditing) },
-            iconProps: { iconName: 'Rename' },
-          },
-          {
-            key: 'confirm',
-            text: part.isConfirmed ? 'Cancel' : 'Confirm',
-            iconProps: { iconName: part.isConfirmed ? 'Cancel' : 'CheckMark' },
-          },
-        ],
-      };
+
     return (
         <div className="p-4 flex items-center justify-between bg-gray-50 border-l-2 border-green-700">
             <div className="flex items-center">
@@ -56,10 +11,7 @@ export default function PartTile({ part, publisher }: { part: Part, publisher?: 
                 <div className="flex-1">
                     <div className="inline">
                         <span className="text-gray-600 text-sm">Part Title</span> <br />
-                        {
-                            isEditing ? <TextField
-                             defaultValue={part.title} className="w-full"  /> : <span className="text-base font-semibold leading-5 w-2/3">{part.title}</span> 
-                        }
+                        <span className="text-base font-semibold leading-5 w-2/3">{part.title}</span> 
                        <br />
                         <div className="inline-flex items-center mt-2">
                             <span className="text-white inline-block px-2 py-1 mr-2 text-xs border font-semibold rounded-full"
@@ -109,12 +61,6 @@ export default function PartTile({ part, publisher }: { part: Part, publisher?: 
                     </div>
                 </div>
             </div>
-            <IconButton
-                menuProps={menuProps}
-                iconProps={{ iconName: 'MoreVertical' }}
-                title="Emoji"
-                ariaLabel="Emoji"
-            />
         </div>
     )
 }

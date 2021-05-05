@@ -5,6 +5,7 @@ import { chairmans, prayers, talk, wt } from '../shared/methods';
 import PartRemoveButton from './PartRemoveButton';
 import PartAssigneeButton from './PartAssigneeButton';
 import { GlobalContext } from '../store/GlobalState';
+import PartContextMenu from './PartContextMenu';
 
 export default function WeekEndView({ parts, week }: { parts: Part[], week: WeekProgram }) {
     const { openPanel, selectPublisher } = useContext(GlobalContext)
@@ -15,6 +16,7 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                     <h3 className="mt-0 text-xl font-semibold">Réunion Publique</h3>
                     <div className="mt-3 ps-4 flex justify-between items-center">
                         <label className="text-gray-400">Président</label>
+                        <div className="inline-flex items-center">
                         {
                             chairmans(parts).length > 1 && chairmans(parts)[1].assignee ?
                             <PartRemoveButton 
@@ -29,10 +31,16 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                                 openPanel()
                             }} />
                         }
+                        {
+                            chairmans(parts) && chairmans(parts).length > 1 ? 
+                            <PartContextMenu part={chairmans(parts)[1]} /> : null
+                        }
+                        </div>
                     </div>
                     <h4 className="my-3 fw-bold weekend">DISCOURS PUBLIC</h4>
                     <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
                         <label className="">{talk(parts)[0]?.title ?? ''}</label>
+                        <div className="inline-flex items-center">
                         {
                             talk(parts).length > 0 && talk(parts)[0].assignee ?
                             <PartRemoveButton 
@@ -47,6 +55,11 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                                 openPanel()
                             }} />
                         }
+                        {
+                            talk(parts) && talk(parts).length > 0 ? 
+                            <PartContextMenu part={talk(parts)[0]} /> : null
+                        }
+                        </div>
                     </div>
                     <h4 className="my-3 fw-bold weekend">ÉTUDE DE LA TOUR DE GARDE</h4>
                     <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
@@ -81,10 +94,15 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                                     openPanel()
                                 }} />
                             }
+                            {
+                                wt(parts) && wt(parts).length > 0 ? 
+                                <PartContextMenu part={wt(parts)[0]} /> : null
+                            }
                         </div>
                     </div>
                     <div className="mt-3 ps-4 flex justify-between items-center">
                         <label className="col-sm-12 col-md-6 col-lg-6 text-gray-400">Priere</label>
+                        <div className="inline-flex items-center my-1">
                         {
                             prayers(parts).length > 3 && prayers(parts)[3].assignee ?
                             <PartRemoveButton 
@@ -99,6 +117,11 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                                 openPanel()
                             }} />
                         }
+                        {
+                            prayers(parts) && prayers(parts).length > 3 ? 
+                            <PartContextMenu part={prayers(parts)[3]} /> : null
+                        }
+                        </div>
                     </div>
                 </div>
             </Stack>
