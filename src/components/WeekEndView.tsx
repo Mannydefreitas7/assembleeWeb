@@ -32,7 +32,7 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                     </div>
                     <h4 className="my-3 fw-bold weekend">DISCOURS PUBLIC</h4>
                     <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
-                        <label className="">{talk(parts)[0].title}</label>
+                        <label className="">{talk(parts)[0]?.title ?? ''}</label>
                         {
                             talk(parts).length > 0 && talk(parts)[0].assignee ?
                             <PartRemoveButton 
@@ -50,7 +50,7 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                     </div>
                     <h4 className="my-3 fw-bold weekend">ÉTUDE DE LA TOUR DE GARDE</h4>
                     <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
-                        <label className="">{wt(parts)[0].title}</label>
+                        <label className="">{wt(parts)[0]?.subTitle ?? ''}</label>
                          <div className="inline-flex items-center my-1">
                             {
                                 wt(parts).length > 0 && wt(parts)[0].assignee  ?

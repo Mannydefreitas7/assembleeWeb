@@ -1,5 +1,5 @@
 import { DateRangeType } from '@fluentui/date-time-utilities/lib/dateValues/dateValues'
-import { Calendar, Icon, IconButton, PrimaryButton, Spinner } from '@fluentui/react';
+import { Calendar, DayOfWeek, Icon, IconButton, PrimaryButton, Spinner } from '@fluentui/react';
 import { addMonths  } from '@fluentui/date-time-utilities';
 import { useConst } from '@fluentui/react-hooks';
 import moment from 'moment';
@@ -16,12 +16,13 @@ export default function AddProgramView() {
     const [ value ] = useDocumentOnce(firestore.doc(`congregations/${CONG_ID}`));
     const [isLoading, setLoading] = React.useState(false)
     const today = useConst(new Date());
-    const [selectedDate, setSelectedDate] = React.useState<Date>();
+    const [selectedDate, setSelectedDate] = React.useState<Date[]>();
     const maxDate = useConst(addMonths(today, 3));
     const minDate = useConst(addMonths(today, -3));
 
     const onSelectDate = React.useCallback((date: Date, selectedDateRangeArray: Date[] | undefined): void => {
-        setSelectedDate(date);
+        console.log(selectedDateRangeArray)
+        setSelectedDate(selectedDateRangeArray);
       }, []);
     
     return (
@@ -42,30 +43,31 @@ export default function AddProgramView() {
 
             <div className="px-4 pb-4 flex items-center justify-center">
                 <Calendar
-                    dateRangeType={DateRangeType.Month}
+                    dateRangeType={DateRangeType.Week}
                     showGoToToday={false}
-                    highlightSelectedMonth
-                    isDayPickerVisible={false}
+                    isMonthPickerVisible={false}
+                    firstDayOfWeek={DayOfWeek.Monday}
+                  //  isDayPickerVisible={false}
                     minDate={minDate}
                     maxDate={maxDate}
                     onSelectDate={onSelectDate}
-                    value={selectedDate}
+                    value={selectedDate ? selectedDate[0] : new Date()}
                 />
             </div>
             <div className="flex px-4 pb-4 justify-center">
                 {   
                     isLoading ?
-                    <Spinner label="Downloading Programs..." labelPosition="right" /> :
+                    <Spinner label="Downloading Schedule..." labelPosition="right" /> :
                     <PrimaryButton  
                     onClick={() => {
 
-                        if (value?.exists && selectedDate) {
+                        if (value?.exists && selectedDate && selectedDate.length > 0) {
                             setLoading(true)
                             let congegation: Congregation = {
                                 ...value.data()
                             }
-                            let promises = Promise.all(programService.addMonthProgram(selectedDate, congegation, firestore))
-                            promises.then(() => {
+                            let promise = programService.addProgram(selectedDate[0], congegation, firestore)
+                            promise.then(_ => {
                                 setLoading(false)
                                 dismissModal()
                             })
@@ -75,7 +77,7 @@ export default function AddProgramView() {
                     iconProps={{
                         iconName: 'CloudDownload'
                     }}
-                    text={`Download ${moment(selectedDate).format('MMMM')}`} />
+                    text={`Download ${moment(selectedDate ? selectedDate[0] : new Date()).format('D')} - ${moment(selectedDate ? selectedDate[selectedDate.length - 1] : new Date()).locale('fr').format('D MMMM')}`} />
                 }
             </div>
         </div>

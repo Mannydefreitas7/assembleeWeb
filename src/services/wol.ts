@@ -48,7 +48,7 @@ export class WOLApi {
             : [Privilege.pub, Privilege.elder, Privilege.ms],
           subTitle: '',
           path: path,
-          title: element.textContent ?? '',
+          title: element?.textContent ?? '',
           lengthTime: moment((time[1].match(/\d+/) ?? [])[0])
             .toDate()
             .getTime(),
@@ -84,7 +84,7 @@ export class WOLApi {
             : [Privilege.elder, Privilege.ms, Privilege.pub],
           isEmailed: false,
           subTitle: '',
-          title: element.textContent ?? '',
+          title: element?.textContent ?? '',
           lengthTime: moment((time[1].match(/\d+/) ?? [])[0])
             .toDate()
             .getTime(),
@@ -119,7 +119,7 @@ export class WOLApi {
             : 10,
           privilege: [Privilege.elder, Privilege.ms],
           subTitle: '',
-          title: element.textContent ?? '',
+          title: element?.textContent ?? '',
           index: i,
           isCalendarAdded: false,
           isEmailed: false,
@@ -189,14 +189,10 @@ export class WOLApi {
       },
       {
         gender: [Gender.brother],
-        title: endContent
-          ? endContent?.querySelector('.groupTOC')?.querySelector('h3')
-              ?.textContent!
-          : 't',
-        subTitle: endContent
-          ? endContent?.querySelector('.groupTOC')?.querySelector('p')
-              ?.textContent!
-          : '',
+        title: endContent?.querySelector('.groupTOC')?.querySelector('h3')
+              ?.textContent ?? '',
+        subTitle: endContent?.querySelector('.groupTOC')?.querySelector('p')
+              ?.textContent ?? '',
         id: v4(),
         hasAssistant: true,
         length: '60',
@@ -300,7 +296,7 @@ export class WOLApi {
               : [Privilege.pub, Privilege.elder, Privilege.ms],
             subTitle: '',
             path: path,
-            title: element.textContent ?? '',
+            title: element?.textContent ?? '',
             lengthTime: moment((time[1].match(/\d+/) ?? [])[0])
               .toDate()
               .getTime(),
@@ -336,7 +332,7 @@ export class WOLApi {
               : [Privilege.elder, Privilege.ms, Privilege.pub],
             isEmailed: false,
             subTitle: '',
-            title: element.textContent ?? '',
+            title: element?.textContent ?? '',
             lengthTime: moment((time[1].match(/\d+/) ?? [])[0])
               .toDate()
               .getTime(),
@@ -371,7 +367,7 @@ export class WOLApi {
               : 10,
             privilege: [Privilege.elder, Privilege.ms],
             subTitle: '',
-            title: element.textContent ?? '',
+            title: element?.textContent ?? '',
             index: i,
             isCalendarAdded: false,
             isEmailed: false,
@@ -453,9 +449,9 @@ export class WOLApi {
           {
             gender: [Gender.brother],
             title: endContent?.querySelector('.groupTOC')?.querySelector('h3')
-              ?.textContent!,
+              ?.textContent ?? '',
             subTitle: endContent?.querySelector('.groupTOC')?.querySelector('p')
-              ?.textContent!,
+              ?.textContent ?? '',
             id: v4(),
             hasAssistant: true,
             length: '60',
@@ -477,7 +473,7 @@ export class WOLApi {
         date: date,
         isSent: false,
         range: midContent.querySelector('header')?.querySelector('#p1')
-          ?.textContent!,
+          ?.textContent ?? '',
         id: weekID,
         isCOVisit: false,
       };

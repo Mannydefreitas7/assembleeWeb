@@ -7,6 +7,7 @@ import { GlobalContext } from '../store/GlobalState';
 import PartRemoveButton from './PartRemoveButton';
 import { EmailService } from '../services/email';
 
+
 export default function MidWeekView({ parts, week }: { parts: Part[], week: WeekProgram }) {
 
 

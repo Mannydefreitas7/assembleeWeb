@@ -84,6 +84,7 @@ export class ProgramsService {
                                 })
                             
                             })
+
                         } else if (wolWeek.items.length > 1) {     
                             let weekEndPart : Part[] = this.wolApiService.parseWeekEnd(wolWeek, monday, path, week.id!)
                             promises[0].then(_ => {
@@ -91,9 +92,7 @@ export class ProgramsService {
                                     promises.push(fireStore.doc(`${path}/weeks/${week.id}/parts/${part.id}`).set(part));
                                 })
                             }) 
-                        } else {
-                            
-                        }
+                        } 
                     }
                 }
             });
@@ -103,8 +102,8 @@ export class ProgramsService {
     }
     
 
-    async addProgram(date: Date, congregation: Congregation, fireStore: firebase.firestore.Firestore) {
-        const promises: Promise<any>[] = [];
+    async addProgram(date: Date, congregation: Congregation, fireStore: firebase.firestore.Firestore) : Promise<any> {
+        let promises: Promise<any>[] = [];
         let path : string = `congregations/${congregation.id}`;
         try {
             let response: Response = await this.wolApiService.getWeekProgram(
@@ -114,18 +113,71 @@ export class ProgramsService {
                 congregation.fireLanguage?.apiURL!
             )
             if (response.status === 200) {
+                let wolWeek: WOLWeek = await response.json();
+                console.log(wolWeek)
+                if (wolWeek.items.length > 0) {
 
-                let wolWeek: WOLWeek = await response.json()
-                    if (this.wolApiService.parseWolContent(wolWeek, date, path)) {
-                        let wolContent = this.wolApiService.parseWolContent(wolWeek, date, path);
-                        let partPromise: Promise<any> = fireStore.collection(`${path}/weeks`).doc(`${wolContent[0].id}`).set(wolContent[0]);
-                        promises.push(partPromise);
+                    let start = moment(date).locale('fr');
+                    let range = `${moment(start).format("D MMM")} - ${start.add(6, 'day').format('D MMM')}`
+                    let week: WeekProgram = this.wolApiService.weekSchedule(wolWeek, date, path, wolWeek.items.length > 1 ? wolWeek.items[1].title : range)
+                    let weekPromise = fireStore.collection(`${path}/weeks`).doc(`${week.id}`).set(week);
+                    promises = [weekPromise]
+                    let prayers : Part[] = this.wolApiService.addPrayers(date, path, week.id!)
+                    let chairmans : Part[] = this.wolApiService.addChairmans(date, path, week.id!)
 
-                        wolContent[1].forEach((part) => {
-                            promises.push(fireStore.doc(`${path}/weeks/${wolContent[0].id}/parts/${part.id}`).set(part));
-                        });
+                        prayers.forEach(prayer => {
+                            promises.push(
+                            fireStore
+                                .doc(`${path}/weeks/${week.id}/parts/${prayer.id}`)
+                                .set(prayer)
+                            );
+                        })
+                        chairmans.forEach(chairman => {
+                            promises.push(
+                            fireStore
+                                .doc(`${path}/weeks/${week.id}/parts/${chairman.id}`)
+                                .set(chairman)
+                            );
+                        })
+                        if (week.id && wolWeek.items.length > 2) {
+                            let midWeekPart : Part[] = this.wolApiService.parseMidWeek(wolWeek, date, path, week.id);
+                            let weekEndPart : Part[] = this.wolApiService.parseWeekEnd(wolWeek, date, path, week.id);
+                            weekEndPart.forEach(part => {
+                                promises.push(
+                                fireStore
+                                    .doc(`${path}/weeks/${week.id}/parts/${part.id}`)
+                                    .set(part)
+                                );
+                            })
+
+                            midWeekPart.forEach(part => {
+                                    promises.push(fireStore.doc(`${path}/weeks/${week.id}/parts/${part.id}`).set(part)
+                                );
+                            });
+                            let promise = Promise.all(promises)
+                            return promise
+                        } else {
+                            if (week.id && wolWeek.items[1].classification === 106) {
+                                let midWeekPart : Part[] = this.wolApiService.parseMidWeek(wolWeek, date, path, week.id);
+                                midWeekPart.forEach(part => {
+                                        promises.push(fireStore.doc(`${path}/weeks/${week.id}/parts/${part.id}`).set(part)
+                                    );
+                                });
+                            }
+                            if (week.id && wolWeek.items[1].classification === 68) {
+                                let weekEndPart : Part[] = this.wolApiService.parseWeekEnd(wolWeek, date, path, week.id);
+                                weekEndPart.forEach(part => {
+                                    promises.push(
+                                    fireStore
+                                        .doc(`${path}/weeks/${week.id}/parts/${part.id}`)
+                                        .set(part)
+                                    );
+                                });
+                            }
+                            let promise = Promise.all(promises)
+                            return promise
+                        }
                     }
-
                 }
         } catch (error) {console.log(error)}
     }

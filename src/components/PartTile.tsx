@@ -53,12 +53,11 @@ export default function PartTile({ part, publisher }: { part: Part, publisher?: 
         <div className="p-4 flex items-center justify-between bg-gray-50 border-l-2 border-green-700">
             <div className="flex items-center">
                 <Icon iconName="FileComment" className="mr-6 text-2xl" />
-                <div className="flex justify-between items-center">
+                <div className="flex-1">
                     <div className="inline">
                         <span className="text-gray-600 text-sm">Part Title</span> <br />
                         {
                             isEditing ? <TextField
-                            
                              defaultValue={part.title} className="w-full"  /> : <span className="text-base font-semibold leading-5 w-2/3">{part.title}</span> 
                         }
                        <br />
@@ -92,7 +91,7 @@ export default function PartTile({ part, publisher }: { part: Part, publisher?: 
                                         presence={part.isConfirmed ? PersonaPresence.online : PersonaPresence.none}
                                         imageAlt={`${publisher.lastName} ${publisher.firstName}`}
                                     />
-                                     <Icon iconName="StatusErrorFull" className="text-lg text-gray-500" />
+                                     <Icon iconName="StatusErrorFull" className="text-lg text-gray-500 mr-1" />
                                     </div> : null
                             }
                             {
