@@ -37,4 +37,5 @@ export interface InitialState {
   listener: firebase.Unsubscribe | null;
   openRenameModal: any;
   reloadWeeks: any;
+  openSpeakerModal: any;
 }

@@ -16,7 +16,8 @@ import {
     OPEN_EXPORT_MODAL,
     INITIAL_LOAD,
     OPEN_RENAME_MODAL,
-    RELOAD_WEEKS
+    RELOAD_WEEKS,
+    OPEN_SPEAKER_MODAL
 } from './ActionTypes';
 import { Part, PartType, WeekProgram } from '../models/wol';
 import { config, CONG_ID } from '../constants';
@@ -25,9 +26,11 @@ import { useBoolean } from '@fluentui/react-hooks';
 import { Publisher } from '../models/publisher';
 import { Congregation } from '../models/congregation';
 import AddProgramView from '../components/AddProgramView';
-import AddPublisherView from '../components/AddPublisherView';
 import ExportOptionsView from '../components/ExportOptionsView';
 import RenamePartView from '../components/RenamePartView';
+import AddPublisherView from '../components/AddPublisherView';
+import AddSpeakerView from '../components/AddSpeakerView';
+
 
 type GlobalProps = {
     children: ReactNode
@@ -95,7 +98,8 @@ const initialState: InitialState = {
     user: {},
     listener: null,
     openRenameModal: null,
-    reloadWeeks: null
+    reloadWeeks: null,
+    openSpeakerModal: null
 }
 
 export const GlobalContext = createContext(initialState)
@@ -104,10 +108,14 @@ export const GlobalProvider = (props: GlobalProps) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
     const [isModalOpen, { setTrue: openModal, setFalse: dismissModal }] = useBoolean(false);
- //   const deleteAllAnymomous = state.functions.httpsCallable('deleteAllAnymomous')
+
     useEffect(() => {
         load();
         return () => { 
+            if (state.user.uid) {
+                let query = state.firestore.doc(`users/${state.user.uid}`);
+                query.update({ isOnline: false })
+            }
             if (state.listener) state.listener()
          }
     // eslint-disable-next-line
@@ -115,7 +123,7 @@ export const GlobalProvider = (props: GlobalProps) => {
 
     const load = async () => {
         try {
-            let congregation : Congregation =  await _firebase.firestore().doc(`congregations/${CONG_ID}`).get();
+            let congregationDoc = await _firebase.firestore().doc(`congregations/${CONG_ID}`).get();
              
             let _weeks = await _firebase.firestore()
             .collection(`congregations/${CONG_ID}/weeks`)
@@ -139,7 +147,7 @@ export const GlobalProvider = (props: GlobalProps) => {
                     payload: {
                         weeks,
                         parts,
-                        congregation,
+                        congregation: congregationDoc.data(),
                         week: weeks[0],
                         user,
                         listener
@@ -222,6 +230,15 @@ export const GlobalProvider = (props: GlobalProps) => {
         })
         openModal()
     }
+    const openSpeakerModal = () => {
+        dispatch({
+            type: OPEN_SPEAKER_MODAL,
+            payload: <AddSpeakerView />
+        })
+        openModal()
+    }
+
+    
 
     const openExportModal = () => {
         dispatch({
@@ -303,7 +320,8 @@ export const GlobalProvider = (props: GlobalProps) => {
             openPublisherModal,
             openExportModal,
             openRenameModal,
-            reloadWeeks
+            reloadWeeks,
+            openSpeakerModal
         }}>
             {props.children}
         </GlobalContext.Provider>

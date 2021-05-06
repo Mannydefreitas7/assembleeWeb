@@ -1,4 +1,4 @@
-import { DefaultButton, PrimaryButton, Text, TextField } from '@fluentui/react'
+import { DefaultButton, PrimaryButton, Separator, Text, TextField } from '@fluentui/react'
 import React, { FormEvent, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from './../assets/logo.jpg'
@@ -11,6 +11,8 @@ import { useAlert } from 'react-alert'
 import { User } from '../models/user'
 import { Gender, Permission, Privilege, Publisher } from '../models/publisher'
 import { CONG_ID } from '../constants'
+import apple from './../assets/apple.svg'
+import google from './../assets/google.svg'
 
 export default function SignUp() {
 
@@ -80,7 +82,6 @@ export default function SignUp() {
             const _provider = provider === 'google' ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.OAuthProvider('apple');
                 let result = await auth.signInWithPopup(_provider)
                 if (result) {
-                    console.log(result.user)
                     let userDoc = await firestore.doc(`users/${result.user?.uid}`).get()
                     if (userDoc.exists) {
                         history.push("/admin")
@@ -103,7 +104,7 @@ export default function SignUp() {
                 </div>
                 <h2 className="font-bold text-2xl">SIGNUP</h2>
                 <div className="flex justify-start flex-wrap">
-                    {/* <button 
+                    <button 
                     onClick={() => loginWithProvider('google')}
                     className="inline-flex mt-2 google w-full items-center justify-center p-2">
                         <img src={google} alt="google"/>
@@ -114,14 +115,14 @@ export default function SignUp() {
                     className="inline-flex my-2 bg-black w-full items-center justify-center p-2">
                         <img src={apple} alt="apple"/>
                         <span className="ml-2 text-white">Sign in with Apple</span>
-                    </button> */}
+                    </button>
                 </div>
-                {/* <Separator 
+                <Separator
                 styles={{
                     content: {
                         background: 'inherit'
                     }
-                }} className="bg-gray-50">OR</Separator> */}
+                }} className="bg-gray-50">OR</Separator>
 
                     <div className="mb-3">
                     <TextField

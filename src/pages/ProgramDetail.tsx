@@ -1,4 +1,4 @@
-import { ActionButton, Pivot, PivotItem, Spinner, SpinnerSize, Toggle } from '@fluentui/react';
+import { ActionButton, DefaultButton, Dialog, DialogFooter, DialogType, Pivot, PivotItem, PrimaryButton, Spinner, SpinnerSize, Toggle } from '@fluentui/react';
 import React, { useContext, useState } from 'react'
 import { useCollection, useDocument } from 'react-firebase-hooks/firestore';
 import { useHistory, useParams } from 'react-router';
@@ -9,7 +9,9 @@ import WeekEndView from '../components/WeekEndView';
 import MidWeekView from '../components/MidWeekView';
 import SelectPublisherPanel from '../components/SelectPublisherPanel';
 import { ExportService } from '../services/export';
-
+import { useBoolean } from '@fluentui/react-hooks';
+import { SharedColors } from '@fluentui/theme'
+import { useAlert } from 'react-alert';
 
 export default function ProgramDetail() {
     const { firestore, congregation, reloadWeeks } = useContext(GlobalContext)
@@ -17,7 +19,8 @@ export default function ProgramDetail() {
     const [documentSnapshot, weekLoading] = useDocument(firestore.doc(`congregations/${CONG_ID}/weeks/${id}`))
     const [collection, loading] = useCollection(firestore.collection(`congregations/${CONG_ID}/weeks/${id}/parts`).orderBy('index'));
     let history = useHistory();
-    
+    let alert = useAlert()
+    const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
     const [isDownloading, setIsDownloading] = useState(false)
     let document: WeekProgram = {
         ...documentSnapshot?.data()
@@ -27,7 +30,10 @@ export default function ProgramDetail() {
     const deleteProgram = () => {
         collection?.docs.forEach(async doc => await doc.ref.delete())
         documentSnapshot?.ref.delete()
+        .then(() => toggleHideDialog())
         .then(() => history.goBack())
+        .then(() => alert.success('Week deleted successfully'))
+        .catch((error) => alert.error(error))
     }
 
     function _onChange(ev: React.MouseEvent<HTMLElement>, checked?: boolean) {
@@ -69,14 +75,14 @@ export default function ProgramDetail() {
                             exportService.downloadPDF([document], congregation, firestore)
                             .then(value => setIsDownloading(false))
                         }}
-                        iconProps={{ iconName: 'DownloadDocument' }} allowDisabledFocus>
+                        iconProps={{ iconName: 'PDF' }} allowDisabledFocus>
                             Download
                         </ActionButton>
                     }
 
                     <ActionButton
                         className="text-red-500"
-                        onClick={deleteProgram}
+                        onClick={toggleHideDialog}
                         iconProps={{ iconName: 'Delete', className: 'text-red-500 hover:text-red-900' }} allowDisabledFocus>
                         Delete
                     </ActionButton>
@@ -96,6 +102,25 @@ export default function ProgramDetail() {
                       <SelectPublisherPanel />
                     </div>
             }
+            <Dialog
+                hidden={hideDialog}
+                onDismiss={toggleHideDialog}
+                dialogContentProps={{
+                    type: DialogType.normal,
+                    title: 'Are You Sure?',
+                    closeButtonAriaLabel: 'Close',
+                    subText: 'This will remove all parts and information related to this week.',
+                }}
+            >
+                <DialogFooter>
+                <PrimaryButton styles={{ 
+                    root: { backgroundColor: SharedColors.red20, borderColor: SharedColors.red20  },
+                    rootHovered: { backgroundColor: SharedColors.red10, borderColor: SharedColors.red10 }
+                 }} onClick={deleteProgram} text="Yes, Delete" />
+                <DefaultButton onClick={toggleHideDialog} text="No" />
+                
+                </DialogFooter>
+            </Dialog>
         </div>
     )
 }

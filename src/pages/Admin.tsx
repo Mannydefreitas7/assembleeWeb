@@ -11,6 +11,7 @@ import ProgramDetail from './ProgramDetail';
 import Programs from './Programs';
 import PublisherDetail from './PublisherDetail';
 import Publishers from './Publishers';
+import Speakers from './Speakers';
 
 
 export default function Admin() {
@@ -61,7 +62,7 @@ export default function Admin() {
                     exact={false}
                     redirectTo="/login"
                     path={path + '/speakers'}>
-                    <h1>SPEAKERS</h1>
+                    <Speakers />
                 </ProtectedRoute>
             </div>
             <ModalView titleId={path} />

@@ -62,6 +62,11 @@ const reducer = (
             ...state,
             modalChildren: action.payload
       };
+      case actionTypes.OPEN_SPEAKER_MODAL:
+         return {
+            ...state,
+            modalChildren: action.payload
+      };
       case actionTypes.OPEN_EXPORT_MODAL:
          return {
             ...state,

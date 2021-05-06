@@ -56,6 +56,7 @@ export default function AddPublisherView() {
                     isInvited: false,
                     privilege: publisher.privilege ? publisher.privilege : Privilege.pub,
                     isWTConductor: false,
+                    speaker: null!,
                     isReader: false,
                     uid: v4()
                 }

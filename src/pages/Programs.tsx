@@ -14,7 +14,7 @@ export default function Programs() {
   //  const [ congregationDocs ] = useDocumentOnce(firestore.doc(`congregations/${CONG_ID}`));
     let { path } = useRouteMatch();
     return (
-        <div className="mx-auto p-8">
+        <div className="container p-8">
             <div className="mb-2 flex justify-between items-center">
                 <h1 className="font-semibold text-2xl inline-flex items-center"> <Icon iconName="ScheduleEventAction" className="mr-2"/>Programs</h1>
                 <div className="inline-flex items-center">

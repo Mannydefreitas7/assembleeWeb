@@ -13,6 +13,7 @@ import { User } from '../models/user'
 import { Permission, Publisher } from '../models/publisher'
 import { useHistory } from "react-router-dom";
 import * as EmailValidator from 'email-validator';
+import { useAlert } from 'react-alert';
 
 export default function Invite() {
 
@@ -22,6 +23,7 @@ export default function Invite() {
     const [user] = useAuthState(auth);
     let query = useQuery();
     let history = useHistory();
+    let alert = useAlert();
     const [isDisabled, setIsDisabled] = React.useState(true);
     const [isLoading, setIsLoading] = React.useState(false);
     const oldPublisherDocQuery = firestore.doc(`congregations/${CONG_ID}/publishers/${query.get('pub')}`);
@@ -41,6 +43,7 @@ export default function Invite() {
                         firstName: oldPublisher.firstName,
                         lastName: oldPublisher.lastName,
                         isEmailVerified: true,
+                        photoURL: oldPublisher.photoURL,
                         loginProvider: credential.additionalUserInfo?.providerId,
                         permissions: [
                             Permission.programs,
@@ -72,15 +75,17 @@ export default function Invite() {
                             createUser(authUser)
                             .then(() => setIsLoading(false))
                             .then(() => history.push('/admin'))
+                            .catch(error => alert.error(error))
                         }
                     } else {
                         createUser(newCredential)
                             .then(() => setIsLoading(false))
                             .then(() => history.push('/admin'))
+                            .catch(error => alert.error(error))
                     }
                 }
         } catch (error) {
-            console.log(error)
+            alert.error(error)
         }
     }
     // eslint-disable-next-line

@@ -50,7 +50,7 @@ export default function SelectPublisherPanel() {
                                 return (
                                     <div key={newPublisher.id}>
                                         <Route path={path} exact>
-                                            <div className="flex justify-between items-center" >
+                                            <div className="flex justify-between items-center bg-gray-50 pr-4 my-2 rounded" >
                                                 <PublisherTile publisher={newPublisher.data()} />
                                                 <div className="inline-flex items-center">
                                                     <Link

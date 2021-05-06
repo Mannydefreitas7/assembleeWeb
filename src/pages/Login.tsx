@@ -1,20 +1,19 @@
-import { PrimaryButton, Separator, Text, TextField } from '@fluentui/react'
+import { PrimaryButton, Text, TextField } from '@fluentui/react'
 import React, { FormEvent, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from './../assets/logo.jpg'
-import apple from './../assets/apple.svg'
-import google from './../assets/google.svg'
-import firebase from "firebase/app";
-import 'firebase/auth';
+// import apple from './../assets/apple.svg'
+// import google from './../assets/google.svg'
 import { useHistory } from "react-router-dom";
 import { GlobalContext } from '../store/GlobalState'
 import { useAlert } from 'react-alert'
+
 
 export default function Login() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { auth, firestore } = useContext(GlobalContext)
+    const { auth, firestore } = useContext(GlobalContext);
     let history = useHistory();
    
     const alert = useAlert()
@@ -22,35 +21,32 @@ export default function Login() {
     const loginWithEmailAndPassword = async () => {
         try {
             if (email.length > 0 && password.length > 0) {
-                    const newCredential = await auth.signInWithEmailAndPassword(email, password)
-                    if (newCredential.credential && process.env.NODE_ENV === 'production') {
-                            const userCredential = await auth.currentUser?.linkWithCredential(newCredential?.credential)
-                            if (userCredential?.user) {
-                               history.push("/admin")
-                            }
-                    } else { history.push("/admin") }
-                }
+                const newCredential = await auth.signInWithEmailAndPassword(email, password)
+                firestore.doc(`users/${newCredential?.user?.uid}`).update({ isOnline: true })
+                .then(() => history.push("/admin"))
+                .then(() => alert.success('Logged In'))
+                .catch(error => alert.error(error))
+            }
         } catch (error) { console.log(error) }
     }
 
-    const loginWithProvider = async (provider: string) => {
-        try {
-            const _provider = provider === 'google' ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.OAuthProvider('apple');
-                let result = await auth.signInWithPopup(_provider)
-                if (result) {
-                    console.log(result.user)
-                    let userDoc = await firestore.doc(`users/${result.user?.uid}`).get()
-                    if (userDoc.exists) {
-                        history.push("/admin")
-                    } else {
-                        result.user?.delete()
-                        .then((_: any) => alert.show('Oops, user account does not exist.'))
-                    }
-                }
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    // const loginWithProvider = async (provider: string) => {
+    //     try {
+    //         const _provider = provider === 'google' ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.OAuthProvider('apple');
+    //             let result = await auth.signInWithPopup(_provider)
+    //             if (result) {
+    //                 let userDoc = await firestore.doc(`users/${result.user?.uid}`).get()
+    //                 if (userDoc.exists) {
+    //                     history.push("/admin")
+    //                 } else {
+    //                     result.user?.delete()
+    //                     .then((_: any) => alert.error('Oops, user account does not exist.'))
+    //                 }
+    //             }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     return (
         <>
@@ -60,7 +56,7 @@ export default function Login() {
                     <img src={logo} className="rounded-full w-28 overflow-hidden" alt="logo" />
                 </div>
                 <h2 className="font-bold text-2xl">LOGIN</h2>
-                <div className="flex justify-start flex-wrap">
+                {/* <div className="flex justify-start flex-wrap">
                     <button 
                     onClick={() => loginWithProvider('google')}
                     className="inline-flex mt-2 google w-full items-center justify-center p-2">
@@ -73,15 +69,15 @@ export default function Login() {
                         <img src={apple} alt="apple"/>
                         <span className="ml-2 text-white">Sign in with Apple</span>
                     </button>
-                </div>
-                <Separator 
+                </div> */}
+                {/* <Separator 
                 styles={{
                     content: {
                         background: 'inherit'
                     }
-                }} className="bg-gray-50">OR</Separator>
+                }} className="bg-gray-50">OR</Separator> */}
 
-                    <div className="mb-3">
+                    <div className="mb-1">
                        <TextField
                         defaultValue={email}
                         onChange={(event : FormEvent, value) => setEmail(value ?? "")}

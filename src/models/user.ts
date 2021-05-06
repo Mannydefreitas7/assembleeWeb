@@ -13,6 +13,7 @@ export class User {
    permissions?: Permission[];
    loginProvider?: string;
    isEmailVerified?: boolean;
+   isOnline?: boolean;
 };
 
 export interface Attachment {
