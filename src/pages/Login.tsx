@@ -7,7 +7,6 @@ import google from './../assets/google.svg'
 import firebase from "firebase/app";
 import 'firebase/auth';
 import { useHistory } from "react-router-dom";
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { GlobalContext } from '../store/GlobalState'
 import { useAlert } from 'react-alert'
 
@@ -17,8 +16,6 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const { auth, firestore } = useContext(GlobalContext)
     let history = useHistory();
-    const [ user, loading ] = useAuthState(auth);
-
    
     const alert = useAlert()
 
@@ -31,15 +28,9 @@ export default function Login() {
                             if (userCredential?.user) {
                                history.push("/admin")
                             }
-                    } else {
-                        history.push("/admin")
-                    }
-                    
-                    }
-                
-        } catch (error) {
-            console.log(error)
-        }
+                    } else { history.push("/admin") }
+                }
+        } catch (error) { console.log(error) }
     }
 
     const loginWithProvider = async (provider: string) => {

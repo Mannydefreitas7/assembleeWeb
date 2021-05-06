@@ -9,7 +9,7 @@ export default function Board() {
 
 
   const { auth } = useContext(GlobalContext)
-  const [ user, loading, error ] = useAuthState(auth);
+  const [ user, loading ] = useAuthState(auth);
 
   const signIn = async () => {
       try {
@@ -24,6 +24,7 @@ export default function Board() {
       if (!user) {
           signIn() 
       }
+      // eslint-disable-next-line
   }, [user])
     
       const PivotTabs = () => (

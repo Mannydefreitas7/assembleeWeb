@@ -58,7 +58,6 @@ export default function PublisherDetail() {
                                     imageAlt={`${publisher.lastName} ${publisher.firstName}`}
                                 /> : null
                             }
-
                         </div>
                         <div className="flex flex-wrap mt-4 w-full items-end">
                             <TextField

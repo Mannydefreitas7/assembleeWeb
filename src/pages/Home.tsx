@@ -8,6 +8,8 @@ import Login from './Login';
 import Admin from './Admin';
 import SignUp from './SignUp';
 import ProtectedRoute from '../components/ProtectedRoute';
+import ConfirmPart from "./ConfirmPart";
+import Invite from "./Invite";
 
 
 export default function Home() {
@@ -28,6 +30,12 @@ export default function Home() {
                     </ProtectedRoute>
                     <Route path="/login">
                         <Login />
+                    </Route>
+                    <Route path="/confirm">
+                        <ConfirmPart />
+                    </Route>
+                    <Route path="/invite">
+                        <Invite />
                     </Route>
                     {
                         process.env.NODE_ENV === 'development' ?

@@ -1,13 +1,11 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import {
-    Route,
     useRouteMatch
 } from "react-router-dom";
 import ModalView from '../components/ModalView';
 import ProtectedRoute from '../components/ProtectedRoute';
 import TopBar from '../components/TopBar';
 import UserView from '../components/UserView';
-import { GlobalContext } from '../store/GlobalState';
 import Dashboard from './Dashboard';
 import ProgramDetail from './ProgramDetail';
 import Programs from './Programs';
@@ -17,7 +15,6 @@ import Publishers from './Publishers';
 
 export default function Admin() {
     let { path } = useRouteMatch();
-    const { user } = useContext(GlobalContext);
 
     return (
         <div>

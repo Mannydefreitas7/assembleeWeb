@@ -1,9 +1,7 @@
-import { DefaultButton, PrimaryButton, Separator, Text, TextField } from '@fluentui/react'
+import { DefaultButton, PrimaryButton, Text, TextField } from '@fluentui/react'
 import React, { FormEvent, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from './../assets/logo.jpg'
-import apple from './../assets/apple.svg'
-import google from './../assets/google.svg'
 import firebase from "firebase/app";
 import 'firebase/auth';
 import { useHistory } from "react-router-dom";
@@ -19,11 +17,9 @@ export default function SignUp() {
     const [email, setEmail] = useState('');
     const [name, setName] = useState<{ fistName: string, lastName: string }>();
     const [password, setPassword] = useState('');
-    const { auth, firestore, congregation } = useContext(GlobalContext)
+    const { auth, firestore } = useContext(GlobalContext)
     let history = useHistory();
-    const [
-        user
-      ] = useAuthState(auth);
+    const [user] = useAuthState(auth);
 
    
     const alert = useAlert()
@@ -78,7 +74,7 @@ export default function SignUp() {
             console.log(error)
         }
     }
-
+    // eslint-disable-next-line
     const loginWithProvider = async (provider: string) => {
         try {
             const _provider = provider === 'google' ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.OAuthProvider('apple');

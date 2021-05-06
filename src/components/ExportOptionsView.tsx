@@ -1,6 +1,6 @@
 import { Dropdown, Icon, IconButton, IDropdownOption, PrimaryButton, Spinner } from '@fluentui/react'
 import moment from 'moment';
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { CONG_ID } from '../constants';
 
 import { WeekProgram } from '../models/wol';
@@ -16,32 +16,34 @@ export default function ExportOptionsView() {
     const [weeks, setWeeks] = useState<WeekProgram[]>([])
     const [loading, setLoading] = useState(false);
     const exportService = new ExportService()
-    // @ts-ignore
-    const load = async () => {
-        try {
-            let weeks = await firestore.collection(`congregations/${CONG_ID}/weeks`)
-            .orderBy('date')
-            .get();
-            let _weeks : WeekProgram[] = weeks.docs.map(w => w.data())
-            setWeeks(_weeks)
-            let _months : IDropdownOption[] = []
-            _weeks.forEach(w => {
-                if (!_months.find(m => moment(m.data).month() === moment(w.date.toDate()).month())) {
-                    _months.push({
-                        key: `${w.id}`,
-                        data: w.date.toDate(),
-                        text: moment(w.date.toDate()).format('MMMM')
-                    })
-                }
-            })
-           setMonths(_months)  
-        } catch (err) { console.log(err) }
-    }
+    const load = useCallback(
+        async () => {
+            try {
+                let weeks = await firestore.collection(`congregations/${CONG_ID}/weeks`)
+                .orderBy('date')
+                .get();
+                let _weeks : WeekProgram[] = weeks.docs.map(w => w.data())
+                setWeeks(_weeks)
+                let _months : IDropdownOption[] = []
+                _weeks.forEach(w => {
+                    if (!_months.find(m => moment(m.data).month() === moment(w.date.toDate()).month())) {
+                        _months.push({
+                            key: `${w.id}`,
+                            data: w.date.toDate(),
+                            text: moment(w.date.toDate()).format('MMMM')
+                        })
+                    }
+                })
+               setMonths(_months)  
+            } catch (err) { console.log(err) }
+        },
+        [firestore],
+    ) 
 
     // @ts-ignore
     useEffect(() => {
         load()
-    }, [])
+    })
 
     const exportSchedule = async () => {
         setLoading(true)

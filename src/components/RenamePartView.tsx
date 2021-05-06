@@ -41,6 +41,8 @@ export default function RenamePartView({part}:{part: Part}) {
             </div>
             <div className="p-4">
                 <TextField 
+                multiline
+                resizable
                 onKeyUp={(e) => setInput(e.currentTarget.value)}
                 defaultValue={input} />
                 <div className="flex items-center justify-center mt-4">

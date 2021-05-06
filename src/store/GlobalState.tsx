@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useEffect, ReactNode, useState } from 'react';
+import React, { createContext, useReducer, useEffect, ReactNode } from 'react';
 import { InitialState } from '../models/initialState';
 import reducer from './AppReducer';
 import firebase from 'firebase/app';
@@ -8,7 +8,6 @@ import 'firebase/functions'
 import 'firebase/storage'
 
 import {
-    LOAD_WEEKS,
     CHANGE_WEEK,
     SELECT_PUBLISHER,
     VIEW_PUBLISHER_PARTS,
@@ -111,6 +110,7 @@ export const GlobalProvider = (props: GlobalProps) => {
         return () => { 
             if (state.listener) state.listener()
          }
+    // eslint-disable-next-line
     }, [])
 
     const load = async () => {

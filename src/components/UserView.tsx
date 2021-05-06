@@ -16,6 +16,7 @@ export default function UserView() {
     const [userInfo, setUserInfo] = useState<User>();
     const [passwords, setPasswords] = useState<{ password: string, confirm: string }>();
     const [ users, usersLoading ] = useCollectionOnce(firestore.collection('users').where('congregation', '==', CONG_ID))
+
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
             if (acceptedFiles[0].type === 'image/jpeg' || acceptedFiles[0].type === 'image/png') {
                let ref = storage.ref().child(`users/${acceptedFiles[0].name}`);
@@ -23,12 +24,15 @@ export default function UserView() {
                    let task = await ref.put(buffer);
                    let url = await task.ref.getDownloadURL();
                    firestore.doc(`users/${userState?.uid}`).update({ photoURL: url })
-                   firestore.doc(`congregations/${CONG_ID}/publishers/${userState?.uid}`).update({ photoURL: url })
+                   firestore.doc(`congregations/${CONG_ID}/publishers/${userState?.uid}`).update({ photoURL: url });
+                   loadUser();
             }
+    // eslint-disable-next-line
       }, [])
 
       useEffect(() => {
         loadUser()
+        // eslint-disable-next-line
       }, [])
 
     const loadUser = async () => {
@@ -57,10 +61,10 @@ export default function UserView() {
                     imageAlt={`${userInfo?.lastName} ${userInfo?.firstName}`}
                 />
             </div>
-            <div {...getRootProps()} className="w-full border-2 bg-gray-100 border-dashed px-4 py-2 mt-4 rounded">
+            <div {...getRootProps()} className={ `${isDragActive ? 'bg-green-100 border-green-600' : 'bg-gray-100 border-gray-200'} w-full border-2 border-dashed px-4 py-2 mt-4 rounded`}>
                 <div className="flex items-center justify-between">
                     <ActionButton iconProps={{ iconName: "ImageCrosshair" }} text='Select Profile Image' />
-                    <img src={userInfo?.photoURL} className="w-8 rounded-full"/>
+                    <img alt={`${userInfo?.lastName} ${userInfo?.firstName}`} src={userInfo?.photoURL} className="w-8 rounded-full"/>
                 </div>
                 <input {...getInputProps()} />
             </div>

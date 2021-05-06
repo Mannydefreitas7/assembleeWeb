@@ -22,7 +22,6 @@ export default function ProgramDetail() {
     let document: WeekProgram = {
         ...documentSnapshot?.data()
     }
-    const [isChecked, setIsChecked] = useState<boolean>(document.isSent ?? false)
     const exportService = new ExportService()
    
     const deleteProgram = () => {
@@ -35,7 +34,6 @@ export default function ProgramDetail() {
        
         firestore.doc(`congregations/${CONG_ID}/weeks/${id}`).update({ isSent: checked })
         .then(() => reloadWeeks())
-        setIsChecked(checked!)
     }
 
     return (
