@@ -6,7 +6,7 @@ import { SharedColors } from '@fluentui/theme';
 
 export default function SmallPartTile({ part } : { part: Part }) {
     return (
-        <div className="p-4 flex justify-start items-center bg-gray-50 my-2 rounded">
+        <div className="p-4 flex justify-start items-center bg-gray-100 my-2 rounded">
             <Icon iconName="FileComment" className="mr-6 text-lg"/>
             <div className="block">
                 <span className="text-gray-600 text-xs">{moment(part?.date?.toDate()).format('Do MMMM YYYY')}</span> <br/>

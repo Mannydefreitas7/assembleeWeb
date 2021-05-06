@@ -14,7 +14,7 @@ export default function Publishers() {
     let { path } = useRouteMatch();
     const [search, setSearch] = useState('');
     return (
-        <div className="container mx-auto p-8">
+        <div className="mx-auto p-8">
             <div className="mb-2 flex justify-between items-center">
                 <h1 className="font-semibold text-2xl inline-flex items-center"> <Icon iconName="People" className="mr-2"/>Publishers</h1>
                 <ActionButton 

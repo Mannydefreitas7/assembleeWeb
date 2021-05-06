@@ -14,7 +14,10 @@ export class Publisher {
    isWTConductor?: boolean;
    speaker?: Speaker;
    parts?: Part[];
+   userId?: string;
    isReader?: boolean;
+   talks?: Talk[];
+   isOutGoing?: boolean;
 };
 
 export class SafePublisher {

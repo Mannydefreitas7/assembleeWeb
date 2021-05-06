@@ -4,7 +4,6 @@ import { IconButton } from '@fluentui/react';
 import { Parent, Part } from '../models/wol';
 import Mail from 'nodemailer/lib/mailer';
 import { useAlert } from 'react-alert';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { GlobalContext } from '../store/GlobalState';
 import { EmailService } from '../services/email';
 import { CONG_ID } from '../constants';
@@ -14,8 +13,7 @@ export default function PartContextMenu({ part } : { part: Part }) {
     const ref = createRef<HTMLDivElement>();
     const linkRef = React.useRef(ref);
     const emailService = new EmailService();
-    const { auth, congregation, functions, openRenameModal, firestore } = useContext(GlobalContext)
-    const [ user, loading ] = useAuthState(auth)
+    const { congregation, functions, openRenameModal, firestore } = useContext(GlobalContext)
     const alert = useAlert()
     const [showContextualMenu, setShowContextualMenu] = useState(false);
     const onShowContextualMenu = React.useCallback((ev: React.MouseEvent<HTMLElement>) => {
@@ -102,7 +100,7 @@ export default function PartContextMenu({ part } : { part: Part }) {
 
   let sending : Mail.Address = {
     name: 'West Hudson French',
-    address: loading ? 'assemblee.app@gmail.com' : user?.email ?? "manny.defreitas7@gmail.com"
+    address: "manny.defreitas7@gmail.com"
 }
 
     return (

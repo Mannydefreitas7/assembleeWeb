@@ -29,7 +29,7 @@ export default function RenamePartView({part}:{part: Part}) {
         <div className="h-160 w-80">
             <div className="flex items-center justify-between pl-4 pr-2 py-2 bg-gray-50">
                 <div className="inline-flex items-center">
-                    <Icon iconName="Generate" className="mr-2 text-lg" />
+                    <Icon iconName="Rename" className="mr-2 text-lg" />
                     <span className="font-bold text-lg">Rename Part</span>
                 </div>
                 <IconButton
@@ -46,7 +46,7 @@ export default function RenamePartView({part}:{part: Part}) {
                 onKeyUp={(e) => setInput(e.currentTarget.value)}
                 defaultValue={input} />
                 <div className="flex items-center justify-center mt-4">
-                    <PrimaryButton className="w-full" text="Submit" onClick={saveChange} />
+                    <PrimaryButton className="w-full" text="Save" onClick={saveChange} />
                 </div>
             </div>
         </div>

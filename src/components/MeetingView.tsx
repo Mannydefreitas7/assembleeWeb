@@ -5,7 +5,7 @@ import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 import { Part, WeekProgram } from '../models/wol';
 import { apply, chairmans, life, prayers, talk, treasures, wt } from '../shared/methods';
 import { GlobalContext } from '../store/GlobalState';
-import { DefaultButton } from '@fluentui/react';
+import { DefaultButton, Text } from '@fluentui/react';
 import { ExportService } from '../services/export';
 
 
@@ -61,14 +61,14 @@ const WeekSchedule = () => {
   return (
     <>
       <Stack>
-        <div className="px-10 pb-10 pt-8 rounded bg-white shadow my-4">
-          <div className="flex justify-end">
+        <div className="flex justify-between items-center my-4">
+          <Text className="text-3xl font-bold">{week.range}</Text>
             {
               isDownloading ? <Spinner label="Downloading..." labelPosition="right" /> : 
-              <DefaultButton onClick={downloadPDF} text="Download" className="mb-4" iconProps={{ iconName: 'PDF' }} />
+              <DefaultButton onClick={downloadPDF} text="Download" iconProps={{ iconName: 'PDF' }} />
             }
           </div>
-       
+        <div className="px-10 pb-10 pt-8 rounded bg-white shadow my-4">
           <h3 className="mt-0 text-xl font-semibold">Réunion de Semaine</h3>
           <div className="mt-3 flex pl-4 flex-wrap justify-between items-center">
             <label className="text-gray-400">Président</label>

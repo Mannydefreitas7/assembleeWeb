@@ -24,7 +24,7 @@ export default function PublisherDetail() {
         firstName: publisher.firstName, lastName: publisher.lastName, email: publisher.email
     })
     return (
-        <div className="container mx-auto mt-5 p-8">
+        <div className="mx-auto mt-5 p-8">
             <div className="mb-2 flex justify-between items-center">
                 <h1 className="font-bold text-2xl">
                     <ActionButton

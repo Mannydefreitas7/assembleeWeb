@@ -37,14 +37,9 @@ export class EmailService {
                 name: `${part?.assignee?.firstName} ${part?.assignee?.lastName}`,
                 address: part.assignee.email,
               };
-              let cc: Mail.Address = {
-                name: `${part?.assistant?.firstName} ${part?.assistant?.lastName}`,
-                address: part?.assistant?.email ?? '',
-              };
-              console.log(email)
               let message: Mail.Options = {
                 from: sending,
-                cc: part.assistant ? cc : undefined,
+                cc: sending,
                 subject: exportService.partDefinition.info?.title,
                 to: email,
                 html: `<p>Hello ${part.assignee.lastName} ${
@@ -53,7 +48,7 @@ export class EmailService {
                   part.date.toDate()
                 ).format(
                   'MMMM DD yyyy'
-                )}</strong>.</p><a style="padding: 5px 10px; color: #ffffff; background-color: #198754; text-decoration: none; border-radius: 5px;" href="https://assemblee.web.app/#/confirm?cong=${
+                )}</strong>.</p><a style="padding: 5px 10px; color: #ffffff; background-color: #198754; text-decoration: none; border-radius: 5px;" href="https://assemblee.web.app/confirm?cong=${
                   congregation.id
                 }&week=${part.week}&part=${
                   part.id

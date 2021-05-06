@@ -30,10 +30,10 @@ export default function Board() {
       const PivotTabs = () => (
         <div className="container mx-auto pb-10 pt-4 px-4">
           <div className="flex justify-between items-center">
-          <h1 className="leading-5 my-5 font-semibold text-gray-400">
+          <Text className="leading-5 my-5 font-bold text-gray-400">
             Tableau d'Affichage <br/>
             <span className="text-2xl text-black">West Hudson French - Airmont NY (USA)</span>
-          </h1>
+          </Text>
           {
             user ?
             <Link 

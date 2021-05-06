@@ -1,7 +1,7 @@
 import { PrimaryButton, Spinner, TextField } from '@fluentui/react';
 import React, { useContext,  useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useCollectionOnce, useDocumentOnce } from 'react-firebase-hooks/firestore';
+import { useDocumentOnce } from 'react-firebase-hooks/firestore';
 
 import firebase from "firebase/app";
 import 'firebase/auth';
@@ -16,9 +16,8 @@ import * as EmailValidator from 'email-validator';
 
 export default function Invite() {
 
-    
-    
     const [password, setPassword] = useState<string>();
+    
     const { auth, firestore } = useContext(GlobalContext);
     const [user] = useAuthState(auth);
     let query = useQuery();
@@ -26,33 +25,21 @@ export default function Invite() {
     const [isDisabled, setIsDisabled] = React.useState(true);
     const [isLoading, setIsLoading] = React.useState(false);
     const oldPublisherDocQuery = firestore.doc(`congregations/${CONG_ID}/publishers/${query.get('pub')}`);
-    const oldPublisherPartsCollectionQuery = firestore.collection(`congregations/${CONG_ID}/publishers/${query.get('pub')}/parts`);
     const [oldPublisherDoc, loading] = useDocumentOnce(oldPublisherDocQuery);
-    const [oldPublisherPartsCollection] = useCollectionOnce(oldPublisherPartsCollectionQuery);
     const oldPublisher : Publisher = {
         ...oldPublisherDoc?.data()
     }
-    const [email, setEmail] = useState(oldPublisher.email);
-    const [name, setName] = useState<{ firstName: string, lastName: string }>({
-        firstName: oldPublisher?.firstName ?? "",
-        lastName: oldPublisher?.lastName ?? ""
-    });
-
+    const [email, setEmail] = useState<string>(oldPublisher?.email ?? "");
     const createUser = async (credential: firebase.auth.UserCredential) : Promise<any> => {
         try {
             const promises : Promise<any>[] = []
             if (!loading) {
-                let newPublisher : Publisher = {
-                    ...oldPublisherDoc?.data(),
-                    uid: credential.user?.uid,
-                    isInvited: true
-                }
                 if (credential && credential.user) {
                     let user: User = {
                         congregation: CONG_ID,
-                        email: credential.user.email ?? "",
-                        firstName: newPublisher.firstName,
-                        lastName: newPublisher.lastName,
+                        email: email ? email : credential.user.email ?? "",
+                        firstName: oldPublisher.firstName,
+                        lastName: oldPublisher.lastName,
                         isEmailVerified: true,
                         loginProvider: credential.additionalUserInfo?.providerId,
                         permissions: [
@@ -62,17 +49,11 @@ export default function Invite() {
                         ],
                         uid: credential.user.uid
                     }
-
                     promises.push(firestore.doc(`users/${user.uid}`).set(user))
-                    promises.push(firestore.doc(`congregations/${CONG_ID}/publishers/${newPublisher.uid}`)
-                    .set(newPublisher))
-                    if (!oldPublisherPartsCollection?.empty) {
-                        oldPublisherPartsCollection?.docs.forEach(part => {
-                            promises.push(firestore.doc(`congregations/${CONG_ID}/publishers/${newPublisher.uid}/parts/${part.id}`).set(part.data()))
-                            promises.push(firestore.doc(`congregations/${CONG_ID}/publishers/${oldPublisherDoc?.id}/parts/${part.id}`).delete())
-                        })
-                    }
-                    promises.push(oldPublisherDocQuery.delete())
+                    promises.push(firestore.doc(`congregations/${CONG_ID}/publishers/${oldPublisher.uid}`).update({ 
+                        userId: credential.user.uid,
+                        isInvited: true
+                    }))
                     return Promise.all(promises)
                 }
             }
@@ -152,46 +133,12 @@ export default function Invite() {
                         <div className="mb-3">
                         <TextField
                             defaultValue={oldPublisher.firstName}
-                            onChange={(event, value) => {
-                                if (value) {
-                                    setName({ 
-                                        lastName: name?.lastName ?? '',
-                                        firstName: value
-                                    })
-                                    if (value.length === 0) {
-                                        setIsDisabled(true)
-                                    } 
-                                }
-                            }}
-                            onGetErrorMessage={(value) => {
-                                if (value.length > 1) {
-                                    return
-                                }
-                                return 'Please enter First Name'
-                            }}
                             label="First Name"
                             type="text"
                             disabled/>
                         <TextField
                             defaultValue={oldPublisher.lastName}
                             disabled
-                            onChange={(event, value) => {
-                                if (value) {
-                                    setName({ 
-                                        firstName: name?.firstName ?? '',
-                                        lastName: value
-                                    })
-                                    if (value.length === 0) {
-                                        setIsDisabled(true)
-                                    }
-                                }
-                            }}
-                            onGetErrorMessage={(value) => {
-                                if (value.length > 1) {
-                                    return
-                                }
-                                return 'Please enter Last Name'
-                            }} 
                             label="Last Name"
                             type="text"/>
                            <TextField
