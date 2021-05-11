@@ -21,6 +21,7 @@ export class EmailService {
   ): Promise<firebase.functions.HttpsCallableResult> {
     const exportService = new ExportService();
     const send = functions.httpsCallable('emailData');
+    const btn = `<a style="padding: 5px 10px; color: #ffffff; background-color: #198754; text-decoration: none; border-radius: 5px;" href="https://assemblee.web.app/confirm?cong=${congregation.id}&week=${part.week}&part=${part.id}">Confirm</a>`;
 
     return new Promise(async (resolve, reject) => {
       if (part.assignee) {
@@ -42,19 +43,8 @@ export class EmailService {
                 cc: sending,
                 subject: exportService.partDefinition.info?.title,
                 to: email,
-                html: `<p>Hello ${part.assignee.lastName} ${
-                  part.assignee.firstName
-                },</p><p>Please find attached your meeting assignment for <strong>${moment(
-                  part.date.toDate()
-                ).format(
-                  'MMMM DD yyyy'
-                )}</strong>.</p><a style="padding: 5px 10px; color: #ffffff; background-color: #198754; text-decoration: none; border-radius: 5px;" href="https://assemblee.web.app/confirm?cong=${
-                  congregation.id
-                }&week=${part.week}&part=${
-                  part.id
-                }">Confirm</a><p>Sincerely,<br>${
-                  congregation?.properties?.orgName ?? ""
-                }</p>`,
+                html: `<p>Hello ${part.assignee.lastName} ${part.assignee.firstName
+                },</p><p>Please find attached your meeting assignment for <strong>${moment(part.date.toDate()).format('MMMM DD yyyy')}</strong>.</p><p>Please confirm if date works for you.</p><p>Sincerely,<br>${congregation?.properties?.orgName ?? ""}</p>`,
                 attachments: [
                   {
                     content: data,

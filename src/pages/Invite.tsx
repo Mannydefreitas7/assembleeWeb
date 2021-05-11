@@ -75,17 +75,17 @@ export default function Invite() {
                             createUser(authUser)
                             .then(() => setIsLoading(false))
                             .then(() => history.push('/admin'))
-                            .catch(error => alert.error(error))
+                            .catch(error => alert.error(`Error: ${error}`))
                         }
                     } else {
                         createUser(newCredential)
                             .then(() => setIsLoading(false))
                             .then(() => history.push('/admin'))
-                            .catch(error => alert.error(error))
+                            .catch(error => alert.error(`Error: ${error}`))
                     }
                 }
         } catch (error) {
-            alert.error(error)
+            alert.error(`Error: ${error}`)
         }
     }
     // eslint-disable-next-line

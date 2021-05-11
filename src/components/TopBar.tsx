@@ -6,6 +6,7 @@ import { Link, NavLink, useRouteMatch } from 'react-router-dom'
 import { GlobalContext } from '../store/GlobalState';
 import logo from './../assets/logo.jpg'
 
+
 export default function TopBar() {
     let { url } = useRouteMatch();
     const { auth, user, firestore } = useContext(GlobalContext);
@@ -33,11 +34,11 @@ export default function TopBar() {
             text: 'Speakers',
             icon: 'PublishCourse'
         },
-        {
-            path: '/',
-            text: 'Board',
-            icon: 'Questionnaire'
-        }
+     //   {
+         //   path: '/',
+        //    text: 'Board',
+          //  icon: 'Questionnaire'
+       // }
     ]
 
 
@@ -54,7 +55,7 @@ export default function TopBar() {
                                 activeClassName="text-green-400"
                                 className="text-white mx-2 align-middle items-center inline-flex"
                                 to={link.path}>
-                                      <Icon iconName={link.icon} className="mr-1"/>
+                                    <Icon iconName={link.icon} className="mr-1"/>
                                     {link.text}
                                 </NavLink>
                         )

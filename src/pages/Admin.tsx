@@ -1,26 +1,33 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
     useRouteMatch
 } from "react-router-dom";
+import BottomBar from '../components/BottomBar';
 import ModalView from '../components/ModalView';
 import ProtectedRoute from '../components/ProtectedRoute';
 import TopBar from '../components/TopBar';
 import UserView from '../components/UserView';
+import { GlobalContext } from '../store/GlobalState';
 import Dashboard from './Dashboard';
 import ProgramDetail from './ProgramDetail';
 import Programs from './Programs';
 import PublisherDetail from './PublisherDetail';
 import Publishers from './Publishers';
+import SpeakerDetail from './SpeakerDetail';
 import Speakers from './Speakers';
 
 
 export default function Admin() {
     let { path } = useRouteMatch();
+    const { isMobile } = useContext(GlobalContext)
 
     return (
         <div>
-            <TopBar />
-            <div className="pt-10">
+            {
+                isMobile ? <BottomBar /> :
+                <TopBar />
+            }
+            <div className={isMobile ? '' : 'pt-12'}>
                 <ProtectedRoute
                     exact={true}
                     redirectTo="/login"
@@ -59,10 +66,16 @@ export default function Admin() {
                     <PublisherDetail />
                 </ProtectedRoute>
                 <ProtectedRoute
-                    exact={false}
+                    exact={true}
                     redirectTo="/login"
                     path={path + '/speakers'}>
                     <Speakers />
+                </ProtectedRoute>
+                <ProtectedRoute
+                    exact={false}
+                    redirectTo="/login"
+                    path={path + '/speakers/:id'}>
+                    <SpeakerDetail />
                 </ProtectedRoute>
             </div>
             <ModalView titleId={path} />

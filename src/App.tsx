@@ -12,7 +12,7 @@ function App() {
     <AlertProvider
     offset='30px'
     timeout={5000}
-    transition={transitions.FADE}
+    transition={transitions.SCALE}
     template={AlertTemplate}>
       <GlobalProvider>
         <Helmet>

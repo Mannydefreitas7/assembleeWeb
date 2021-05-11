@@ -1,8 +1,31 @@
 import { Icon, Persona, PersonaPresence, PersonaSize, SharedColors } from '@fluentui/react'
+
+import { useContext } from 'react'
+import { useAlert } from 'react-alert'
+import { CONG_ID } from '../constants'
 import { Publisher } from '../models/publisher'
 import { Parent, Part } from '../models/wol'
+import { GlobalContext } from '../store/GlobalState'
 
 export default function PartTile({ part, publisher }: { part: Part, publisher?: Publisher }) {
+
+    const { firestore, dismissPanel } = useContext(GlobalContext)
+    const alert = useAlert()
+    const deletePublisher = async (isAssignee: boolean) => {
+        try {
+            if (isAssignee) {
+                await firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`)
+                .update({ assignee: null })
+              
+            } else {
+                await firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`)
+                .update({ assistant: null })
+                
+
+            }
+            dismissPanel()
+        } catch (error) { alert.error(`${error}`); console.log(error) }
+    }
 
     return (
         <div className="p-4 flex items-center justify-between bg-gray-50 border-l-2 border-green-700">
@@ -33,21 +56,22 @@ export default function PartTile({ part, publisher }: { part: Part, publisher?: 
                                 }}
                             >{part.parent}</span>
                             {
-                                publisher ?
-                                    <div className="inline-flex items-center mr-4 bg-gray-100 p-1 rounded-full cursor-pointer" onClick={() => {}}>
+                                part.assignee ?
+                                    <div className="inline-flex items-center mr-4 bg-gray-100 p-1 rounded-full cursor-pointer" onClick={() => deletePublisher(true)}>
                                     <Persona
                                         className={part.assignee && part.assignee.uid === publisher?.uid ? 'opacity-100' : 'bg-opacity-50'}
-                                        imageUrl={publisher.photoURL ? publisher.photoURL : ''}
-                                        text={`${publisher.lastName} ${publisher.firstName}`}
+                                        imageUrl={part.assignee.photoURL ? part.assignee.photoURL : ''}
+                                        text={`${part.assignee.lastName} ${part.assignee.firstName}`}
                                         size={PersonaSize.size24}
                                         presence={part.isConfirmed ? PersonaPresence.online : PersonaPresence.none}
-                                        imageAlt={`${publisher.lastName} ${publisher.firstName}`}
+                                        imageAlt={`${part.assignee.lastName} ${part.assignee.firstName}`}
                                     />
                                      <Icon iconName="StatusErrorFull" className="text-lg text-gray-500 mr-1" />
                                     </div> : null
                             }
                             {
                                 part.assistant ?
+                                <div className="inline-flex items-center mr-4 bg-gray-100 p-1 rounded-full cursor-pointer" onClick={() => deletePublisher(false)}>
                                     <Persona
                                         className={part.assistant.uid === publisher?.uid ? 'opacity-100' : 'bg-opacity-50'}
                                         imageUrl={part.assistant.photoURL ? part.assistant.photoURL : ''}
@@ -55,7 +79,9 @@ export default function PartTile({ part, publisher }: { part: Part, publisher?: 
                                         size={PersonaSize.size24}
                                         presence={part.isConfirmed ? PersonaPresence.online : PersonaPresence.none}
                                         imageAlt={`${part.assistant.lastName} ${part.assistant.firstName}`}
-                                    /> : null
+                                    />
+                                     <Icon iconName="StatusErrorFull" className="text-lg text-gray-500 mr-1" />
+                                    </div> : null
                             }
                         </div>
                     </div>

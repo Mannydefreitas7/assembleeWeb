@@ -26,6 +26,7 @@ export interface InitialState {
   selectPublisher: any;
   dismissModal: any;
   openModal: any;
+  isMobile: boolean;
   isModalOpen: boolean;
   modalChildren: ReactNode;
   viewPublisherParts: any; 

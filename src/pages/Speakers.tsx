@@ -12,10 +12,9 @@ export default function Speakers() {
     const collectionQuery = firestore.collection(`congregations/${CONG_ID}/speakers`).orderBy('lastName')
     const brothersQuery = firestore.collection(`congregations/${CONG_ID}/publishers`)
     .where('privilege', 'in', [Privilege.elder, Privilege.ms])
-    .where('speaker', '!=', null)
     const [ speakersCollection, speakersCollectionLoading ] = useCollection(collectionQuery)
     const [brothersCollection, brothersCollectionLoading] = useCollection(brothersQuery)
-    let { path, url } = useRouteMatch();
+    let { path } = useRouteMatch();
     return (
         <div className="container p-8">
             <div className="mb-2 flex justify-between items-center">
@@ -39,7 +38,7 @@ export default function Speakers() {
                                 <Link 
                                 to={`/admin/publishers/${speaker.uid}`}
                                 key={speaker.uid}
-                                className="px-4 py-3 bg-white rounded text-black my-2 flex items-center hover:bg-gray-10 hover:bg-opacity-50 cursor-pointer">
+                                className="px-4 py-3 bg-white rounded text-black my-2 flex items-center hover:bg-gray-10 hover:bg-opacity-50 cursor-pointer shadow">
                                     <Persona
                                         text={`${speaker.lastName} ${speaker.firstName}`}
                                         secondaryText={speaker.privilege?.toUpperCase()}
@@ -62,7 +61,7 @@ export default function Speakers() {
                                 <Link 
                                 to={`${path}/${speaker.id}`}
                                 key={speaker.id}
-                                className="px-4 py-3 bg-white rounded text-black my-2 flex items-center hover:bg-gray-10 hover:bg-opacity-50 cursor-pointer">
+                                className="px-4 py-3 bg-white rounded text-black my-2 flex items-center hover:bg-gray-10 hover:bg-opacity-50 cursor-pointer shadow">
                                     <Persona
                                         text={`${speaker.lastName} ${speaker.firstName}`}
                                         secondaryText={speaker.congregation?.properties?.orgName?.toUpperCase()}

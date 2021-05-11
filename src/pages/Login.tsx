@@ -25,9 +25,9 @@ export default function Login() {
                 firestore.doc(`users/${newCredential?.user?.uid}`).update({ isOnline: true })
                 .then(() => history.push("/admin"))
                 .then(() => alert.success('Logged In'))
-                .catch(error => alert.error(error))
+                .catch(error => alert.error(`${error}`))
             }
-        } catch (error) { console.log(error) }
+        } catch (error) { alert.error(`${error}`) }
     }
 
     // const loginWithProvider = async (provider: string) => {

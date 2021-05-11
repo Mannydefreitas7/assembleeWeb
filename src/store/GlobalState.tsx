@@ -6,6 +6,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
 import 'firebase/storage'
+import talks from './../assets/talks.json';
 
 import {
     CHANGE_WEEK,
@@ -23,22 +24,23 @@ import { Part, PartType, WeekProgram } from '../models/wol';
 import { config, CONG_ID } from '../constants';
 import { IDropdownOption } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
-import { Publisher } from '../models/publisher';
-import { Congregation } from '../models/congregation';
+import { Publisher, Talk } from '../models/publisher';
+import { Congregation, FireLanguage } from '../models/congregation';
 import AddProgramView from '../components/AddProgramView';
 import ExportOptionsView from '../components/ExportOptionsView';
 import RenamePartView from '../components/RenamePartView';
 import AddPublisherView from '../components/AddPublisherView';
 import AddSpeakerView from '../components/AddSpeakerView';
+import { useMediaQuery } from 'react-responsive';
 
 
 type GlobalProps = {
     children: ReactNode
 }
 
-
-const _firebase = firebase.initializeApp(config)
+const _firebase: firebase.app.App = firebase.apps.length === 0 ? firebase.initializeApp(config) : firebase.app()
 if (process.env.NODE_ENV === 'development') {
+
     let congregation: Congregation = {
         id: '0927216B-2451-4AB5-AD08-11AC5777CCB1',
         fireLanguage: {
@@ -56,17 +58,33 @@ if (process.env.NODE_ENV === 'development') {
             orgName: 'West Hudson French - NY (USA)',
             orgGuid: '0927216B-2451-4AB5-AD08-11AC5777CCB1'
         }
-
     }
 
-    _firebase.functions().useEmulator("localhost", 5001)
-    _firebase.firestore().useEmulator("localhost", 8080)
-    _firebase.auth().useEmulator("http://localhost:9099");
-    _firebase.firestore().doc(`congregations/${congregation.id}`).set(congregation);
-  //  let provider = new firebase.auth.GoogleAuthProvider()
-  //  _firebase.auth().signInWithPopup(provider)
-}
+    let language: FireLanguage = {
+        apiURL: 'wol/dt/r30/lp-f/',
+        languageCode: 'F'
+    }
 
+    let _talks : Talk[] = talks.map(t => {
+        return {
+            id: `${t.DocumentId}`,
+            number: t.DocumentId + 1,
+            timeStamp: new Date(),
+            title: t.Title
+        }
+    })
+
+
+  //  _firebase.functions().useEmulator("localhost", 5001)
+  //  _firebase.firestore().useEmulator("localhost", 8080)
+  //  _firebase.auth().useEmulator("http://localhost:9099");
+  //  _firebase.firestore().doc(`congregations/${congregation.id}`).set(congregation);
+  //  _firebase.firestore().doc(`languages/${language.languageCode}`).set(language);
+    _talks.forEach(talk => {
+        _firebase.firestore().doc(`languages/${language.languageCode}/talks/${talk.id}`).set(talk)
+    })
+}
+ 
 
 const initialState: InitialState = {
     parts: [],
@@ -88,6 +106,7 @@ const initialState: InitialState = {
     isModalOpen: false,
     selectPublisher: null,
     openModal: null,
+    isMobile: false,
     dismissModal: null,
     modalChildren: null,
     viewPublisherParts: null,
@@ -108,7 +127,7 @@ export const GlobalProvider = (props: GlobalProps) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
     const [isModalOpen, { setTrue: openModal, setFalse: dismissModal }] = useBoolean(false);
-
+    const isMobile = useMediaQuery({ maxWidth: 767 })
     useEffect(() => {
         load();
         return () => { 
@@ -312,6 +331,7 @@ export const GlobalProvider = (props: GlobalProps) => {
             changeWeek,
             selectPublisher,
             type: state.type,
+            isMobile: isMobile,
             user: state.user,
             modalChildren: state.modalChildren,
             viewPublisherParts,

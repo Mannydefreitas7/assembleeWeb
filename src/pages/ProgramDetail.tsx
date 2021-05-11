@@ -1,4 +1,4 @@
-import { ActionButton, DefaultButton, Dialog, DialogFooter, DialogType, Pivot, PivotItem, PrimaryButton, Spinner, SpinnerSize, Toggle } from '@fluentui/react';
+import { ActionButton, DefaultButton, Dialog, DialogFooter, DialogType, IconButton, Pivot, PivotItem, PrimaryButton, Spinner, SpinnerSize, Toggle } from '@fluentui/react';
 import React, { useContext, useState } from 'react'
 import { useCollection, useDocument } from 'react-firebase-hooks/firestore';
 import { useHistory, useParams } from 'react-router';
@@ -14,7 +14,7 @@ import { SharedColors } from '@fluentui/theme'
 import { useAlert } from 'react-alert';
 
 export default function ProgramDetail() {
-    const { firestore, congregation, reloadWeeks } = useContext(GlobalContext)
+    const { firestore, congregation, reloadWeeks, isMobile } = useContext(GlobalContext)
     const { id } = useParams<{ id: string }>();
     const [documentSnapshot, weekLoading] = useDocument(firestore.doc(`congregations/${CONG_ID}/weeks/${id}`))
     const [collection, loading] = useCollection(firestore.collection(`congregations/${CONG_ID}/weeks/${id}/parts`).orderBy('index'));
@@ -33,18 +33,23 @@ export default function ProgramDetail() {
         .then(() => toggleHideDialog())
         .then(() => history.goBack())
         .then(() => alert.success('Week deleted successfully'))
-        .catch((error) => alert.error(error))
+        .catch((error) => alert.error(`Error: ${error}`))
     }
 
     function _onChange(ev: React.MouseEvent<HTMLElement>, checked?: boolean) {
-       
         firestore.doc(`congregations/${CONG_ID}/weeks/${id}`).update({ isSent: checked })
         .then(() => reloadWeeks())
     }
 
+    const download = () => {
+        setIsDownloading(true)
+        exportService.downloadPDF([document], congregation, firestore)
+        .then(value => setIsDownloading(false))
+    }
+
     return (
         <div className="mx-auto p-8">
-            <div className="mb-2 flex justify-between items-center">
+            <div className="mb-2 flex flex-wrap justify-between items-center">
                 <h1 className="font-bold text-2xl">
                     <ActionButton
                         className="font-bold text-base"
@@ -54,7 +59,7 @@ export default function ProgramDetail() {
                     </ActionButton> <br />
                     {document.range}
                 </h1>
-                <div className="flex items-center">
+                <div className="flex flex-wrap items-center">
                     {
                         weekLoading ? <Spinner /> : 
                         <Toggle 
@@ -69,23 +74,32 @@ export default function ProgramDetail() {
                     {
                         isDownloading ?
                         <Spinner label="Downloading..." labelPosition={'right'} /> :
-                        <ActionButton 
-                        onClick={() => {
-                            setIsDownloading(true)
-                            exportService.downloadPDF([document], congregation, firestore)
-                            .then(value => setIsDownloading(false))
-                        }}
+                        isMobile ? <IconButton
+                        onClick={download}
+                        iconProps={{ iconName: 'PDF' }}
+                        /> : <ActionButton 
+                        onClick={download}
                         iconProps={{ iconName: 'PDF' }} allowDisabledFocus>
                             Download
                         </ActionButton>
                     }
-
-                    <ActionButton
-                        className="text-red-500"
+                    {
+                        isMobile ? <IconButton 
+                        styles={{ icon: {
+                            color: SharedColors.red10
+                        }}}
                         onClick={toggleHideDialog}
-                        iconProps={{ iconName: 'Delete', className: 'text-red-500 hover:text-red-900' }} allowDisabledFocus>
-                        Delete
-                    </ActionButton>
+                        iconProps={{ iconName: 'Delete' }} 
+                        /> : <ActionButton
+                            styles={{ 
+                                root: { color: SharedColors.red10 },
+                                icon: {
+                                color: SharedColors.red10
+                            }}}
+                            onClick={toggleHideDialog}
+                            iconProps={{ iconName: 'Delete', className: 'text-red-500 hover:text-red-900' }} allowDisabledFocus>Delete</ActionButton>
+                    }
+
                 </div>
             </div>
             {

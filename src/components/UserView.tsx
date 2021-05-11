@@ -60,7 +60,7 @@ export default function UserView() {
             .update({ firstName: userInfo?.firstName, lastName: userInfo?.lastName })
             .then(() => setIsEditing(false))
             .then(() => { alert.success("User Info updated successfully!") })
-            .catch(error => alert.error(error))
+            .catch(error => alert.error(`Error: ${error}`))
         }
         
     }

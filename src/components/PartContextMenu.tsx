@@ -7,29 +7,31 @@ import { useAlert } from 'react-alert';
 import { GlobalContext } from '../store/GlobalState';
 import { EmailService } from '../services/email';
 import { CONG_ID } from '../constants';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 
 export default function PartContextMenu({ part } : { part: Part }) {
     const ref = createRef<HTMLDivElement>();
     const linkRef = React.useRef(ref);
     const emailService = new EmailService();
-    const { congregation, functions, openRenameModal, firestore } = useContext(GlobalContext)
+    const { congregation, functions, openRenameModal, firestore, auth } = useContext(GlobalContext)
     const alert = useAlert()
     const [showContextualMenu, setShowContextualMenu] = useState(false);
     const onShowContextualMenu = React.useCallback((ev: React.MouseEvent<HTMLElement>) => {
         ev.preventDefault(); // don't navigate
         setShowContextualMenu(true);
     }, []);
+    const [user, loading] = useAuthState(auth)
   const onHideContextualMenu = React.useCallback(() => setShowContextualMenu(false), []);
 
-  const hideEmail = () : boolean => {
+  const isDisabled = () : boolean => {
       if (part.parent === Parent.apply) {
-        if (part.assignee) {
+        if (part.assignee && !part.isEmailed) {
             return false
         }
       }
       if (part.parent === Parent.treasures && part.index === 2) {
-        if (part.assignee) {
+        if (part.assignee && !part.isEmailed) {
             return false
         }
       }
@@ -62,11 +64,15 @@ export default function PartContextMenu({ part } : { part: Part }) {
     //     firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`).delete()
     // }
 
+  const sending : Mail.Address = {
+      name: congregation.properties?.orgName ?? 'Congregation',
+      address: loading ? "assemblee.app@gmail.com" : user?.email ?? 'assemblee.app@gmail.com'
+  }
   const menuItems: IContextualMenuItem[] = [
     {
         key: 'email',
-        text: 'Email',
-        disabled: hideEmail(),
+        text: part.isEmailed ? 'Emailed' : 'Email',
+        disabled: isDisabled(),
         onClick: () => {
             emailService
             .emailPartPDF(part, sending, congregation, functions)
@@ -75,8 +81,12 @@ export default function PartContextMenu({ part } : { part: Part }) {
                     setTimeout(() =>  alert.success('Email sent'), 2000)
                 }
             })
+            .then(() => {
+              firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`).update({ isEmailed: true })
+            })
+            .catch(error => alert.error(`${error}`))
         },
-        iconProps: { iconName: 'Mail' },
+        iconProps: { iconName: part.isEmailed ? 'MailCheck' : 'Mail' },
       },
       {
         key: 'rename',
@@ -98,10 +108,7 @@ export default function PartContextMenu({ part } : { part: Part }) {
     //   },
   ];
 
-  let sending : Mail.Address = {
-    name: 'West Hudson French',
-    address: "manny.defreitas7@gmail.com"
-}
+
 
     return (
         <>  

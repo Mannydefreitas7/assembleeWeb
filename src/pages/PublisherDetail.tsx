@@ -1,4 +1,4 @@
-import { ActionButton, BasePicker, BasePickerListBelow, ChoiceGroup, DefaultButton, Dialog, DialogFooter, DialogType, IBasePicker, IBasePickerSuggestionsProps, ITag, Label, Persona, PersonaInitialsColor, PersonaSize, PrimaryButton, SearchBox, Spinner, TagPicker, Text, TextField } from '@fluentui/react'
+import { ActionButton, ChoiceGroup, DefaultButton, Dialog, DialogFooter, DialogType, Panel, PanelType, Persona, PersonaInitialsColor, PersonaSize, PrimaryButton,  Spinner, Text, TextField } from '@fluentui/react'
 import React, { useContext, useState } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
@@ -7,16 +7,19 @@ import { Gender, Privilege, Publisher, Talk } from '../models/publisher';
 import { useHistory, useParams } from 'react-router';
 import { useAlert } from 'react-alert';
 import { useBoolean } from '@fluentui/react-hooks';
-import { NeutralColors, SharedColors } from '@fluentui/theme'
-import SmallTalkTile from '../components/SmallTalkTile';
+import { SharedColors } from '@fluentui/theme'
+import SelectTalkOutlineView from '../components/SelectTalkOutlineView';
+import TalkTile from '../components/TalkTile';
 
 export default function PublisherDetail() {
+
     const { firestore, auth } = useContext(GlobalContext);
     const { id } = useParams<{ id: string }>();
     let query = firestore.doc(`congregations/${CONG_ID}/publishers/${id}`)
     const [documentSnapshot, publisherLoading] = useDocument(query)
     const [talksCollection, talksCollectionLoading] = useCollection(firestore.collection(`congregations/${CONG_ID}/publishers/${id}/talks`))
     const [isEditing, setEditing] = useState(false)
+    const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
 
     let history = useHistory();
     let alert = useAlert();
@@ -36,7 +39,7 @@ export default function PublisherDetail() {
                 handleCodeInApp: true
             })
                 .then(() => alert.success(`Email sent to ${publisher?.firstName?.slice(0, 1).toUpperCase()}. ${publisher?.lastName?.toUpperCase()}`))
-                .catch(error => alert.error(error))
+                .catch(error => alert.error(`Error: ${error}`))
         }
     }
 
@@ -45,12 +48,12 @@ export default function PublisherDetail() {
         .then(() => toggleHideDialog())
         .then(() => history.goBack())
         .then(() => alert.success('Publisher deleted successfully'))
-        .catch((error) => alert.error(error))
+        .catch((error) => alert.error(`Error: ${error}`))
     }
 
     return (
         <div className="container mt-2 p-8">
-            <div className="mb-2 flex justify-between items-center">
+            <div className="mb-2 flex flex-wrap justify-between items-center">
                 <h1 className="font-bold text-2xl">
                     <ActionButton
                         className="font-bold text-base"
@@ -171,16 +174,18 @@ export default function PublisherDetail() {
                         </div>
                         {
                             talksCollectionLoading ? <Spinner title="Please wait..." /> :
-                            publisher.speaker && talksCollection ?
+                            talksCollection && (publisher.privilege === Privilege.elder || publisher.privilege === Privilege.ms)  ?
                                 <div className="mt-4">
-                                    
-                                    <Text className="font-bold mt-6 text-xl">Talks</Text>
+                                    <div className="flex justify-between items-center">
+                                        <Text className="font-bold mt-6 text-xl">Talks</Text>
+                                        <DefaultButton onClick={openPanel} iconProps={{ iconName: 'Add' }} text="Talk" />
+                                    </div>
                                     {
                                         talksCollection.docs.map(doc => {
                                             let talk: Talk = {
                                                 ...doc.data()
                                             }
-                                            return (<SmallTalkTile key={talk.id} talk={talk} />)
+                                            return (<TalkTile key={talk.id} talk={talk} />)
                                         })
                                     }
                                 </div> : null
@@ -206,6 +211,12 @@ export default function PublisherDetail() {
 
                 </DialogFooter>
             </Dialog>
+            <Panel
+                isOpen={isOpen}
+                onDismiss={dismissPanel}
+                type={PanelType.extraLarge}
+                headerText="Select Talk Outline"
+            ><SelectTalkOutlineView publisher={publisher} onDismiss={dismissPanel} /></Panel>
         </div>
     )
 }

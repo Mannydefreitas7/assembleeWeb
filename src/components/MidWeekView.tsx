@@ -10,11 +10,11 @@ import PartContextMenu from './PartContextMenu';
 
 export default function MidWeekView({ parts, week }: { parts: Part[], week: WeekProgram }) {
 
-    const { openPanel, selectPublisher } = useContext(GlobalContext)
+    const { openPanel, selectPublisher, isMobile } = useContext(GlobalContext)
     return (
         <div>
             <Stack>
-                <div className="p-10 rounded bg-white shadow my-4">
+                <div className={`${isMobile ? 'p-4' : 'p-10'} rounded bg-white shadow my-4`}>
                     <h3 className="mt-0 text-xl font-semibold">Réunion de Semaine</h3>
                     <div className="mt-3 flex pl-4 flex-wrap justify-between items-center">
                         <label className="text-gray-400">Président</label>
@@ -67,7 +67,7 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                         parts && treasures(parts).map(part => {
                             return (
                                 <div className="mt-3 pl-4 flex flex-wrap justify-between items-center" key={part.id}>
-                                    <label>{part.title}</label>
+                                    <label className={isMobile ? 'text-xs' : ''}>{part.title}</label>
                                     <div className="inline-flex items-center my-2">
                                     {
                                         part && part.assignee ?
@@ -98,8 +98,8 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                         parts && apply(parts).map(part => {
                             return (
                                 <div className="mt-3 pl-4 flex flex-wrap justify-between items-center" key={part.id}>
-                                    <label className="w-2/3">{part.title}</label>
-                                    <div className="inline-flex items-center my-2">
+                                    <label className={isMobile ? 'text-xs' : 'w-2/3'}>{part.title}</label>
+                                    <div className="inline-flex flex-wrap items-center my-2">
                                         {
                                             part && part.assignee ?
                                                 <PartRemoveButton
@@ -143,7 +143,7 @@ export default function MidWeekView({ parts, week }: { parts: Part[], week: Week
                         parts && life(parts).map(part => {
                             return (
                                 <div className="mt-3 pl-4 flex flex-wrap justify-between items-center" key={part.id}>
-                                    <label className="w-2/3">{part.title}</label>
+                                    <label className={isMobile ? 'text-xs' : 'w-2/3'}>{part.title}</label>
                                     <div className="inline-flex items-center my-2">
                                     {
                                         part && part.index !== life(parts).length ?
