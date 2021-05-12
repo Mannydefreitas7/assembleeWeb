@@ -9,6 +9,7 @@ import TopBar from '../components/TopBar';
 import UserView from '../components/UserView';
 import { GlobalContext } from '../store/GlobalState';
 import Dashboard from './Dashboard';
+import Groups from './Groups';
 import ProgramDetail from './ProgramDetail';
 import Programs from './Programs';
 import PublisherDetail from './PublisherDetail';
@@ -76,6 +77,12 @@ export default function Admin() {
                     redirectTo="/login"
                     path={path + '/speakers/:id'}>
                     <SpeakerDetail />
+                </ProtectedRoute>
+                <ProtectedRoute
+                    exact={false}
+                    redirectTo="/login"
+                    path={path + '/groups'}>
+                    <Groups />
                 </ProtectedRoute>
             </div>
             <ModalView titleId={path} />

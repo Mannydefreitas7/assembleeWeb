@@ -39,4 +39,5 @@ export interface InitialState {
   openRenameModal: any;
   reloadWeeks: any;
   openSpeakerModal: any;
+  openGroupModal: any;
 }

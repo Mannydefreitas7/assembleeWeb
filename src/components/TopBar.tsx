@@ -34,11 +34,11 @@ export default function TopBar() {
             text: 'Speakers',
             icon: 'PublishCourse'
         },
-     //   {
-         //   path: '/',
-        //    text: 'Board',
-          //  icon: 'Questionnaire'
-       // }
+       {
+           path: `${url}/groups`,
+           text: 'Groups',
+           icon: 'Group'
+       }
     ]
 
 

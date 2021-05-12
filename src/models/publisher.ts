@@ -14,6 +14,7 @@ export class Publisher {
    isWTConductor?: boolean;
    speaker?: Speaker;
    parts?: Part[];
+   groupId?: string;
    userId?: string;
    isReader?: boolean;
    talks?: Talk[];

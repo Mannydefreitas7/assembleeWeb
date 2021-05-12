@@ -18,7 +18,8 @@ import {
     INITIAL_LOAD,
     OPEN_RENAME_MODAL,
     RELOAD_WEEKS,
-    OPEN_SPEAKER_MODAL
+    OPEN_SPEAKER_MODAL,
+    OPEN_GROUP_MODAL
 } from './ActionTypes';
 import { Part, PartType, WeekProgram } from '../models/wol';
 import { config, CONG_ID } from '../constants';
@@ -32,6 +33,7 @@ import RenamePartView from '../components/RenamePartView';
 import AddPublisherView from '../components/AddPublisherView';
 import AddSpeakerView from '../components/AddSpeakerView';
 import { useMediaQuery } from 'react-responsive';
+import AddGroupView from '../components/AddGroupView';
 
 
 type GlobalProps = {
@@ -80,9 +82,9 @@ if (process.env.NODE_ENV === 'development') {
   //  _firebase.auth().useEmulator("http://localhost:9099");
   //  _firebase.firestore().doc(`congregations/${congregation.id}`).set(congregation);
   //  _firebase.firestore().doc(`languages/${language.languageCode}`).set(language);
-    _talks.forEach(talk => {
-        _firebase.firestore().doc(`languages/${language.languageCode}/talks/${talk.id}`).set(talk)
-    })
+    // _talks.forEach(talk => {
+    //     _firebase.firestore().doc(`languages/${language.languageCode}/talks/${talk.id}`).set(talk)
+    // })
 }
  
 
@@ -118,7 +120,8 @@ const initialState: InitialState = {
     listener: null,
     openRenameModal: null,
     reloadWeeks: null,
-    openSpeakerModal: null
+    openSpeakerModal: null,
+    openGroupModal: null
 }
 
 export const GlobalContext = createContext(initialState)
@@ -257,6 +260,14 @@ export const GlobalProvider = (props: GlobalProps) => {
         openModal()
     }
 
+    const openGroupModal = () => {
+        dispatch({
+            type: OPEN_GROUP_MODAL,
+            payload: <AddGroupView />
+        })
+        openModal()
+    }
+
     
 
     const openExportModal = () => {
@@ -326,6 +337,7 @@ export const GlobalProvider = (props: GlobalProps) => {
             openPanel,
             openModal,
             dismissModal,
+            openGroupModal,
             isModalOpen: isModalOpen,
             loading: state.loading,
             changeWeek,
