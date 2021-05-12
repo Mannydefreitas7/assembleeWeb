@@ -29,6 +29,10 @@ export default function Dashboard() {
                         <Icon iconName="PublishCourse" className="text-4xl text-gray-300 mt-4"/>
                         <Text className="text-lg font-semibold mb-4 text-gray-500">Speakers</Text>
                     </Link>
+                    <Link className="p-4 bg-white hover:bg-gray-100 flex flex-col items-center justify-items-center rounded cursor-pointer shadow" to='/admin/groups'>
+                        <Icon iconName="Group" className="text-4xl text-gray-300 mt-4"/>
+                        <Text className="text-lg font-semibold mb-4 text-gray-500">Groups</Text>
+                    </Link>
                 </div>
             </div>
         </div>

@@ -1,10 +1,12 @@
-import { Dropdown, Icon, IconButton, IDropdownOption, PrimaryButton, Separator, TextField } from '@fluentui/react'
+import { Dropdown, Icon, IconButton, IDropdownOption, PrimaryButton, Separator, Spinner, TextField } from '@fluentui/react'
 import React, { useContext } from 'react'
 import { Gender, Privilege, Publisher } from '../models/publisher';
 import { GlobalContext } from '../store/GlobalState';
 import * as EmailValidator from 'email-validator';
 import { v4 } from 'uuid'
 import { CONG_ID } from '../constants';
+import { useCollectionOnce } from 'react-firebase-hooks/firestore';
+import { Group } from '../models/group';
 
 export default function AddPublisherView() {
     const { dismissModal, firestore } = useContext(GlobalContext);
@@ -14,6 +16,10 @@ export default function AddPublisherView() {
         lastName: '',
         email: ''
     });
+    const groupCollectionQuery = firestore.collection(
+        `congregations/${CONG_ID}/groups`
+    ).orderBy('number'); 
+    const [groupCollection, groupLoading] = useCollectionOnce(groupCollectionQuery);
     const [errorMsg, setErrorMsg] = React.useState<{
         firstName?: string | undefined,
         lastName?: string | undefined,
@@ -130,7 +136,6 @@ export default function AddPublisherView() {
                         placeholder="Brother"
                         label="Gender"
                         onChange={(e, option) => {
-                            
                             setPublisher({ 
                                 ...publisher,
                                 gender: option?.text ?? Gender.brother 
@@ -154,6 +159,30 @@ export default function AddPublisherView() {
                         options={publisher.gender === Gender.brother ? privileges : privileges.filter(p => p.key === Privilege.pub)}
                     />
                </div>
+               {
+                        groupLoading ? <Spinner /> :
+                                <Dropdown
+                                    label="Group"
+                                    className="mb-4"
+                                    placeholder="Select Group"
+                                    defaultSelectedKey={publisher.groupId}
+                                    onChange={(e, option) => {
+                                        setPublisher({
+                                            ...publisher,
+                                            groupId: option?.id
+                                        })
+                                    }}
+                                    options={groupCollection ? groupCollection.docs.map(doc => {   
+                                    let group: Group = doc.data()
+                                    let option: IDropdownOption = {
+                                        id: group.id ?? '',
+                                        key: group.id ?? '',
+                                        text: group.name ?? ''
+                                    }
+                                    return option
+                                }) : []}
+                                />
+                        }
                <div className="flex py-4 justify-center">
                     <PrimaryButton
                     onClick={addPublisher}

@@ -1,4 +1,4 @@
-import { ActionButton, ChoiceGroup, DefaultButton, Dialog, DialogFooter, DialogType, Panel, PanelType, Persona, PersonaInitialsColor, PersonaSize, PrimaryButton,  Spinner, Text, TextField } from '@fluentui/react'
+import { ActionButton, ChoiceGroup, DefaultButton, Dialog, DialogFooter, DialogType, Dropdown, IDropdownOption, Panel, PanelType, Persona, PersonaInitialsColor, PersonaSize, PrimaryButton,  Spinner, Text, TextField } from '@fluentui/react'
 import React, { useContext, useState } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
@@ -10,6 +10,7 @@ import { useBoolean } from '@fluentui/react-hooks';
 import { SharedColors } from '@fluentui/theme'
 import SelectTalkOutlineView from '../components/SelectTalkOutlineView';
 import TalkTile from '../components/TalkTile';
+import { Group } from '../models/group';
 
 export default function PublisherDetail() {
 
@@ -18,6 +19,10 @@ export default function PublisherDetail() {
     let query = firestore.doc(`congregations/${CONG_ID}/publishers/${id}`)
     const [documentSnapshot, publisherLoading] = useDocument(query)
     const [talksCollection, talksCollectionLoading] = useCollection(firestore.collection(`congregations/${CONG_ID}/publishers/${id}/talks`))
+    const groupCollectionQuery = firestore.collection(
+        `congregations/${CONG_ID}/groups`
+    ).orderBy('number'); 
+    const [groupCollection, groupLoading] = useCollection(groupCollectionQuery);
     const [isEditing, setEditing] = useState(false)
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
 
@@ -26,11 +31,15 @@ export default function PublisherDetail() {
     let publisher: Publisher = documentSnapshot?.exists ? {
         ...documentSnapshot?.data()
     } : {}
-    const [name, setName] = useState<{ firstName: string | undefined, lastName: string | undefined, email: string | undefined }>({
-        firstName: publisher.firstName, lastName: publisher.lastName, email: publisher.email
+    const [pub, setPublisher] = useState<Publisher>({
+        firstName: publisher.firstName, 
+        lastName: publisher.lastName, 
+        email: publisher.email,
+        groupId: publisher.groupId
     })
     const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
-
+    
+    
     const invite = () => {
         let url: string = `https://assemblee.web.app/invite?cong=${id}&pub=${publisher.uid}`;
         if (publisher.email) {
@@ -98,52 +107,83 @@ export default function PublisherDetail() {
                             <TextField
                                 disabled={!isEditing}
                                 type="text"
-                                onKeyUp={(e) => setName({
+                                onKeyUp={(e) => setPublisher({
+                                    ...pub,
                                     firstName: e.currentTarget?.value,
-                                    lastName: name?.lastName,
-                                    email: name?.email
                                 })}
                                 placeholder="Charles"
                                 className="mt-4 md:w-full lg:w-1/4"
                                 label="First Name"
-                                defaultValue={isEditing ? name?.firstName : publisher.firstName}
+                                defaultValue={publisher.firstName}
                             />
                             <TextField
                                 disabled={!isEditing}
                                 type="text"
-                                onKeyUp={(e) => setName({
-                                    firstName: name?.firstName,
+                                onKeyUp={(e) => setPublisher({
+                                    ...pub,
                                     lastName: e.currentTarget?.value,
-                                    email: name?.lastName
                                 })}
                                 className="mt-4 md:w-full lg:w-1/4"
                                 placeholder="Russel"
                                 label="Last Name"
-                                defaultValue={isEditing ? name?.lastName : publisher.lastName}
+                                defaultValue={publisher.lastName}
                             />
                             <TextField
                                 disabled={!isEditing}
                                 type="email"
-                                onKeyUp={(e) => setName({
-                                    firstName: name?.firstName,
-                                    lastName: name?.lastName,
+                                onKeyUp={(e) => setPublisher({
+                                    ...pub,
                                     email: e.currentTarget?.value
                                 })}
                                 className="mt-4 md:w-full lg:w-1/4"
                                 placeholder="charles.russel@jw.org"
                                 label="Email"
-                                defaultValue={isEditing ? name?.email : publisher.email}
+                                defaultValue={publisher.email}
                             />
                             {
-                                isEditing ? <DefaultButton
+                                groupLoading ? <Spinner /> :
+                                <Dropdown
+                                    label="Group"
+                                    className="mt-4 md:w-full lg:w-1/4"
+                                    disabled={!isEditing}
+                                    placeholder="Select Group"
+                                    defaultSelectedKey={publisher.groupId}
+                                    onChange={(e, option) => {
+                                        setPublisher({
+                                            ...pub,
+                                            groupId: option?.id
+                                        })
+                                    }}
+                                    options={groupCollection ? groupCollection.docs.map(doc => {   
+                                    let group: Group = doc.data()
+                                    let option: IDropdownOption = {
+                                        id: group.id ?? '',
+                                        key: group.id ?? '',
+                                        text: group.name ?? ''
+                                    }
+                                    return option
+                                }) : []}
+                                />
+                            }
+                            
+                            {
+                                isEditing ? 
+                                <div className="inline-flex items-center mt-4">
+                                    <DefaultButton 
+                                    className="mr-2"
+                                    text='Cancel' onClick={() => setEditing(false)} />
+                                    <DefaultButton
                                     onClick={() => {
                                         firestore.doc(`congregations/${CONG_ID}/publishers/${publisher.uid}`).update({
-                                            firstName: name && name.firstName ? name?.firstName : publisher.firstName,
-                                            lastName: name && name.lastName ? name?.lastName : publisher.lastName,
-                                            email: name && name.email ? name?.email : publisher.email,
+                                            firstName: pub && pub.firstName ? pub?.firstName : publisher.firstName,
+                                            lastName: pub && pub.lastName ? pub?.lastName : publisher.lastName,
+                                            email: pub && pub.email ? pub?.email : publisher.email,
+                                            groupId: pub && pub.groupId ? pub.groupId : publisher.groupId
                                         }).then(() => setEditing(false))
                                     }}
-                                    className="mt-4" iconProps={{ iconName: 'Save' }} text='Save' /> :
+                                     iconProps={{ iconName: 'Save' }} text='Save' />
+                                </div>
+                                 :
                                     <DefaultButton
                                         onClick={() => { setEditing(true) }}
                                         className="mt-4" iconProps={{ iconName: 'Edit' }} text='Edit' />

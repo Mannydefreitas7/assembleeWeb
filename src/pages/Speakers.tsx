@@ -1,4 +1,4 @@
-import { ActionButton, Persona, PersonaInitialsColor, Spinner, Text } from '@fluentui/react';
+import { DefaultButton, Persona, PersonaInitialsColor, Spinner, Text } from '@fluentui/react';
 import React, { useContext } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { CONG_ID } from '../constants';
@@ -19,11 +19,11 @@ export default function Speakers() {
         <div className="container p-8">
             <div className="mb-2 flex justify-between items-center">
                 <h1 className="font-semibold text-2xl inline-flex items-center"> <Icon iconName="PublishCourse" className="mr-2"/>Speakers</h1>
-                <ActionButton 
+                <DefaultButton 
                 onClick={openSpeakerModal}
                 iconProps={{ iconName: 'AddFriend' }} allowDisabledFocus>
                     Add Speaker
-                </ActionButton>
+                </DefaultButton>
             </div>
             {
                 <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4 mt-3">

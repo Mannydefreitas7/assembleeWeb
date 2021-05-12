@@ -1,4 +1,4 @@
-import { ActionButton, IconButton } from '@fluentui/react'
+import { ActionButton, DefaultButton, IconButton } from '@fluentui/react'
 import React, { useContext } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 
@@ -11,7 +11,7 @@ export default function ExportMenu() {
                 isMobile ? <IconButton 
                     onClick={openExportModal}
                     iconProps={{ iconName: 'Generate' }} /> : 
-                <ActionButton
+                <DefaultButton
                     iconProps={{ iconName: 'Generate' }}
                     text="Export"
                     onClick={openExportModal}

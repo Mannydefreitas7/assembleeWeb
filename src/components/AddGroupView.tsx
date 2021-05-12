@@ -5,20 +5,25 @@ import { v4 } from 'uuid'
 import { CONG_ID } from '../constants';
 import { Group } from '../models/group';
 import { useAlert } from 'react-alert';
+import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 
 export default function AddGroupView() {
     const { dismissModal, firestore } = useContext(GlobalContext);
-    const [isLoading, setLoading] = React.useState(true);
     const [group, setGroup] = React.useState<Group>();
     const alert = useAlert();
+    const groupCollectionQuery = firestore.collection(
+        `congregations/${CONG_ID}/groups`
+    );
+    const [groupCollection, groupLoading] = useCollectionOnce(groupCollectionQuery);
              
 
     const addGroup = async () => {
         try {
-            if (group && group.name && group.address) {
+            if (!groupLoading && group && group.name && group.address) {
                 let _group : Group = {
                     ...group,
-                    id: v4()
+                    id: v4(),
+                    number: groupCollection?.docs.length
                 }
                await firestore
                 .doc(`congregations/${CONG_ID}/groups/${_group.id}`)

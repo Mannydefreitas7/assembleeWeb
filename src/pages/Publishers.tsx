@@ -1,4 +1,4 @@
-import { ActionButton, SearchBox, Spinner, SpinnerSize } from '@fluentui/react';
+import { ActionButton, DefaultButton, SearchBox, Spinner, SpinnerSize } from '@fluentui/react';
 import React, { useContext, useState } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { CONG_ID } from '../constants';
@@ -17,11 +17,11 @@ export default function Publishers() {
         <div className="container p-8">
             <div className="mb-2 flex justify-between items-center">
                 <h1 className="font-semibold text-2xl inline-flex items-center"> <Icon iconName="People" className="mr-2"/>Publishers</h1>
-                <ActionButton 
+                <DefaultButton 
                 onClick={openPublisherModal}
                 iconProps={{ iconName: 'AddFriend' }} allowDisabledFocus>
                     Add Publisher
-                </ActionButton>
+                </DefaultButton>
             </div>
             {
                    value?.docs && value?.docs.map(p => p.data()).length > 0 ?
