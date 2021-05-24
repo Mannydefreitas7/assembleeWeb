@@ -1,0 +1,39 @@
+.treasures {
+  color: #5a6a70;
+}
+
+.apply {
+  color: #c18626;
+}
+
+.life {
+  color: #961526;
+}
+
+.weekend {
+  color: #919191;
+}
+
+.google {
+  background-color: #4285F4;
+  border-color: #4285F4;
+  color: white;
+}
+.google:hover {
+  background-color: #356ac0;
+  border-color: #356ac0;
+  color: white;
+}
+
+*:focus {
+  outline: none !important;
+}
+.route-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.route-wrapper > div {
+  position: absolute;
+  width: 100%;
+}

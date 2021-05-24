@@ -1,9 +1,0 @@
-
-<div class="d-flex align-items-center py-2">
-      <img [src]="speaker.photoURL ? speaker.photoURL : '../assets/images/placeholder-pub.jpg' " alt="" class="rounded-circle me-3" style="width: 40px; height: 40px;">
-
-      <p class="fs-6 lh-base fw-bold m-0">
-        {{ speaker.lastName | titlecase }}, {{ speaker.firstName | titlecase }}<br>
-          <span class="badge bg-light text-dark fw-bold">{{ speaker.privilege }}</span> <br>
-          <span class="badge bg-light text-dark fw-bold">{{ speaker.congregation.properties.orgName }}</span>
-</div>

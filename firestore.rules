@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+     match /{document=**} {
+     	allow read;
+     // allow write: if request.auth != null;
+     allow write;
+    }
+    match /users/{userId} {
+    	allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid));
+      allow write: if request.auth != null;
+    }
+    
+    match /congregations/{congregationId}/publishers {
+    	allow read, write, update: if request.auth != null || exists(/databases/$(database)/documents/congregations/$(congregationId));
+    }
+    
+    match /congregations/{congregationId}/publishers/{pubId} {
+    	allow read, write, update: if request.auth != null || exists(/databases/$(database)/documents/congregations/$(congregationId)/publishers/$(pubId));
+    }
+    
+    match /congregations/{congregationId}/parts/{partId} {
+    	 allow write, update: if request.auth != null || exists(/databases/$(database)/documents/congregations/$(congregationId)/parts/$(partId));
+    }
+  }
+}
+
