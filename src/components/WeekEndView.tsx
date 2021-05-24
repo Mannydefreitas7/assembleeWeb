@@ -43,6 +43,7 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                         {
                             talk(parts).length > 0 && talk(parts)[0] ?
                             <Dropdown 
+                            disabled={!talk(parts)[0].assignee}
                             style={{ minWidth: 350 }}
                             defaultValue={talk(parts)[0].title}
                             placeholder="Select Talk Outline"

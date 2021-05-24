@@ -14,6 +14,7 @@ import ProgramDetail from './ProgramDetail';
 import Programs from './Programs';
 import PublisherDetail from './PublisherDetail';
 import Publishers from './Publishers';
+import Service from './Service';
 import SpeakerDetail from './SpeakerDetail';
 import Speakers from './Speakers';
 
@@ -83,6 +84,12 @@ export default function Admin() {
                     redirectTo="/login"
                     path={path + '/groups'}>
                     <Groups />
+                </ProtectedRoute>
+                <ProtectedRoute
+                    exact={false}
+                    redirectTo="/login"
+                    path={path + '/service'}>
+                    <Service />
                 </ProtectedRoute>
             </div>
             <ModalView titleId={path} />

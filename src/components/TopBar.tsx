@@ -38,7 +38,12 @@ export default function TopBar() {
            path: `${url}/groups`,
            text: 'Groups',
            icon: 'Group'
-       }
+       },
+       {
+        path: `${url}/service`,
+        text: 'Service',
+        icon: 'TimeEntry'
+    }
     ]
 
 

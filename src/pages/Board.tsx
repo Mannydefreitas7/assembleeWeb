@@ -5,6 +5,8 @@ import { NeutralColors, SharedColors } from '@fluentui/theme';
 import { GlobalContext } from '../store/GlobalState';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Link } from 'react-router-dom';
+import ServiceMeetingView from './ServiceMeetingView';
+import GroupView from './GroupView';
 export default function Board() {
 
 
@@ -61,13 +63,10 @@ export default function Board() {
               <MeetingView />
             </PivotItem>
             <PivotItem headerText="Prédication">
-              <Label>Pivot #2</Label>
+              <ServiceMeetingView />
             </PivotItem>
             <PivotItem headerText="Groupes">
-              <Label>Pivot #3</Label>
-            </PivotItem>
-            <PivotItem headerText="Info">
-              <Label>Pivot #4</Label>
+              <GroupView />
             </PivotItem>
           </Pivot>
         </div>
