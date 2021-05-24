@@ -25,17 +25,7 @@ export default function SpeakerDetail() {
     let speaker: Speaker = documentSnapshot?.exists ? {
         ...documentSnapshot?.data()
     } : {}
-    const [speakerState, setSpeakerState] = useState<Speaker>({
-        firstName: speaker.firstName, 
-        lastName: speaker.lastName, 
-        email: speaker.email,
-        congregation: { 
-            properties: { 
-                orgName: speaker.congregation?.properties?.orgName,
-                address: speaker.congregation?.properties?.address
-            } 
-        }
-    })
+    const [speakerState, setSpeakerState] = useState<Speaker>(speaker)
     const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
 
     const deleteSpeaker = () => {
@@ -86,9 +76,8 @@ export default function SpeakerDetail() {
                                 disabled={!isEditing}
                                 type="text"
                                 onKeyUp={(e) => setSpeakerState({
-                                    firstName: e.currentTarget?.value,
-                                    lastName: speakerState?.lastName,
-                                    email: speakerState?.email
+                                    ...speaker,
+                                    firstName: e.currentTarget?.value
                                 })}
                                 placeholder="Charles"
                                 className="mt-4 md:w-full lg:w-1/4"
@@ -112,8 +101,7 @@ export default function SpeakerDetail() {
                                 disabled={!isEditing}
                                 type="email"
                                 onKeyUp={(e) => setSpeakerState({
-                                    firstName: speakerState?.firstName,
-                                    lastName: speakerState?.lastName,
+                                    ...speaker,
                                     email: e.currentTarget?.value
                                 })}
                                 className="mt-4 md:w-full lg:w-1/4"
@@ -121,21 +109,45 @@ export default function SpeakerDetail() {
                                 label="Email"
                                 defaultValue={isEditing ? speakerState?.email : speaker.email}
                             />
+                             <TextField
+                                disabled={!isEditing}
+                                type="text"
+                                onKeyUp={(e) => setSpeakerState({
+                                    ...speaker,
+                                    congregation: {
+                                        properties: {
+                                            ...speaker?.congregation?.properties,
+                                            orgName: e.currentTarget?.value
+                                        }
+                                    }
+                                })}
+                                className="mt-4 md:w-full lg:w-1/4"
+                                placeholder="Long Meadow English"
+                                label="Congregation Name"
+                                defaultValue={isEditing ? speakerState?.congregation?.properties?.orgName : speaker.congregation?.properties?.orgName}
+                            />
+                                                         <TextField
+                                disabled={!isEditing}
+                                type="text"
+                                onKeyUp={(e) => setSpeakerState({
+                                    ...speaker,
+                                    congregation: {
+                                        properties: {
+                                            ...speaker?.congregation?.properties,
+                                            address: e.currentTarget?.value
+                                        }
+                                    }
+                                })}
+                                className="mt-4 md:w-full lg:w-1/4"
+                                placeholder="Kings Drive"
+                                label="Congregation Address"
+                                defaultValue={isEditing ? speakerState?.congregation?.properties?.address : speaker.congregation?.properties?.address}
+                            />
                             {
                                 isEditing ? <DefaultButton
                                     onClick={() => {
                                         firestore.doc(`congregations/${CONG_ID}/speakers/${speaker.id}`)
-                                        .update({
-                                            firstName: speakerState && speakerState.firstName ? speakerState?.firstName : speaker.firstName,
-                                            lastName: speakerState && speakerState.lastName ? speakerState?.lastName : speaker.lastName,
-                                            email: speakerState && speakerState.email ? speakerState?.email : speaker.email,
-                                            congregation: {
-                                                properties: {
-                                                    orgName: speakerState && speakerState.congregation?.properties?.orgName ? speakerState && speakerState.congregation?.properties?.orgName : speaker.congregation?.properties?.orgName,
-                                                    address: speakerState && speakerState.congregation?.properties?.address ? speakerState && speakerState.congregation?.properties?.address : speaker.congregation?.properties?.address
-                                                }
-                                            }
-                                        }).then(() => setEditing(false))
+                                        .update(speakerState).then(() => setEditing(false))
                                     }}
                                     className="mt-4" iconProps={{ iconName: 'Save' }} text='Save' /> :
                                     <DefaultButton

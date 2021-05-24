@@ -27,6 +27,11 @@ const reducer = (
          ...state,
          parts: action.payload
       };
+      case actionTypes.LOAD_TALKS:
+         return {
+            ...state,
+            talks: action.payload
+         };
       case actionTypes.SELECT_PUBLISHER:
       return {
          ...state,
@@ -68,6 +73,11 @@ const reducer = (
             modalChildren: action.payload
       };
       case actionTypes.OPEN_GROUP_MODAL:
+         return {
+            ...state,
+            modalChildren: action.payload
+      }; 
+      case actionTypes.EDIT_GROUP_MODAL:
          return {
             ...state,
             modalChildren: action.payload

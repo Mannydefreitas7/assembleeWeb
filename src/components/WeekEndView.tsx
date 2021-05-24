@@ -1,4 +1,4 @@
-import { Stack } from '@fluentui/react'
+import { Dropdown, Stack } from '@fluentui/react'
 import React, { useContext } from 'react'
 import { Part, PartType, WeekProgram } from './../models/wol';
 import { chairmans, prayers, talk, wt } from '../shared/methods';
@@ -8,7 +8,8 @@ import { GlobalContext } from '../store/GlobalState';
 import PartContextMenu from './PartContextMenu';
 
 export default function WeekEndView({ parts, week }: { parts: Part[], week: WeekProgram }) {
-    const { openPanel, selectPublisher } = useContext(GlobalContext)
+    const { openPanel, selectPublisher, talks } = useContext(GlobalContext);
+
     return (
         <div>
             <Stack>
@@ -39,7 +40,15 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                     </div>
                     <h4 className="my-3 fw-bold weekend">DISCOURS PUBLIC</h4>
                     <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
-                        <label className="">{talk(parts)[0]?.title ?? ''}</label>
+                        {
+                            talk(parts).length > 0 && talk(parts)[0] ?
+                            <Dropdown 
+                            style={{ minWidth: 350 }}
+                            defaultValue={talk(parts)[0].title}
+                            placeholder="Select Talk Outline"
+                            options={talks ? talks : []}
+                             /> : null
+                        }
                         <div className="inline-flex items-center">
                         {
                             talk(parts).length > 0 && talk(parts)[0].assignee ?

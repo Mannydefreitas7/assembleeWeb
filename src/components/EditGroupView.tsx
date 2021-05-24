@@ -1,46 +1,49 @@
-import { Icon, IconButton, PrimaryButton, TextField } from '@fluentui/react'
-import React, { useContext } from 'react'
+import { Icon, IconButton, PrimaryButton, Spinner, TextField } from '@fluentui/react'
+import React, { useContext, useEffect } from 'react'
 import { GlobalContext } from '../store/GlobalState';
-import { v4 } from 'uuid'
 import { CONG_ID } from '../constants';
 import { Group } from '../models/group';
 import { useAlert } from 'react-alert';
-import { useCollectionOnce } from 'react-firebase-hooks/firestore';
+import { useDocumentOnce } from 'react-firebase-hooks/firestore';
 
-export default function AddGroupView() {
+export default function EditGroupView({ id }: {id: string}) {
     const { dismissModal, firestore } = useContext(GlobalContext);
     const [group, setGroup] = React.useState<Group>();
     const alert = useAlert();
-    const groupCollectionQuery = firestore.collection(
-        `congregations/${CONG_ID}/groups`
+    const groupDocumentQuery = firestore.doc(
+        `congregations/${CONG_ID}/groups/${id}`
     );
-    const [groupCollection, groupLoading] = useCollectionOnce(groupCollectionQuery);
-             
+    const [groupDocument, groupLoading] = useDocumentOnce(groupDocumentQuery);
+           
+    useEffect(() => {
+       
+        if (!groupLoading) {
+            let _group : Group = {
+                ...groupDocument?.data()
+            }
+            console.log(_group)
+            setGroup(_group)
+        }
+    }, [groupLoading, groupDocument])
 
-    const addGroup = async () => {
+    const editGroup = async () => {
         try {
-            if (!groupLoading && group && group.name && group.address) {
-                let _group : Group = {
-                    ...group,
-                    id: v4(),
-                    number: groupCollection?.docs.length
-                }
+            if (!groupLoading && group) {
                await firestore
-                .doc(`congregations/${CONG_ID}/groups/${_group.id}`)
-                .set(_group)
+                .doc(`congregations/${CONG_ID}/groups/${id}`)
+                .update(group)
                 dismissModal()
-                alert.success('Group added successfully')
+                alert.success('Group changes saved successfully')
             }
         } catch (error) { alert.error(`${error}`) }     
     }
       
     return (
         <div>
-            <div className="flex items-center justify-between pl-4 pr-2 py-2 bg-gray-50">
-               
+            <div className="flex items-center justify-between pl-4 pr-2 py-2 bg-gray-50">   
                <div className="inline-flex items-center">
                    <Icon iconName="Group" className="mr-2 text-lg"/>
-                   <span className="font-bold text-lg">Add Group</span>
+                   <span className="font-bold text-lg">Edit Group</span>
                </div>
                <IconButton
                onClick={dismissModal}
@@ -50,8 +53,10 @@ export default function AddGroupView() {
                />
            </div>
            <div className="px-4 pb-2" style={{ minWidth: 500 }}>
- 
-                    <TextField 
+               
+               {
+                   group ? <>
+                         <TextField 
                     onKeyUp={(e) => { 
                         setGroup({ 
                             ...group,
@@ -59,8 +64,10 @@ export default function AddGroupView() {
                         })
                      }}
                     placeholder="Salle Du Royaume" 
-                    label="Name" 
+                    label="Name"
+                    defaultValue={group?.name}
                     required />
+
                     <TextField 
                     onKeyUp={(e) => { 
                         setGroup({ 
@@ -70,6 +77,7 @@ export default function AddGroupView() {
                     }}
                     placeholder="Kings Drive" 
                     label="Addresse" 
+                    defaultValue={group?.address}
                     required />
                     <TextField 
                     onKeyUp={(e) => { 
@@ -79,16 +87,21 @@ export default function AddGroupView() {
                         })
                     }}
                     multiline
+                    defaultValue={group?.description}
                     label="Description" 
                      />
+                    </> : <div className='flex justify-center items-center' style={{ minHeight: 220 }}><Spinner /></div>
+               }
+
+                   
   
                <div className="flex py-4 justify-center">
                     <PrimaryButton
-                    onClick={addGroup}
+                    onClick={editGroup}
                     disabled={!group?.name}
                     className="w-full" 
-                    iconProps={{iconName: 'Add'}}
-                    text='Add Group' />
+                    iconProps={{iconName: 'Save'}}
+                    text='Save' />
             </div> 
            </div>
         </div>

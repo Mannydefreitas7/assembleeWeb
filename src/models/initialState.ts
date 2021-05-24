@@ -5,6 +5,7 @@ import { Publisher } from "./publisher";
 import { ReactNode } from "react";
 import { Congregation } from "./congregation";
 import { User } from "./user";
+import { IDropdownOption } from "@fluentui/react";
 
 export interface InitialState {
   week: WeekProgram;
@@ -40,4 +41,7 @@ export interface InitialState {
   reloadWeeks: any;
   openSpeakerModal: any;
   openGroupModal: any;
+  openEditGroupModal: any;
+  talks: IDropdownOption[];
+  loadTalks: any;
 }

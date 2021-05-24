@@ -19,7 +19,9 @@ import {
     OPEN_RENAME_MODAL,
     RELOAD_WEEKS,
     OPEN_SPEAKER_MODAL,
-    OPEN_GROUP_MODAL
+    OPEN_GROUP_MODAL,
+    EDIT_GROUP_MODAL,
+    LOAD_TALKS
 } from './ActionTypes';
 import { Part, PartType, WeekProgram } from '../models/wol';
 import { config, CONG_ID } from '../constants';
@@ -34,6 +36,7 @@ import AddPublisherView from '../components/AddPublisherView';
 import AddSpeakerView from '../components/AddSpeakerView';
 import { useMediaQuery } from 'react-responsive';
 import AddGroupView from '../components/AddGroupView';
+import EditGroupView from '../components/EditGroupView';
 
 
 type GlobalProps = {
@@ -42,7 +45,7 @@ type GlobalProps = {
 
 const _firebase: firebase.app.App = firebase.apps.length === 0 ? firebase.initializeApp(config) : firebase.app()
 if (process.env.NODE_ENV === 'development') {
-
+    // eslint-disable-next-line
     let congregation: Congregation = {
         id: '0927216B-2451-4AB5-AD08-11AC5777CCB1',
         fireLanguage: {
@@ -61,12 +64,12 @@ if (process.env.NODE_ENV === 'development') {
             orgGuid: '0927216B-2451-4AB5-AD08-11AC5777CCB1'
         }
     }
-
+    // eslint-disable-next-line
     let language: FireLanguage = {
         apiURL: 'wol/dt/r30/lp-f/',
         languageCode: 'F'
     }
-
+    // eslint-disable-next-line
     let _talks : Talk[] = talks.map(t => {
         return {
             id: `${t.DocumentId}`,
@@ -121,7 +124,10 @@ const initialState: InitialState = {
     openRenameModal: null,
     reloadWeeks: null,
     openSpeakerModal: null,
-    openGroupModal: null
+    openGroupModal: null,
+    talks: [],
+    openEditGroupModal: null,
+    loadTalks: null
 }
 
 export const GlobalContext = createContext(initialState)
@@ -238,6 +244,16 @@ export const GlobalProvider = (props: GlobalProps) => {
         })
     }
 
+    const loadTalks = (id: string) => {
+        getTalks(id).then(options => {
+            if (options)
+            dispatch({
+                type: LOAD_TALKS,
+                payload: options
+            })
+        })
+    }
+
     const addProgram = () => {
         dispatch({
             type: ADD_PROGRAM,
@@ -267,6 +283,13 @@ export const GlobalProvider = (props: GlobalProps) => {
         })
         openModal()
     }
+    const openEditGroupModal = (id: string) => {
+        dispatch({
+            type: EDIT_GROUP_MODAL,
+            payload:  <EditGroupView id={id} />
+        })
+        openModal()
+    }
 
     
 
@@ -284,6 +307,40 @@ export const GlobalProvider = (props: GlobalProps) => {
             payload: <RenamePartView part={part} />
         })
         openModal()
+    }
+
+    const getTalks = async (id: string) => {
+        let talks : IDropdownOption[] = [];
+        try {
+            const publisherQuery = state.firestore.doc(`congregations/${CONG_ID}/publishers/${id}`);
+            const isPublisher = (await publisherQuery.get()).exists
+            if (isPublisher) {
+                const talksCollection = await state.firestore.collection(`congregations/${CONG_ID}/publishers/${id}/talks`).get()
+                talks = [
+                    ...talksCollection.docs.map(doc => {
+                        let talk : Talk = doc.data();
+                        return {
+                            key: talk.id ?? '',
+                            text: talk.title ?? ''
+                        }
+                    })
+                ]
+                return talks;
+            } else {
+                const talksCollection = await state.firestore.collection(`congregations/${CONG_ID}/speakers/${id}/talks`).get()
+                talks = [
+                    ...talksCollection.docs.map(doc => {
+                        let talk : Talk = doc.data();
+                        return {
+                            key: talk.id ?? '',
+                            text: talk.title ?? ''
+                        }
+                    })
+                ]
+                return talks;
+            }
+        } catch (error) { console.log(error) }
+        return talks
     }
 
     async function assignPublisher(week: WeekProgram, part: Part, newPublisher: Publisher, type: PartType, oldPublisher?: Publisher) {
@@ -353,7 +410,10 @@ export const GlobalProvider = (props: GlobalProps) => {
             openExportModal,
             openRenameModal,
             reloadWeeks,
-            openSpeakerModal
+            openSpeakerModal,
+            openEditGroupModal,
+            talks: state.talks,
+            loadTalks
         }}>
             {props.children}
         </GlobalContext.Provider>

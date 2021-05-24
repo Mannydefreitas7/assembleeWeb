@@ -14,7 +14,7 @@ export default function PublisherTile({ publisher, isConfirmed } : { publisher: 
          <Persona
             {...persona}
             className="p-2"
-            initialsColor={publisher.gender === Gender.brother ? PersonaInitialsColor.darkBlue : PersonaInitialsColor.pink}
+            initialsColor={publisher.gender === Gender.sister ? PersonaInitialsColor.pink : PersonaInitialsColor.darkBlue}
             size={PersonaSize.size48}
             presence={isConfirmed ? PersonaPresence.online : PersonaPresence.none}
             imageAlt={`${publisher.lastName} ${publisher.firstName}`}

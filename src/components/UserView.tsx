@@ -1,4 +1,4 @@
-import { ActionButton, DefaultButton, Persona, PersonaSize, PrimaryButton, Spinner, Text, TextField } from '@fluentui/react'
+import { ActionButton, DefaultButton, Persona, PersonaInitialsColor, PersonaSize, PrimaryButton, Spinner, Text, TextField } from '@fluentui/react'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -87,6 +87,7 @@ export default function UserView() {
                     <Persona
                         text={`${userDoc?.data()?.lastName} ${userDoc?.data()?.firstName}`}
                         secondaryText={userDoc?.data()?.email}
+                        initialsColor={PersonaInitialsColor.darkBlue}
                         tertiaryText={userDoc?.data()?.permissions?.includes(Permission.admin) ? 'Admin' : ''}
                         imageUrl={userDoc?.data()?.photoURL}
                         imageShouldFadeIn={true}

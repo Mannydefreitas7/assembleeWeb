@@ -21,6 +21,7 @@ export class EmailService {
   ): Promise<firebase.functions.HttpsCallableResult> {
     const exportService = new ExportService();
     const send = functions.httpsCallable('emailData');
+    // eslint-disable-next-line
     const btn = `<a style="padding: 5px 10px; color: #ffffff; background-color: #198754; text-decoration: none; border-radius: 5px;" href="https://assemblee.web.app/confirm?cong=${congregation.id}&week=${part.week}&part=${part.id}">Confirm</a>`;
 
     return new Promise(async (resolve, reject) => {

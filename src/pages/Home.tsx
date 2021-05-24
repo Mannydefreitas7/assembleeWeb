@@ -1,8 +1,7 @@
 import {
     BrowserRouter as Router,
     Switch,
-    Route,
-    Redirect
+    Route
 } from "react-router-dom";
 import Board from './Board';
 import Login from './Login';
@@ -19,12 +18,25 @@ export default function Home() {
         <>
             <Router>
                 <Switch>
-                    <Route path="/" exact>
-                        <Board />
-                    </Route>
                     <Route path="/board">
-                        <Redirect to="/" />
+                       <Board />
                     </Route>
+                    <ProtectedRoute
+                        path="/admin"
+                        redirectTo="/board"
+                        exact={false}
+                    >
+                        <Admin />
+                    </ProtectedRoute>
+
+                    <ProtectedRoute
+                        path="/"
+                        redirectTo="/board"
+                        exact={true}
+                    >
+                        <Admin />
+                    </ProtectedRoute>
+
                     <ProtectedRoute
                         path="/admin"
                         redirectTo="/login"

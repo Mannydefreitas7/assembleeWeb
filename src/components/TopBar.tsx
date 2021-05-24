@@ -1,4 +1,4 @@
-import { Icon, Persona, PersonaSize, Spinner } from '@fluentui/react'
+import { Icon, Persona, PersonaInitialsColor, PersonaSize, Spinner } from '@fluentui/react'
 import React, { useContext } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
@@ -69,6 +69,7 @@ export default function TopBar() {
                     <Persona
                         size={PersonaSize.size32}
                         hidePersonaDetails={true}
+                        initialsColor={PersonaInitialsColor.darkBlue}
                         imageUrl={userDoc?.photoURL}
                         text={`${userDoc?.firstName} ${userDoc?.lastName}`}
                     />

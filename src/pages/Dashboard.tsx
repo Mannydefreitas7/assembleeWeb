@@ -9,7 +9,7 @@ export default function Dashboard() {
             <div className="mb-2 flex justify-between items-center">
                 <h1 className="font-semibold text-2xl inline-flex items-center">Welcome!</h1>
             </div>
-                <Link className="p-4 bg-white hover:bg-gray-100 flex justify-between items-center rounded cursor-pointer shadow" to='/'>
+                <Link className="p-4 bg-white hover:bg-gray-100 flex justify-between items-center rounded cursor-pointer shadow" to='/board'>
                     <div className="inline-flex items-center">
                         <Icon iconName="Questionnaire" className="mr-2 text-2xl"/>
                         <Text className="text-lg font-semibold">Board</Text>
