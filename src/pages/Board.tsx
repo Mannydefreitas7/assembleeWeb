@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import { Icon, Label, Pivot, PivotItem, Spinner, Text } from '@fluentui/react';
+import { Icon, Pivot, PivotItem, Spinner, Text } from '@fluentui/react';
 import MeetingView from '../components/MeetingView';
 import { NeutralColors, SharedColors } from '@fluentui/theme';
 import { GlobalContext } from '../store/GlobalState';
