@@ -169,7 +169,6 @@ export const GlobalProvider = (props: GlobalProps) => {
 
             let listener = state.auth
             .onAuthStateChanged(user => {
-                console.log(user)
                 dispatch({
                     type: INITIAL_LOAD,
                     payload: {

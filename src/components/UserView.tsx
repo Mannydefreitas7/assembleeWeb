@@ -40,7 +40,6 @@ export default function UserView() {
 
     const loadUser = async () => {
         if (!userDocloading && userDoc?.exists) {
-            console.log(userDoc)
             let user : User = {
                 ...userDoc?.data()
             }

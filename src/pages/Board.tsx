@@ -20,7 +20,6 @@ export default function Board() {
   } 
 
   useEffect(() => {
-      console.log(`USER FROM BOARD: ${user?.email}`)
       if (!user) {
           signIn() 
       }

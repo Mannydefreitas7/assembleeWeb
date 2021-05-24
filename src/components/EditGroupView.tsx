@@ -21,7 +21,6 @@ export default function EditGroupView({ id }: {id: string}) {
             let _group : Group = {
                 ...groupDocument?.data()
             }
-            console.log(_group)
             setGroup(_group)
         }
     }, [groupLoading, groupDocument])
