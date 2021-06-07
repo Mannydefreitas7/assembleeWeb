@@ -458,7 +458,7 @@ export class WOLApi {
             path: path,
             isCalendarAdded: false,
             lengthTime: moment('01:00:00', 'hh:mm:ss').toDate().getTime(),
-            privilege: [Privilege.elder],
+            privilege: [Privilege.elder, Privilege.ms],
             index: 1,
             isEmailed: false,
             date: date,

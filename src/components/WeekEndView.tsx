@@ -8,8 +8,14 @@ import { GlobalContext } from '../store/GlobalState';
 import PartContextMenu from './PartContextMenu';
 
 export default function WeekEndView({ parts, week }: { parts: Part[], week: WeekProgram }) {
-    const { openPanel, selectPublisher, talks } = useContext(GlobalContext);
+    const { openPanel, selectPublisher, talks, firestore, congregation } = useContext(GlobalContext);
 
+    const selectTalk = async (part: Part, title: string) => {
+        try {
+            let doc = firestore.doc(`congregations/${congregation.id}/weeks/${week.id}/parts/${part.id}`);
+            doc.update({ title: title })
+        } catch (error) { console.log(error) }
+    }
     return (
         <div>
             <Stack>
@@ -42,12 +48,19 @@ export default function WeekEndView({ parts, week }: { parts: Part[], week: Week
                     <div className="mt-3 ps-4 d-flex flex flex-wrap justify-between items-center">
                         {
                             talk(parts).length > 0 && talk(parts)[0] ?
+                            talk(parts)[0].title ? <label className="">{talk(parts)[0].title ?? ''}</label> :
                             <Dropdown 
-                            disabled={!talk(parts)[0].assignee}
-                            style={{ minWidth: 350 }}
-                            defaultValue={talk(parts)[0].title}
-                            placeholder="Select Talk Outline"
-                            options={talks ? talks : []}
+                                disabled={!talk(parts)[0].assignee}
+                                style={{ minWidth: 350 }}
+                                defaultValue={talk(parts)[0].title}
+                                onChange={(e, option) => {
+                                    console.log(option)
+                                    if (option) {
+                                        selectTalk(talk(parts)[0], option.text)
+                                    }
+                                }}
+                                placeholder="Select Talk Outline"
+                                options={talks ? talks : []}
                              /> : null
                         }
                         <div className="inline-flex items-center">

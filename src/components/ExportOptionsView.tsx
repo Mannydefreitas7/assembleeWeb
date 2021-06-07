@@ -40,10 +40,11 @@ export default function ExportOptionsView() {
         [firestore],
     ) 
 
-    // @ts-ignore
+    
     useEffect(() => {
         load()
-    })
+    // @ts-ignore
+    }, [load])
 
     const exportSchedule = async () => {
         setLoading(true)

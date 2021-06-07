@@ -532,52 +532,48 @@ async downloadPDF(
     fireStore: firebase.firestore.Firestore
   ) : Promise<boolean> {
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
       const docDefinition : TDocumentDefinitions = {
         content : [],
         styles: this.docStyles
       }
-      try {
-  
         const promises : Promise<firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>>[] = weeks.map(week => {
           let docs = fireStore
           .collection(`congregations/${congregation.id}/weeks/${week.id}/parts`)
-          .get();
+          .get()
              return docs
         })
 
-        let all = await Promise.all(promises);
-        console.log(all)
-        let arrayOfContent = all.map(a => {
-          let parts : Part[] = a.docs.map(d => d.data());
-          let week : WeekProgram = weeks.filter(w => w.id === parts[0].week)[0]
-          return this.parsePDFPage(congregation, week, parts)
-        });
+        let all = Promise.all(promises);
+        all.then(data => {
+          let arrayOfContent = data.map(a => {
+            let parts : Part[] = a.docs.map(d => d.data());
+            let week : WeekProgram = weeks.filter(w => w.id === parts[0].week)[0]
+            return this.parsePDFPage(congregation, week, parts)
+          });
+          if (arrayOfContent.length > 0) {
 
-        if (arrayOfContent.length > 0) {
+            docDefinition.content = weeks.length > 1 ? 
+              arrayOfContent.map(array => [
+                array,
+                {
+                  text: '',
+                  pageBreak: 'after'
+                }
+              ]) : arrayOfContent;
 
-          docDefinition.content = weeks.length > 1 ? 
-            arrayOfContent.map(array => [
-              array,
-              {
-                text: '',
-                pageBreak: 'after'
-              }
-            ]) : arrayOfContent;
-          return setTimeout(() => {
               pdfMake
-                .createPdf(docDefinition)
-                .download(
-                  `Meeting Schedule - ${weeks.length > 1 ? moment(weeks[0].date.toDate()).format(
-                    'MMMM yyyy'
-                  ) : weeks[0].range}.pdf`
-                );
-            resolve(true);
-          }, 3000);
-        }
-        return reject('There was an error fetching the content')
-      } catch (err) { console.log(err) }
+              .createPdf(docDefinition)
+              .download(`Meeting Schedule - ${weeks.length > 1 ? 
+              moment(weeks[0].date.toDate())
+              .format('MMMM yyyy') : 
+              weeks[0].range}.pdf`)
+
+            return resolve(true);
+          }
+          return reject('There was an error fetching the content')
+        })
     });
   }
 

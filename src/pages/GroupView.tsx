@@ -25,6 +25,7 @@ export default function GroupView() {
                 groupCollection && groupCollection.docs.map((doc, ind) => {
                     let group: Group = doc.data();
                     return <div 
+                    key={group.id}
                     className={`bg-white rounded px-3 py-2 w-full shadow dark:border-gray-700`}>
                      <div className="flex justify-between">
                         <div className="p-1 mb-4">
@@ -43,6 +44,7 @@ export default function GroupView() {
                                 .map((doc, index) => {
                                     let publisher: Publisher = doc.data();
                                     return <Persona
+                                            key={index}
                                             className="my-1"
                                             initialsColor={
                                                 publisher.gender === Gender.brother
