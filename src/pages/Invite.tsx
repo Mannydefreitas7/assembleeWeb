@@ -1,6 +1,5 @@
 import { PrimaryButton, Spinner, TextField } from '@fluentui/react';
 import React, { useContext,  useState } from 'react'
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { useDocumentOnce } from 'react-firebase-hooks/firestore';
 
 import firebase from "firebase/app";
@@ -20,7 +19,6 @@ export default function Invite() {
     const [password, setPassword] = useState<string>();
     
     const { auth, firestore } = useContext(GlobalContext);
-    const [user] = useAuthState(auth);
     let query = useQuery();
     let history = useHistory();
     let alert = useAlert();
@@ -43,8 +41,6 @@ export default function Invite() {
                         firstName: oldPublisher.firstName,
                         lastName: oldPublisher.lastName,
                         isEmailVerified: true,
-                        photoURL: oldPublisher.photoURL,
-                        loginProvider: credential.additionalUserInfo?.providerId,
                         permissions: [
                             Permission.programs,
                             Permission.publishers,
@@ -65,27 +61,21 @@ export default function Invite() {
 
 
     const signUpWithEmailAndPassword = async () => {
-        try {
-            setIsLoading(true)
-                if (password && oldPublisher.email) {
-                    const newCredential = await auth.createUserWithEmailAndPassword(oldPublisher.email, password)
-                    if (user) {
-                        if (newCredential.credential) {
-                            const authUser = await user.linkWithCredential(newCredential.credential)
-                            createUser(authUser)
-                            .then(() => setIsLoading(false))
-                            .then(() => history.push('/admin'))
-                            .catch(error => alert.error(`Error: ${error}`))
-                        }
-                    } else {
-                        createUser(newCredential)
+        if (firestore) {
+            try {
+                setIsLoading(true)
+                    if (password && oldPublisher.email) {
+                        const newCredential = await auth.createUserWithEmailAndPassword(oldPublisher.email, password)
+                            createUser(newCredential)
                             .then(() => setIsLoading(false))
                             .then(() => history.push('/admin'))
                             .catch(error => alert.error(`Error: ${error}`))
                     }
-                }
-        } catch (error) {
-            alert.error(`Error: ${error}`)
+            } catch (error) {
+                alert.error(`Error: ${error}`)
+            }
+        } else {
+            console.log('FIRESTORE NOT LOADED')
         }
     }
     // eslint-disable-next-line

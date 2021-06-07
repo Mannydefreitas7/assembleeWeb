@@ -19,7 +19,7 @@ export default function UserView() {
    // const [password, setPassword] = useState<string>();
     const [isEditing, setIsEditing] = useState(false)
     const [ users, usersLoading ] = useCollection(firestore.collection('users').where('congregation', '==', CONG_ID))
-    const [userDoc, userDocloading] = useDocument(firestore.doc(`users/${userState?.uid}`))
+    const [userDoc, userDocloading] = useDocument(firestore.doc(`users/${userState?.uid}`));
     let alert = useAlert()
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
             if (acceptedFiles[0].type === 'image/jpeg' || acceptedFiles[0].type === 'image/png') {
@@ -28,30 +28,18 @@ export default function UserView() {
                    let task = await ref.put(buffer);
                    let url = await task.ref.getDownloadURL();
                    firestore.doc(`users/${userState?.uid}`).update({ photoURL: url })
-                   loadUser();
             }
     // eslint-disable-next-line
       }, [])
-
-      useEffect(() => {
-        loadUser()
-        // eslint-disable-next-line
-      }, [])
-
-    const loadUser = async () => {
-        if (!userDocloading && userDoc?.exists) {
-            let user : User = {
-                ...userDoc?.data()
-            }
-            setUserInfo(user)
-        }
-    }
 
     const deleteAllAnymomous = functions.httpsCallable('deleteAllAnymomous')
 
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({onDrop})
 
+    useEffect(() => {
+        deleteAllAnymomous()
+    })
 
     const saveData = () => {
         if (auth.currentUser) {
@@ -66,10 +54,6 @@ export default function UserView() {
     return (
         <div className="container mx-auto p-8">
             <div className="flex justify-end py-2">
-                {
-                    userInfo?.permissions?.includes(Permission.admin) ?
-                     <ActionButton text="Delete All Anonymous" iconProps={{ iconName: 'UserGauge' }} onClick={deleteAllAnymomous} /> : null
-                }
                
                 <ActionButton text="Sign Out" iconProps={{ iconName: 'SignOut' }} onClick={() => {
                     if (!userDocloading && userDoc?.exists) {

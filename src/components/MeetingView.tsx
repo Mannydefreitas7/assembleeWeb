@@ -142,6 +142,7 @@ const WeekSchedule = () => {
           </div>
           <div className="mt-3 ps-4 flex justify-between items-center">
             <label className="col-sm-12 col-md-6 col-lg-6 text-gray-400">Priere</label>
+            <PartInfo part={talk(parts)[0]} />
           </div>
         </div>
       </Stack>

@@ -51,9 +51,13 @@ export default function Groups() {
             }
             const destId = destination.droppableId;
             const srcId = source.droppableId;
-            if (srcId === `droppable-publishers`) {
-                await firestore.doc(`congregations/${CONG_ID}/publishers/${draggableId}`).update({ groupId: destId })
+            if (destId) {
+                if (srcId === `droppable-publishers`) {
+                    return await firestore.doc(`congregations/${CONG_ID}/publishers/${draggableId}`).update({ groupId: destId })
+                }
+                return await firestore.doc(`congregations/${CONG_ID}/publishers/${draggableId}`).update({ groupId: destId })
             }
+
         } catch (error) { console.log(error) }
     };
 
