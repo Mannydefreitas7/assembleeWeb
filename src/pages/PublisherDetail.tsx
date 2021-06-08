@@ -2,6 +2,7 @@ import { ActionButton, ChoiceGroup, DefaultButton, Dialog, DialogFooter, DialogT
 import React, { useContext, useState } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
+
 import { CONG_ID } from '../constants';
 import { Gender, Privilege, Publisher, Talk } from '../models/publisher';
 import { useHistory, useParams } from 'react-router';
@@ -14,7 +15,8 @@ import { Group } from '../models/group';
 
 export default function PublisherDetail() {
 
-    const { firestore, auth } = useContext(GlobalContext);
+    const { firestore, auth, congregation } = useContext(GlobalContext);
+    
     const { id } = useParams<{ id: string }>();
     let query = firestore.doc(`congregations/${CONG_ID}/publishers/${id}`)
     const [documentSnapshot, publisherLoading] = useDocument(query)
@@ -39,9 +41,9 @@ export default function PublisherDetail() {
     })
     const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
     
-    
+
     const invite = () => {
-        let url: string = `https://assemblee.web.app/invite?cong=${id}&pub=${publisher.uid}`;
+        let url: string = `https://assemblee.web.app/invite?cong=${congregation.id}&pub=${publisher.uid}`;
         if (publisher.email) {
             auth.sendSignInLinkToEmail(publisher.email, {
                 url: url,

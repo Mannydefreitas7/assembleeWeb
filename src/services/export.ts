@@ -162,7 +162,10 @@ export class ExportService {
   downloadPartPDF(part: Part) {
     return new Promise((resolve, reject) => {
       if (part.assignee) {
-        this.parsePart(part);
+        
+        let content: Content = this.parsePart(part);
+        this.partDefinition.content = content;
+        this.partDefinition.styles = this.partStyles;
         setTimeout(() => {
           pdfMake
             .createPdf(this.partDefinition)
@@ -271,6 +274,7 @@ export class ExportService {
         ],
       },
     ];
+    
     return content
   }
 

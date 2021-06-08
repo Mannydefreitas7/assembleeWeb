@@ -2,27 +2,43 @@ import React, { createRef, useContext, useState } from 'react'
 import { ContextualMenu, IContextualMenuItem } from '@fluentui/react/lib/ContextualMenu';
 import { IconButton } from '@fluentui/react';
 import { Parent, Part } from '../models/wol';
+// @ts-ignore
+import useClipboard from 'react-hook-clipboard';
 import Mail from 'nodemailer/lib/mailer';
 import { useAlert } from 'react-alert';
 import { GlobalContext } from '../store/GlobalState';
 import { EmailService } from '../services/email';
 import { CONG_ID } from '../constants';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { ExportService } from '../services/export';
 
 
 export default function PartContextMenu({ part } : { part: Part }) {
+
     const ref = createRef<HTMLDivElement>();
     const linkRef = React.useRef(ref);
+    const [clipboard, copyToClipboard] = useClipboard()
     const emailService = new EmailService();
-    const { congregation, functions, openRenameModal, firestore, auth } = useContext(GlobalContext)
+    const exportService = new ExportService();
+    const { congregation, functions, openRenameModal, firestore, auth } = useContext(GlobalContext);
+
     const alert = useAlert()
+
     const [showContextualMenu, setShowContextualMenu] = useState(false);
+
     const onShowContextualMenu = React.useCallback((ev: React.MouseEvent<HTMLElement>) => {
         ev.preventDefault(); // don't navigate
         setShowContextualMenu(true);
     }, []);
+
     const [user, loading] = useAuthState(auth)
-  const onHideContextualMenu = React.useCallback(() => setShowContextualMenu(false), []);
+    const onHideContextualMenu = React.useCallback(() => setShowContextualMenu(false), []);
+
+  const copyEmail = (email: string) => {
+    copyToClipboard(email)
+    alert.success('Email copied to clipboard')
+}
+
 
   const isDisabled = () : boolean => {
       if (part.parent === Parent.apply) {
@@ -93,6 +109,24 @@ export default function PartContextMenu({ part } : { part: Part }) {
         text: 'Rename',
         onClick: () => { openRenameModal(part) },
         iconProps: { iconName: 'Rename' },
+      },
+      {
+        key: 'copy',
+        text: 'Copy Email',
+        disabled: isDisabled(),
+        onClick: () => { 
+          if (part && part.assignee && part.assignee.email)
+          copyEmail(part.assignee.email) 
+        },
+        iconProps: { iconName: 'Copy' },
+      },
+      {
+        key: 'part',
+        text: 'Part PDF',
+        onClick: () => { 
+          exportService.downloadPartPDF(part)
+        },
+        iconProps: { iconName: 'Installation' },
       },
       {
         key: 'confirm',
