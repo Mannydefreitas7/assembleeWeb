@@ -1,5 +1,5 @@
 
-
+export const wolURL = 'https://meps-cors.herokuapp.com/https://wol.jw.org/'
 export const config = {
     apiKey: "AIzaSyAG52zdOjqJW5wTVNoSdwyHz-VPQPuzcmA",
     authDomain: "assemblee-5ddb6.firebaseapp.com",

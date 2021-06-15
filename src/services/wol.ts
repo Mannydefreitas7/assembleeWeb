@@ -5,6 +5,7 @@ import { Congregation } from '../models/congregation';
 import { Gender, Privilege } from '../models/publisher';
 import { Parent, Part, WeekProgram, WOLWeek } from '../models/wol';
 import firebase from 'firebase/app';
+import { wolURL } from '../constants';
 
 export class WOLApi {
   async getWeekProgram(
@@ -13,7 +14,7 @@ export class WOLApi {
     day: number,
     apiURL: string
   ): Promise<Response> {
-    let url = `${process.env.REACT_APP_WOL_URL}${apiURL}${year}/${month}/${day}`;
+    let url = `${wolURL}${apiURL}${year}/${month}/${day}`;
     return await fetch(url);
   }
 
