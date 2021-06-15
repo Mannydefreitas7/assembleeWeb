@@ -44,4 +44,5 @@ export interface InitialState {
   openEditGroupModal: any;
   talks: IDropdownOption[];
   loadTalks: any;
+  load: any;
 }

@@ -15,7 +15,6 @@ import {
 } from "@fluentui/react";
 import React, { useContext, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { CONG_ID } from "../constants";
 import { GlobalContext } from "../store/GlobalState";
 import {
     DragDropContext,
@@ -29,12 +28,12 @@ import { useBoolean } from '@fluentui/react-hooks';
 import { useAlert } from "react-alert";
 
 export default function Groups() {
-    const { firestore, openGroupModal, openEditGroupModal } = useContext(GlobalContext);
+    const { firestore, openGroupModal, openEditGroupModal , congregation} = useContext(GlobalContext);
     const groupCollectionQuery = firestore.collection(
-        `congregations/${CONG_ID}/groups`
+        `congregations/${congregation.id}/groups`
     ).orderBy('number');
     const publishersCollectionQuery = firestore.collection(
-        `congregations/${CONG_ID}/publishers`
+        `congregations/${congregation.id}/publishers`
     ).orderBy('lastName');
     const [groupId, setGroupId] = useState<string>();
     const [groupCollection, groupLoading] = useCollection(groupCollectionQuery);
@@ -53,9 +52,9 @@ export default function Groups() {
             const srcId = source.droppableId;
             if (destId) {
                 if (srcId === `droppable-publishers`) {
-                    return await firestore.doc(`congregations/${CONG_ID}/publishers/${draggableId}`).update({ groupId: destId })
+                    return await firestore.doc(`congregations/${congregation.id}/publishers/${draggableId}`).update({ groupId: destId })
                 }
-                return await firestore.doc(`congregations/${CONG_ID}/publishers/${draggableId}`).update({ groupId: destId })
+                return await firestore.doc(`congregations/${congregation.id}/publishers/${draggableId}`).update({ groupId: destId })
             }
 
         } catch (error) { console.log(error) }
@@ -63,12 +62,12 @@ export default function Groups() {
 
     const deleteGroup = () => {
         if (groupId) {
-            firestore.doc(`congregations/${CONG_ID}/groups/${groupId}`).delete()
+            firestore.doc(`congregations/${congregation.id}/groups/${groupId}`).delete()
             .then(async () => {
-                const publishersGroupCollection = await firestore.collection(`congregations/${CONG_ID}/publishers`).where('groupId', '==', groupId).get()
+                const publishersGroupCollection = await firestore.collection(`congregations/${congregation.id}/publishers`).where('groupId', '==', groupId).get()
                if (publishersGroupCollection) {
                 publishersGroupCollection.docs.map(doc => doc.data()).forEach(pub => {
-                       firestore.doc(`congregations/${CONG_ID}/publishers/${pub.uid}`).update({groupId: null})
+                       firestore.doc(`congregations/${congregation.id}/publishers/${pub.uid}`).update({groupId: null})
                    })
                }
             })

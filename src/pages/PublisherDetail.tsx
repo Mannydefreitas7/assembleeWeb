@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 
-import { CONG_ID } from '../constants';
+
 import { Gender, Privilege, Publisher, Talk } from '../models/publisher';
 import { useHistory, useParams } from 'react-router';
 import { useAlert } from 'react-alert';
@@ -18,11 +18,11 @@ export default function PublisherDetail() {
     const { firestore, auth, congregation } = useContext(GlobalContext);
     
     const { id } = useParams<{ id: string }>();
-    let query = firestore.doc(`congregations/${CONG_ID}/publishers/${id}`)
+    let query = firestore.doc(`congregations/${congregation.id}/publishers/${id}`)
     const [documentSnapshot, publisherLoading] = useDocument(query)
-    const [talksCollection, talksCollectionLoading] = useCollection(firestore.collection(`congregations/${CONG_ID}/publishers/${id}/talks`))
+    const [talksCollection, talksCollectionLoading] = useCollection(firestore.collection(`congregations/${congregation.id}/publishers/${id}/talks`))
     const groupCollectionQuery = firestore.collection(
-        `congregations/${CONG_ID}/groups`
+        `congregations/${congregation.id}/groups`
     ).orderBy('number'); 
     const [groupCollection, groupLoading] = useCollection(groupCollectionQuery);
     const [isEditing, setEditing] = useState(false)
@@ -176,7 +176,7 @@ export default function PublisherDetail() {
                                     text='Cancel' onClick={() => setEditing(false)} />
                                     <DefaultButton
                                     onClick={() => {
-                                        firestore.doc(`congregations/${CONG_ID}/publishers/${publisher.uid}`).update({
+                                        firestore.doc(`congregations/${congregation.id}/publishers/${publisher.uid}`).update({
                                             firstName: pub && pub.firstName ? pub?.firstName : publisher.firstName,
                                             lastName: pub && pub.lastName ? pub?.lastName : publisher.lastName,
                                             email: pub && pub.email ? pub?.email : publisher.email,
@@ -195,7 +195,7 @@ export default function PublisherDetail() {
                         <div className="mt-4">
                             <ChoiceGroup
                                 onChange={(e, option) => {
-                                    firestore.doc(`congregations/${CONG_ID}/publishers/${publisher.uid}`).update({ privilege: option?.key })
+                                    firestore.doc(`congregations/${congregation.id}/publishers/${publisher.uid}`).update({ privilege: option?.key })
                                 }}
                                 label="Privilege" defaultSelectedKey={publisher.privilege} options={[
                                     {

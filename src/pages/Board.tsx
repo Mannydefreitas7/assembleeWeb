@@ -4,15 +4,16 @@ import MeetingView from '../components/MeetingView';
 import { NeutralColors, SharedColors } from '@fluentui/theme';
 import { GlobalContext } from '../store/GlobalState';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import ServiceMeetingView from './ServiceMeetingView';
 import GroupView from './GroupView';
 export default function Board() {
 
 
-  const { auth } = useContext(GlobalContext)
+  const { auth, load } = useContext(GlobalContext)
   const [ user, loading ] = useAuthState(auth);
-
+   const { congID } = useParams<{ congID: string }>();
+  const location = useLocation();
   const signIn = async () => {
       try {
           await auth.signInAnonymously()
@@ -25,6 +26,8 @@ export default function Board() {
       if (!user) {
           signIn() 
       }
+      console.log(congID)
+      load()
       // eslint-disable-next-line
   }, [user])
     

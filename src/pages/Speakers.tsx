@@ -1,16 +1,16 @@
 import { DefaultButton, Persona, PersonaInitialsColor, Spinner, Text } from '@fluentui/react';
 import React, { useContext } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { CONG_ID } from '../constants';
+
 import { GlobalContext } from '../store/GlobalState';
 import { Icon } from '@fluentui/react/lib/Icon';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Privilege, Publisher, Speaker } from '../models/publisher';
 
 export default function Speakers() {
-    const { firestore, openSpeakerModal } = useContext(GlobalContext)
-    const collectionQuery = firestore.collection(`congregations/${CONG_ID}/speakers`).orderBy('lastName')
-    const brothersQuery = firestore.collection(`congregations/${CONG_ID}/publishers`)
+    const { firestore, openSpeakerModal, congregation } = useContext(GlobalContext)
+    const collectionQuery = firestore.collection(`congregations/${congregation.id}/speakers`).orderBy('lastName')
+    const brothersQuery = firestore.collection(`congregations/${congregation.id}/publishers`)
     .where('privilege', 'in', [Privilege.elder, Privilege.ms])
     const [ speakersCollection, speakersCollectionLoading ] = useCollection(collectionQuery)
     const [brothersCollection, brothersCollectionLoading] = useCollection(brothersQuery)

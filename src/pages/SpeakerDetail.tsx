@@ -2,7 +2,7 @@ import { ActionButton, DefaultButton, Dialog, DialogFooter, DialogType, Panel, P
 import React, { useContext, useState } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
-import { CONG_ID } from '../constants';
+
 import { Speaker, Talk } from '../models/publisher';
 import { useHistory, useParams } from 'react-router';
 import { useAlert } from 'react-alert';
@@ -12,11 +12,11 @@ import SelectTalkOutlineView from '../components/SelectTalkOutlineView';
 import TalkTile from '../components/TalkTile';
 
 export default function SpeakerDetail() {
-    const { firestore } = useContext(GlobalContext);
+    const { firestore , congregation} = useContext(GlobalContext);
     const { id } = useParams<{ id: string }>();
-    let query = firestore.doc(`congregations/${CONG_ID}/speakers/${id}`)
+    let query = firestore.doc(`congregations/${congregation.id}/speakers/${id}`)
     const [documentSnapshot, speakerLoading] = useDocument(query)
-    const [talksCollection, talksCollectionLoading] = useCollection(firestore.collection(`congregations/${CONG_ID}/speakers/${id}/talks`))
+    const [talksCollection, talksCollectionLoading] = useCollection(firestore.collection(`congregations/${congregation.id}/speakers/${id}/talks`))
     const [isEditing, setEditing] = useState(false)
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
 
@@ -146,7 +146,7 @@ export default function SpeakerDetail() {
                             {
                                 isEditing ? <DefaultButton
                                     onClick={() => {
-                                        firestore.doc(`congregations/${CONG_ID}/speakers/${speaker.id}`)
+                                        firestore.doc(`congregations/${congregation.id}/speakers/${speaker.id}`)
                                         .update(speakerState).then(() => setEditing(false))
                                     }}
                                     className="mt-4" iconProps={{ iconName: 'Save' }} text='Save' /> :

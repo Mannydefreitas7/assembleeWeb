@@ -4,10 +4,10 @@ import { Privilege, Speaker } from '../models/publisher';
 import { GlobalContext } from '../store/GlobalState';
 import * as EmailValidator from 'email-validator';
 import { v4 } from 'uuid'
-import { CONG_ID } from '../constants';
+
 
 export default function AddSpeakerView() {
-    const { dismissModal, firestore } = useContext(GlobalContext);
+    const { dismissModal, firestore , congregation} = useContext(GlobalContext);
     const [isLoading, setLoading] = React.useState(true);
     const [speaker, setSpeaker] = React.useState<Speaker>();
     const [errorMsg, setErrorMsg] = React.useState<{
@@ -53,7 +53,7 @@ export default function AddSpeakerView() {
                     id: v4()
                 }
                 firestore
-                    .doc(`congregations/${CONG_ID}/speakers/${_speaker.id}`)
+                    .doc(`congregations/${congregation.id}/speakers/${_speaker.id}`)
                     .set(_speaker)
                     .then(dismissModal)
             }

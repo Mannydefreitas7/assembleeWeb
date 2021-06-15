@@ -2,7 +2,6 @@ import { Persona, PersonaInitialsColor, SearchBox, Spinner } from '@fluentui/rea
 import React, { useContext, useState } from 'react'
 import { useAlert } from 'react-alert'
 import {  useCollectionOnce } from 'react-firebase-hooks/firestore'
-import { CONG_ID } from '../constants'
 import { Publisher, Speaker, Talk } from '../models/publisher'
 import { GlobalContext } from '../store/GlobalState'
 import PublisherTile from './PublisherTile'
@@ -18,14 +17,14 @@ export default function SelectTalkOutlineView({ publisher, speaker, onDismiss }:
 
     const addTalkToPublisher = (talk: Talk) => {
         if (publisher) {
-           return firestore.doc(`congregations/${CONG_ID}/publishers/${publisher.uid}/talks/${talk.id}`)
+           return firestore.doc(`congregations/${congregation.id}/publishers/${publisher.uid}/talks/${talk.id}`)
            .set(talk)
            .then(() => onDismiss())
            .then(() => alert.success('Talk added successfully'))
            .catch((error) => alert.error(`Error: ${error}`))
         }
         if (speaker) {
-            return firestore.doc(`congregations/${CONG_ID}/speakers/${speaker.id}/talks/${talk.id}`)
+            return firestore.doc(`congregations/${congregation.id}/speakers/${speaker.id}/talks/${talk.id}`)
             .set(talk)
             .then(() => onDismiss())
             .then(() => alert.success('Talk added successfully'))

@@ -8,7 +8,7 @@ import Mail from 'nodemailer/lib/mailer';
 import { useAlert } from 'react-alert';
 import { GlobalContext } from '../store/GlobalState';
 import { EmailService } from '../services/email';
-import { CONG_ID } from '../constants';
+
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { ExportService } from '../services/export';
 
@@ -20,7 +20,7 @@ export default function PartContextMenu({ part } : { part: Part }) {
     const [clipboard, copyToClipboard] = useClipboard()
     const emailService = new EmailService();
     const exportService = new ExportService();
-    const { congregation, functions, openRenameModal, firestore, auth } = useContext(GlobalContext);
+    const { functions, openRenameModal, firestore, auth, congregation} = useContext(GlobalContext);
 
     const alert = useAlert()
 
@@ -56,28 +56,28 @@ export default function PartContextMenu({ part } : { part: Part }) {
 
     const confirmPart = () => {
         if (part.assignee) {
-        firestore.doc(`congregations/${CONG_ID}/publishers/${part.assignee.uid}/parts/${part.id}`).update({ isConfirmed: true })
+        firestore.doc(`congregations/${congregation.id}/publishers/${part.assignee.uid}/parts/${part.id}`).update({ isConfirmed: true })
         } else if (part.assistant) {
-        firestore.doc(`congregations/${CONG_ID}/publishers/${part.assistant.uid}/parts/${part.id}`).update({ isConfirmed: true })
+        firestore.doc(`congregations/${congregation.id}/publishers/${part.assistant.uid}/parts/${part.id}`).update({ isConfirmed: true })
         }
-        firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`).update({ isConfirmed: true })
+        firestore.doc(`congregations/${congregation.id}/weeks/${part.week}/parts/${part.id}`).update({ isConfirmed: true })
     }
 
     const cancelPart = () => {
         if (part.assignee) {
-        firestore.doc(`congregations/${CONG_ID}/publishers/${part.assignee.uid}/parts/${part.id}`).update({ isConfirmed: false })
+        firestore.doc(`congregations/${congregation.id}/publishers/${part.assignee.uid}/parts/${part.id}`).update({ isConfirmed: false })
         } else if (part.assistant) {
-        firestore.doc(`congregations/${CONG_ID}/publishers/${part.assistant.uid}/parts/${part.id}`).update({ isConfirmed: false })
+        firestore.doc(`congregations/${congregation.id}/publishers/${part.assistant.uid}/parts/${part.id}`).update({ isConfirmed: false })
         }
-        firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`).update({ isConfirmed: false })
+        firestore.doc(`congregations/${congregation.id}/weeks/${part.week}/parts/${part.id}`).update({ isConfirmed: false })
     }
     // const deletePart = () => {
     //     if (part.assignee) {
-    //     firestore.doc(`congregations/${CONG_ID}/publishers/${part.assignee.uid}/parts/${part.id}`).delete()
+    //     firestore.doc(`congregations/${congregation.id}/publishers/${part.assignee.uid}/parts/${part.id}`).delete()
     //     } else if (part.assistant) {
-    //     firestore.doc(`congregations/${CONG_ID}/publishers/${part.assistant.uid}/parts/${part.id}`).delete()
+    //     firestore.doc(`congregations/${congregation.id}/publishers/${part.assistant.uid}/parts/${part.id}`).delete()
     //     }
-    //     firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`).delete()
+    //     firestore.doc(`congregations/${congregation.id}/weeks/${part.week}/parts/${part.id}`).delete()
     // }
 
   const sending : Mail.Address = {
@@ -85,25 +85,25 @@ export default function PartContextMenu({ part } : { part: Part }) {
       address: loading ? "assemblee.app@gmail.com" : user?.email ?? 'assemblee.app@gmail.com'
   }
   const menuItems: IContextualMenuItem[] = [
-    {
-        key: 'email',
-        text: part.isEmailed ? 'Emailed' : 'Email',
-        disabled: isDisabled(),
-        onClick: () => {
-            emailService
-            .emailPartPDF(part, sending, congregation, functions)
-            .then(result => {
-                if (result) {
-                    setTimeout(() =>  alert.success('Email sent'), 2000)
-                }
-            })
-            .then(() => {
-              firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`).update({ isEmailed: true })
-            })
-            .catch(error => alert.error(`${error}`))
-        },
-        iconProps: { iconName: part.isEmailed ? 'MailCheck' : 'Mail' },
-      },
+    // {
+    //     key: 'email',
+    //     text: part.isEmailed ? 'Emailed' : 'Email',
+    //     disabled: isDisabled(),
+    //     onClick: () => {
+    //         emailService
+    //         .emailPartPDF(part, sending, congregation, functions)
+    //         .then(result => {
+    //             if (result) {
+    //                 setTimeout(() =>  alert.success('Email sent'), 2000)
+    //             }
+    //         })
+    //         .then(() => {
+    //           firestore.doc(`congregations/${congregation.id}/weeks/${part.week}/parts/${part.id}`).update({ isEmailed: true })
+    //         })
+    //         .catch(error => alert.error(`${error}`))
+    //     },
+    //     iconProps: { iconName: part.isEmailed ? 'MailCheck' : 'Mail' },
+    //   },
       {
         key: 'rename',
         text: 'Rename',

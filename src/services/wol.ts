@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { v4 } from 'uuid';
-import { CONG_ID } from '../constants';
+
 import { Congregation } from '../models/congregation';
 import { Gender, Privilege } from '../models/publisher';
 import { Parent, Part, WeekProgram, WOLWeek } from '../models/wol';
@@ -488,7 +488,7 @@ export class WOLApi {
     congregation: Congregation,
     fireStore: firebase.firestore.Firestore
   ) {
-    let path: string = `congregations/${CONG_ID}`;
+    let path: string = `congregations/${congregation.id}`;
     try {
       let wolWeekPromise = await this.getWeekProgram(
         moment(week.date.toDate()).year(),

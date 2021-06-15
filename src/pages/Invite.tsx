@@ -5,7 +5,7 @@ import { useDocumentOnce } from 'react-firebase-hooks/firestore';
 import firebase from "firebase/app";
 import 'firebase/auth';
 import logo from './../assets/logo.jpg'
-import { CONG_ID } from '../constants';
+
 import { useQuery } from '../shared/hooks';
 import { GlobalContext } from '../store/GlobalState';
 import { User } from '../models/user'
@@ -18,13 +18,13 @@ export default function Invite() {
 
     const [password, setPassword] = useState<string>();
     
-    const { auth, firestore } = useContext(GlobalContext);
+    const { auth, firestore , congregation} = useContext(GlobalContext);
     let query = useQuery();
     let history = useHistory();
     let alert = useAlert();
     const [isDisabled, setIsDisabled] = React.useState(true);
     const [isLoading, setIsLoading] = React.useState(false);
-    const oldPublisherDocQuery = firestore.doc(`congregations/${CONG_ID}/publishers/${query.get('pub')}`);
+    const oldPublisherDocQuery = firestore.doc(`congregations/${congregation.id}/publishers/${query.get('pub')}`);
     const [oldPublisherDoc, loading] = useDocumentOnce(oldPublisherDocQuery);
     const oldPublisher : Publisher = {
         ...oldPublisherDoc?.data()
@@ -36,7 +36,7 @@ export default function Invite() {
             if (!loading) {
                 if (credential && credential.user) {
                     let user: User = {
-                        congregation: CONG_ID,
+                        congregation: congregation.id,
                         email: email ? email : credential.user.email ?? "",
                         firstName: oldPublisher.firstName,
                         lastName: oldPublisher.lastName,
@@ -49,7 +49,7 @@ export default function Invite() {
                         uid: credential.user.uid
                     }
                     promises.push(firestore.doc(`users/${user.uid}`).set(user))
-                    promises.push(firestore.doc(`congregations/${CONG_ID}/publishers/${oldPublisher.uid}`).update({ 
+                    promises.push(firestore.doc(`congregations/${congregation.id}/publishers/${oldPublisher.uid}`).update({ 
                         userId: credential.user.uid,
                         isInvited: true
                     }))

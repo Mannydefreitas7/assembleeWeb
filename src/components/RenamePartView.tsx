@@ -5,19 +5,19 @@ import { useAlert } from 'react-alert';
 
 import { GlobalContext } from '../store/GlobalState';
 
-import { CONG_ID } from '../constants';
+
 
 export default function RenamePartView({part}:{part: Part}) {
-    const { firestore, dismissModal } = useContext(GlobalContext);
+    const { firestore, dismissModal , congregation} = useContext(GlobalContext);
     const [input, setInput] = useState<string>(part.title ?? '');
     const alert = useAlert()
     const saveChange = () => {
         if (part.assignee) {
-           firestore.doc(`congregations/${CONG_ID}/publishers/${part.assignee.uid}/parts/${part.id}`).update({ title: input })
+           firestore.doc(`congregations/${congregation.id}/publishers/${part.assignee.uid}/parts/${part.id}`).update({ title: input })
         } else if (part.assistant) {
-           firestore.doc(`congregations/${CONG_ID}/publishers/${part.assistant.uid}/parts/${part.id}`).update({ title: input })
+           firestore.doc(`congregations/${congregation.id}/publishers/${part.assistant.uid}/parts/${part.id}`).update({ title: input })
         }
-        firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`).update({ title: input })
+        firestore.doc(`congregations/${congregation.id}/weeks/${part.week}/parts/${part.id}`).update({ title: input })
         .then(() => {
             dismissModal()
             alert.success('Part renamed successfully!')

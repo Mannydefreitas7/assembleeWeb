@@ -18,12 +18,12 @@ export default function Home() {
         <>
             <Router>
                 <Switch>
-                    <Route path="/board">
+                    <Route path="/board/:congID">
                        <Board />
                     </Route>
                     <ProtectedRoute
                         path="/admin"
-                        redirectTo="/board"
+                        redirectTo="/board/:congID"
                         exact={false}
                     >
                         <Admin />
@@ -31,7 +31,7 @@ export default function Home() {
 
                     <ProtectedRoute
                         path="/"
-                        redirectTo="/board"
+                        redirectTo="/board/:congID"
                         exact={true}
                     >
                         <Admin />

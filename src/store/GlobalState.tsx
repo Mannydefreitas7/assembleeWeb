@@ -24,7 +24,7 @@ import {
     LOAD_TALKS
 } from './ActionTypes';
 import { Part, PartType, WeekProgram } from '../models/wol';
-import { config, CONG_ID } from '../constants';
+import { config } from '../constants';
 import { IDropdownOption } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Publisher, Talk } from '../models/publisher';
@@ -37,6 +37,8 @@ import AddSpeakerView from '../components/AddSpeakerView';
 import { useMediaQuery } from 'react-responsive';
 import AddGroupView from '../components/AddGroupView';
 import EditGroupView from '../components/EditGroupView';
+import { User } from '../models/user';
+import { useLocation, useParams } from 'react-router';
 
 
 type GlobalProps = {
@@ -127,7 +129,8 @@ const initialState: InitialState = {
     openGroupModal: null,
     talks: [],
     openEditGroupModal: null,
-    loadTalks: null
+    loadTalks: null,
+    load: null
 }
 
 export const GlobalContext = createContext(initialState)
@@ -137,8 +140,10 @@ export const GlobalProvider = (props: GlobalProps) => {
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
     const [isModalOpen, { setTrue: openModal, setFalse: dismissModal }] = useBoolean(false);
     const isMobile = useMediaQuery({ maxWidth: 767 })
+   // const { congID } = useParams<{ congID: string }>();
     useEffect(() => {
-        load();
+       // load();
+
         return () => { 
             if (state.user.uid) {
                 let query = state.firestore.doc(`users/${state.user.uid}`);
@@ -150,44 +155,52 @@ export const GlobalProvider = (props: GlobalProps) => {
     }, [])
 
     const load = async () => {
+        
         try {
-            let congregationDoc = await _firebase.firestore().doc(`congregations/${CONG_ID}`).get();
+                
+                let userDoc = await _firebase.firestore().doc(`users/${state.user.uid}`).get()
+                let user: User = {
+                    ...userDoc.data()
+                }
+                let congregationDoc = await _firebase.firestore().doc(`congregations/${user.congregation}`).get();
              
-            let _weeks = await _firebase.firestore()
-            .collection(`congregations/${CONG_ID}/weeks`)
-            .limit(8)
-            .orderBy('date')
-            .where('isSent', '==', true)
-            .get();
-         
-            let weeks: WeekProgram[] = _weeks.docs.map(d => d.data());
-            let parts: Part[] = weeks && weeks.length > 0 ? await _firebase.firestore()
-            .collection(`congregations/${CONG_ID}/weeks/${weeks[0].id}/parts`)
-            .orderBy('index')
-            .get()
-            .then(_ => _.docs.map(d => d.data())) : []
+                let _weeks = await _firebase.firestore()
+                .collection(`congregations/${user.congregation}/weeks`)
+                .limit(8)
+                .orderBy('date')
+                .where('isSent', '==', true)
+                .get();
+             
+                let weeks: WeekProgram[] = _weeks.docs.map(d => d.data());
 
-            let listener = state.auth
-            .onAuthStateChanged(user => {
-                dispatch({
-                    type: INITIAL_LOAD,
-                    payload: {
-                        weeks,
-                        parts,
-                        congregation: congregationDoc.data(),
-                        week: weeks[0],
-                        user,
-                        listener
-                    }
+                let parts: Part[] = weeks && weeks.length > 0 ? await _firebase.firestore()
+                .collection(`congregations/${user.congregation}/weeks/${weeks[0].id}/parts`)
+                .orderBy('index')
+                .get()
+                .then(_ => _.docs.map(d => d.data())) : []
+
+                let listener = state.auth
+                .onAuthStateChanged(user => {
+                    dispatch({
+                        type: INITIAL_LOAD,
+                        payload: {
+                            weeks,
+                            parts,
+                            congregation: congregationDoc.data(),
+                            week: weeks[0],
+                            user,
+                            listener
+                        }
+                    })
                 })
-            })
+
         } catch (error) { console.log(error) }
     }
 
     const loadWeekParts = async (option: IDropdownOption) => {
         try {
             let parts: Part[] = await _firebase.firestore()
-                .collection(`congregations/${CONG_ID}/weeks/${option.key}/parts`)
+                .collection(`congregations/${state.congregation.id}/weeks/${option.key}/parts`)
                 .orderBy('index')
                 .get()
                 .then(_ => _.docs.map(d => d.data()))
@@ -208,7 +221,7 @@ export const GlobalProvider = (props: GlobalProps) => {
     const reloadWeeks = async () => {
         try {
             let weeks: WeekProgram[] = await state.firestore
-                .collection(`congregations/${CONG_ID}/weeks`)
+                .collection(`congregations/${state.congregation.id}/weeks`)
                 .orderBy('date')
                 .where('isSent', '==', true)
                 .get()
@@ -311,10 +324,10 @@ export const GlobalProvider = (props: GlobalProps) => {
     const getTalks = async (id: string) => {
         let talks : IDropdownOption[] = [];
         try {
-            const publisherQuery = state.firestore.doc(`congregations/${CONG_ID}/publishers/${id}`);
+            const publisherQuery = state.firestore.doc(`congregations/${state.congregation.id}/publishers/${id}`);
             const isPublisher = (await publisherQuery.get()).exists
             if (isPublisher) {
-                const talksCollection = await state.firestore.collection(`congregations/${CONG_ID}/publishers/${id}/talks`).get()
+                const talksCollection = await state.firestore.collection(`congregations/${state.congregation.id}/publishers/${id}/talks`).get()
                 talks = [
                     ...talksCollection.docs.map(doc => {
                         let talk : Talk = doc.data();
@@ -326,7 +339,7 @@ export const GlobalProvider = (props: GlobalProps) => {
                 ]
                 return talks;
             } else {
-                const talksCollection = await state.firestore.collection(`congregations/${CONG_ID}/speakers/${id}/talks`).get()
+                const talksCollection = await state.firestore.collection(`congregations/${state.congregation.id}/speakers/${id}/talks`).get()
                 talks = [
                     ...talksCollection.docs.map(doc => {
                         let talk : Talk = doc.data();
@@ -344,11 +357,11 @@ export const GlobalProvider = (props: GlobalProps) => {
 
     async function assignPublisher(week: WeekProgram, part: Part, newPublisher: Publisher, type: PartType, oldPublisher?: Publisher) {
         try {
-            const partDocument = state.firestore.doc(`congregations/${CONG_ID}/weeks/${week.id}/parts/${part.id}`);
+            const partDocument = state.firestore.doc(`congregations/${state.congregation.id}/weeks/${week.id}/parts/${part.id}`);
             if (oldPublisher && oldPublisher.uid !== newPublisher.uid) {
-                state.firestore.doc(`congregations/${CONG_ID}/publishers/${oldPublisher.uid}/parts/${part.id}`).delete();
+                state.firestore.doc(`congregations/${state.congregation.id}/publishers/${oldPublisher.uid}/parts/${part.id}`).delete();
             } else {
-                state.firestore.doc(`congregations/${CONG_ID}/publishers/${newPublisher.uid}/parts/${part.id}`)
+                state.firestore.doc(`congregations/${state.congregation.id}/publishers/${newPublisher.uid}/parts/${part.id}`)
                 .set(part)
             }
             if (type === PartType.assignee) {
@@ -412,7 +425,8 @@ export const GlobalProvider = (props: GlobalProps) => {
             openSpeakerModal,
             openEditGroupModal,
             talks: state.talks,
-            loadTalks
+            loadTalks,
+            load
         }}>
             {props.children}
         </GlobalContext.Provider>

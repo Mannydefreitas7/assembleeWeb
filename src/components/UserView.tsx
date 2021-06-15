@@ -7,18 +7,18 @@ import {  useDropzone } from 'react-dropzone'
 import 'firebase/auth'
 import 'firebase/firestore'
 import { User } from '../models/user';
-import { CONG_ID } from '../constants';
+
 import { Permission } from '../models/publisher';
 import UserRow from './UserRow';
 import { useAlert } from 'react-alert';
 
 export default function UserView() {
-    const { auth, storage, firestore, functions } = useContext(GlobalContext);
+    const { auth, storage, firestore, functions , congregation} = useContext(GlobalContext);
     const [ userState ] = useAuthState(auth);
     const [userInfo, setUserInfo] = useState<User>();
    // const [password, setPassword] = useState<string>();
     const [isEditing, setIsEditing] = useState(false)
-    const [ users, usersLoading ] = useCollection(firestore.collection('users').where('congregation', '==', CONG_ID))
+    const [ users, usersLoading ] = useCollection(firestore.collection('users').where('congregation', '==', congregation.id))
     const [userDoc, userDocloading] = useDocument(firestore.doc(`users/${userState?.uid}`));
     let alert = useAlert()
     const onDrop = useCallback(async (acceptedFiles: File[]) => {

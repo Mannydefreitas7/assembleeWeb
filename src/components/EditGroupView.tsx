@@ -1,17 +1,17 @@
 import { Icon, IconButton, PrimaryButton, Spinner, TextField } from '@fluentui/react'
 import React, { useContext, useEffect } from 'react'
 import { GlobalContext } from '../store/GlobalState';
-import { CONG_ID } from '../constants';
+
 import { Group } from '../models/group';
 import { useAlert } from 'react-alert';
 import { useDocumentOnce } from 'react-firebase-hooks/firestore';
 
 export default function EditGroupView({ id }: {id: string}) {
-    const { dismissModal, firestore } = useContext(GlobalContext);
+    const { dismissModal, firestore , congregation} = useContext(GlobalContext);
     const [group, setGroup] = React.useState<Group>();
     const alert = useAlert();
     const groupDocumentQuery = firestore.doc(
-        `congregations/${CONG_ID}/groups/${id}`
+        `congregations/${congregation.id}/groups/${id}`
     );
     const [groupDocument, groupLoading] = useDocumentOnce(groupDocumentQuery);
            
@@ -29,7 +29,7 @@ export default function EditGroupView({ id }: {id: string}) {
         try {
             if (!groupLoading && group) {
                await firestore
-                .doc(`congregations/${CONG_ID}/groups/${id}`)
+                .doc(`congregations/${congregation.id}/groups/${id}`)
                 .update(group)
                 dismissModal()
                 alert.success('Group changes saved successfully')

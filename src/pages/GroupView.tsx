@@ -1,18 +1,18 @@
 import { Persona, PersonaInitialsColor, PersonaSize, Spinner, Text } from '@fluentui/react';
 import React, { useContext } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { CONG_ID } from '../constants';
+
 import { Group } from '../models/group';
 import { Gender, Publisher } from '../models/publisher';
 import { GlobalContext } from '../store/GlobalState';
 
 export default function GroupView() {
-    const { firestore } = useContext(GlobalContext);
+    const { firestore , congregation} = useContext(GlobalContext);
     const groupCollectionQuery = firestore.collection(
-        `congregations/${CONG_ID}/groups`
+        `congregations/${congregation.id}/groups`
     ).orderBy('number');
     const publishersCollectionQuery = firestore.collection(
-        `congregations/${CONG_ID}/publishers`
+        `congregations/${congregation.id}/publishers`
     ).orderBy('lastName');
     const [groupCollection, groupLoading] = useCollection(groupCollectionQuery);
     const [publishersCollection, publishersCollectionLoading] = useCollection(

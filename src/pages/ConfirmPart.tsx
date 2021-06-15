@@ -3,7 +3,6 @@ import moment from 'moment';
 import React, { useContext, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useDocument } from 'react-firebase-hooks/firestore';
-import { CONG_ID } from '../constants';
 import { Part } from '../models/wol';
 import { useQuery } from '../shared/hooks';
 import { GlobalContext } from '../store/GlobalState';
@@ -12,9 +11,9 @@ import { GlobalContext } from '../store/GlobalState';
 export default function ConfirmPart() {
 
     let query = useQuery();
-    const { auth, firestore } = useContext(GlobalContext);
+    const { auth, firestore , congregation} = useContext(GlobalContext);
     const [user] = useAuthState(auth);
-    const docQuery = firestore.doc(`congregations/${CONG_ID}/weeks/${query.get('week')}/parts/${query.get('part')}`)
+    const docQuery = firestore.doc(`congregations/${congregation.id}/weeks/${query.get('week')}/parts/${query.get('part')}`)
     const [partDoc, partLoading] = useDocument(docQuery)
     let part: Part = {
         ...partDoc?.data()

@@ -1,7 +1,7 @@
 import { DefaultButton, IconButton, Spinner, SpinnerSize, Text } from '@fluentui/react';
 import React, { useContext } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { CONG_ID } from '../constants';
+
 import { WeekProgram } from '../models/wol';
 import { GlobalContext } from '../store/GlobalState';
 import { Icon } from '@fluentui/react/lib/Icon';
@@ -9,8 +9,8 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import ExportMenu from '../components/ExportMenu';
 
 export default function Programs() {
-    const { firestore, openModal, addProgram, isMobile } = useContext(GlobalContext)
-    const [ weeksCollection, loading ] = useCollection(firestore.collection(`congregations/${CONG_ID}/weeks`).orderBy('date'));
+    const { firestore, openModal, addProgram, isMobile, congregation } = useContext(GlobalContext)
+    const [ weeksCollection, loading ] = useCollection(firestore.collection(`congregations/${congregation.id}/weeks`).orderBy('date'));
     let { path } = useRouteMatch();
     return (
         <div className="container p-8">

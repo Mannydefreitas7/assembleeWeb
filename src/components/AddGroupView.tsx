@@ -2,17 +2,17 @@ import { Icon, IconButton, PrimaryButton, TextField } from '@fluentui/react'
 import React, { useContext } from 'react'
 import { GlobalContext } from '../store/GlobalState';
 import { v4 } from 'uuid'
-import { CONG_ID } from '../constants';
+
 import { Group } from '../models/group';
 import { useAlert } from 'react-alert';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 
 export default function AddGroupView() {
-    const { dismissModal, firestore } = useContext(GlobalContext);
+    const { dismissModal, firestore, congregation } = useContext(GlobalContext);
     const [group, setGroup] = React.useState<Group>();
     const alert = useAlert();
     const groupCollectionQuery = firestore.collection(
-        `congregations/${CONG_ID}/groups`
+        `congregations/${congregation.id}/groups`
     );
     const [groupCollection, groupLoading] = useCollectionOnce(groupCollectionQuery);
              
@@ -26,7 +26,7 @@ export default function AddGroupView() {
                     number: groupCollection?.docs.length
                 }
                await firestore
-                .doc(`congregations/${CONG_ID}/groups/${_group.id}`)
+                .doc(`congregations/${congregation.id}/groups/${_group.id}`)
                 .set(_group)
                 dismissModal()
                 alert.success('Group added successfully')

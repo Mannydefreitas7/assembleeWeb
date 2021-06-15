@@ -1,7 +1,7 @@
 import {  DefaultButton, SearchBox, Spinner, SpinnerSize } from '@fluentui/react';
 import React, { useContext, useState } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { CONG_ID } from '../constants';
+
 import { GlobalContext } from '../store/GlobalState';
 import { Icon } from '@fluentui/react/lib/Icon';
 import { Link, useRouteMatch } from 'react-router-dom';
@@ -9,8 +9,8 @@ import PublisherTile from '../components/PublisherTile';
 import { Publisher } from '../models/publisher';
 
 export default function Publishers() {
-    const { firestore, openPublisherModal } = useContext(GlobalContext)
-    const [ value, loading ] = useCollection(firestore.collection(`congregations/${CONG_ID}/publishers`).orderBy('lastName'))
+    const { firestore, openPublisherModal, congregation } = useContext(GlobalContext)
+    const [ value, loading ] = useCollection(firestore.collection(`congregations/${congregation.id}/publishers`).orderBy('lastName'))
     let { path } = useRouteMatch();
     const [search, setSearch] = useState('');
     return (

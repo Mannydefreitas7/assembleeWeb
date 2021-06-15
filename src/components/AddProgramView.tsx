@@ -7,13 +7,12 @@ import React, { useContext } from 'react'
 import { ProgramsService } from '../services/programs';
 import { GlobalContext } from '../store/GlobalState';
 import { useDocumentOnce } from 'react-firebase-hooks/firestore';
-import { CONG_ID } from '../constants';
 import { Congregation } from '../models/congregation';
 
 export default function AddProgramView() {
     const programService = new ProgramsService();
-    const { dismissModal, firestore } = useContext(GlobalContext)
-    const [ value ] = useDocumentOnce(firestore.doc(`congregations/${CONG_ID}`));
+    const { dismissModal, firestore, congregation } = useContext(GlobalContext)
+    const [ value ] = useDocumentOnce(firestore.doc(`congregations/${congregation.id}`));
     const [isLoading, setLoading] = React.useState(false)
     const today = useConst(new Date());
     const [selectedDate, setSelectedDate] = React.useState<Date[]>();

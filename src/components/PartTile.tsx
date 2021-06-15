@@ -2,23 +2,22 @@ import { Icon, Persona, PersonaPresence, PersonaSize, SharedColors } from '@flue
 
 import { useContext } from 'react'
 import { useAlert } from 'react-alert'
-import { CONG_ID } from '../constants'
 import { Publisher } from '../models/publisher'
 import { Parent, Part } from '../models/wol'
 import { GlobalContext } from '../store/GlobalState'
 
 export default function PartTile({ part, publisher }: { part: Part, publisher?: Publisher }) {
 
-    const { firestore, dismissPanel } = useContext(GlobalContext)
+    const { firestore, dismissPanel, congregation } = useContext(GlobalContext)
     const alert = useAlert()
     const deletePublisher = async (isAssignee: boolean) => {
         try {
             if (isAssignee) {
-                await firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`)
+                await firestore.doc(`congregations/${congregation.id}/weeks/${part.week}/parts/${part.id}`)
                 .update({ assignee: null })
               
             } else {
-                await firestore.doc(`congregations/${CONG_ID}/weeks/${part.week}/parts/${part.id}`)
+                await firestore.doc(`congregations/${congregation.id}/weeks/${part.week}/parts/${part.id}`)
                 .update({ assistant: null })
                 
 

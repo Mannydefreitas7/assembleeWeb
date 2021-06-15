@@ -2,7 +2,7 @@ import { ActionButton, DefaultButton, Dialog, DialogFooter, DialogType, IconButt
 import React, { useContext, useState } from 'react'
 import { useCollection, useDocument } from 'react-firebase-hooks/firestore';
 import { useHistory, useParams } from 'react-router';
-import { CONG_ID } from '../constants';
+
 import { Part, WeekProgram } from '../models/wol';
 import { GlobalContext } from '../store/GlobalState';
 import WeekEndView from '../components/WeekEndView';
@@ -16,8 +16,8 @@ import { useAlert } from 'react-alert';
 export default function ProgramDetail() {
     const { firestore, congregation, reloadWeeks, isMobile } = useContext(GlobalContext)
     const { id } = useParams<{ id: string }>();
-    const [documentSnapshot, weekLoading] = useDocument(firestore.doc(`congregations/${CONG_ID}/weeks/${id}`))
-    const [collection, loading] = useCollection(firestore.collection(`congregations/${CONG_ID}/weeks/${id}/parts`).orderBy('index'));
+    const [documentSnapshot, weekLoading] = useDocument(firestore.doc(`congregations/${congregation.id}/weeks/${id}`))
+    const [collection, loading] = useCollection(firestore.collection(`congregations/${congregation.id}/weeks/${id}/parts`).orderBy('index'));
     let history = useHistory();
     let alert = useAlert()
     const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
@@ -37,7 +37,7 @@ export default function ProgramDetail() {
     }
 
     function _onChange(ev: React.MouseEvent<HTMLElement>, checked?: boolean) {
-        firestore.doc(`congregations/${CONG_ID}/weeks/${id}`).update({ isSent: checked })
+        firestore.doc(`congregations/${congregation.id}/weeks/${id}`).update({ isSent: checked })
         .then(() => reloadWeeks())
     }
 

@@ -10,7 +10,6 @@ import { GlobalContext } from '../store/GlobalState'
 import { useAlert } from 'react-alert'
 import { User } from '../models/user'
 import { Gender, Permission, Privilege, Publisher } from '../models/publisher'
-import { CONG_ID } from '../constants'
 import apple from './../assets/apple.svg'
 import google from './../assets/google.svg'
 
@@ -19,7 +18,7 @@ export default function SignUp() {
     const [email, setEmail] = useState('');
     const [name, setName] = useState<{ fistName: string, lastName: string }>();
     const [password, setPassword] = useState('');
-    const { auth, firestore } = useContext(GlobalContext)
+    const { auth, firestore, congregation } = useContext(GlobalContext)
     let history = useHistory();
     const [user] = useAuthState(auth);
 
@@ -38,7 +37,7 @@ export default function SignUp() {
                             
                             if (newCredential?.user) {
                                 let user: User = {
-                                    congregation: CONG_ID,
+                                    congregation: congregation.id,
                                     email: newCredential?.user?.email ?? "",
                                     firstName: name?.fistName,
                                     lastName: name?.lastName,
@@ -64,7 +63,7 @@ export default function SignUp() {
                                 firestore.doc(`users/${user.uid}`).set(user)
                                 .then(() => {
                                     history.push("/admin")
-                                    firestore.doc(`congregations/${CONG_ID}/publishers/${publisher.uid}`)
+                                    firestore.doc(`congregations/${congregation.id}/publishers/${publisher.uid}`)
                                     .set(publisher)
                                     .then(() => history.push("/admin"))
                                 })

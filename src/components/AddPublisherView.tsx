@@ -4,12 +4,12 @@ import { Gender, Privilege, Publisher } from '../models/publisher';
 import { GlobalContext } from '../store/GlobalState';
 import * as EmailValidator from 'email-validator';
 import { v4 } from 'uuid'
-import { CONG_ID } from '../constants';
+
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 import { Group } from '../models/group';
 
 export default function AddPublisherView() {
-    const { dismissModal, firestore } = useContext(GlobalContext);
+    const { dismissModal, firestore , congregation} = useContext(GlobalContext);
     const [isLoading, setLoading] = React.useState(true);
     const [publisher, setPublisher] = React.useState<Publisher>({
         firstName: '',
@@ -17,7 +17,7 @@ export default function AddPublisherView() {
         email: ''
     });
     const groupCollectionQuery = firestore.collection(
-        `congregations/${CONG_ID}/groups`
+        `congregations/${congregation.id}/groups`
     ).orderBy('number'); 
     const [groupCollection, groupLoading] = useCollectionOnce(groupCollectionQuery);
     const [errorMsg, setErrorMsg] = React.useState<{
@@ -67,7 +67,7 @@ export default function AddPublisherView() {
                     uid: v4()
                 }
                 firestore
-                .doc(`congregations/${CONG_ID}/publishers/${_publisher.uid}`)
+                .doc(`congregations/${congregation.id}/publishers/${_publisher.uid}`)
                 .set(_publisher)
                 .then(dismissModal)
             }

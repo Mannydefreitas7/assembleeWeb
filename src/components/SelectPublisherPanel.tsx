@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { Route, useHistory, useRouteMatch } from 'react-router';
 import { Link } from 'react-router-dom';
-import { CONG_ID } from '../constants';
+
 import { Gender, Privilege, Publisher } from '../models/publisher';
 import { Parent } from '../models/wol';
 import { GlobalContext } from '../store/GlobalState'
@@ -12,11 +12,11 @@ import PublisherPartsView from './PublisherPartsView';
 import PublisherTile from './PublisherTile';
 
 export default function SelectPublisherPanel() {
-    const { firestore, dismissPanel, isPanelOpen, week, part, publisher, assignPublisher, type, loadTalks } = useContext(GlobalContext)
+    const { firestore, dismissPanel, isPanelOpen, week, part, publisher, assignPublisher, type, loadTalks, congregation } = useContext(GlobalContext)
     let { path, url } = useRouteMatch();
-    const [publishersCollection, publishersLoading] = useCollection(firestore.collection(`congregations/${CONG_ID}/publishers`)
+    const [publishersCollection, publishersLoading] = useCollection(firestore.collection(`congregations/${congregation.id}/publishers`)
         .orderBy('lastName'));
-    const [speakersCollection, speakersLoading] = useCollection(firestore.collection(`congregations/${CONG_ID}/speakers`)
+    const [speakersCollection, speakersLoading] = useCollection(firestore.collection(`congregations/${congregation.id}/speakers`)
         .orderBy('lastName'));
     const [search, setSearch] = useState('');
     let history = useHistory();

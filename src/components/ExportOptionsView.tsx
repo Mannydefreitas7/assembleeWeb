@@ -1,7 +1,7 @@
 import { Dropdown, Icon, IconButton, IDropdownOption, PrimaryButton, Spinner } from '@fluentui/react'
 import moment from 'moment';
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { CONG_ID } from '../constants';
+
 
 import { WeekProgram } from '../models/wol';
 import { ExportService } from '../services/export';
@@ -19,7 +19,7 @@ export default function ExportOptionsView() {
     const load = useCallback(
         async () => {
             try {
-                let weeks = await firestore.collection(`congregations/${CONG_ID}/weeks`)
+                let weeks = await firestore.collection(`congregations/${congregation.id}/weeks`)
                 .orderBy('date')
                 .get();
                 let _weeks : WeekProgram[] = weeks.docs.map(w => w.data())
@@ -37,7 +37,7 @@ export default function ExportOptionsView() {
                setMonths(_months)  
             } catch (err) { console.log(err) }
         },
-        [firestore],
+        [firestore, congregation],
     ) 
 
     
