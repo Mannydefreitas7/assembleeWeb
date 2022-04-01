@@ -7,26 +7,15 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { Link } from 'react-router-dom';
 import ServiceMeetingView from './ServiceMeetingView';
 import GroupView from './GroupView';
+
+
+
 export default function Board() {
 
 
   const { auth } = useContext(GlobalContext)
   const [ user, loading ] = useAuthState(auth);
 
-  const signIn = async () => {
-      try {
-          await auth.signInAnonymously()
-      } catch (error) {
-          console.log(error)
-      }
-  } 
-
-  useEffect(() => {
-      if (!user) {
-          signIn() 
-      }
-      // eslint-disable-next-line
-  }, [user])
     
       const PivotTabs = () => (
         <div className="container mx-auto pb-10 pt-4 px-4">

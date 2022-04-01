@@ -17,20 +17,20 @@ export default function SelectTalkOutlineView({ publisher, speaker, onDismiss }:
     const alert = useAlert()
 
     const addTalkToPublisher = (talk: Talk) => {
-        if (publisher) {
-           return firestore.doc(`congregations/${CONG_ID}/publishers/${publisher.uid}/talks/${talk.id}`)
-           .set(talk)
-           .then(() => onDismiss())
-           .then(() => alert.success('Talk added successfully'))
-           .catch((error) => alert.error(`Error: ${error}`))
-        }
-        if (speaker) {
-            return firestore.doc(`congregations/${CONG_ID}/speakers/${speaker.id}/talks/${talk.id}`)
-            .set(talk)
-            .then(() => onDismiss())
-            .then(() => alert.success('Talk added successfully'))
-            .catch((error) => alert.error(`Error: ${error}`))
-        }
+        // if (publisher) {
+        //    return firestore.doc(`congregations/${CONG_ID}/publishers/${publisher.uid}/talks/${talk.id}`)
+        //    .set(talk)
+        //    .then(() => onDismiss())
+        //    .then(() => alert.success('Talk added successfully'))
+        //    .catch((error) => alert.error(`Error: ${error}`))
+        // }
+        // if (speaker) {
+        //     return firestore.doc(`congregations/${CONG_ID}/speakers/${speaker.id}/talks/${talk.id}`)
+        //     .set(talk)
+        //     .then(() => onDismiss())
+        //     .then(() => alert.success('Talk added successfully'))
+        //     .catch((error) => alert.error(`Error: ${error}`))
+        // }
     }
 
     return (
@@ -54,7 +54,7 @@ export default function SelectTalkOutlineView({ publisher, speaker, onDismiss }:
                     className="mt-5"
                     placeholder="Search Talk Outline" onKeyDown={(newValue) => setSearch(newValue.currentTarget.value)} /> : null
             }
-            {
+            {/* {
                 talksCollectionLoading ? <Spinner label="Please wait..."/> :
                 talksCollection && talksCollection.docs
                 .filter(doc => {
@@ -71,7 +71,7 @@ export default function SelectTalkOutlineView({ publisher, speaker, onDismiss }:
                         <TalkTile onClick={() => addTalkToPublisher(talk)} key={talk.id} talk={talk} />
                     )
                 })
-            }
+            } */}
 
         </div>
     )

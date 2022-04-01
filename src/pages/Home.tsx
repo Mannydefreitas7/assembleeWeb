@@ -10,9 +10,33 @@ import SignUp from './SignUp';
 import ProtectedRoute from '../components/ProtectedRoute';
 import ConfirmPart from "./ConfirmPart";
 import Invite from "./Invite";
+import { useContext, useEffect } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { GlobalContext } from "../store/GlobalState";
+import Setup from "./Setup";
 
 
 export default function Home() {
+
+    const { auth } = useContext(GlobalContext)
+    const [ user, loading ] = useAuthState(auth);
+  
+    const signIn = async () => {
+        try {
+            await auth.signInAnonymously()
+        } catch (error) {
+            console.log(error)
+        }
+    } 
+  
+
+    useEffect(() => { 
+          if (user && !user.isAnonymous) {
+            console.log('test')
+              signIn() 
+          }
+          // eslint-disable-next-line
+      }, [])
 
     return (
         <>
@@ -21,18 +45,11 @@ export default function Home() {
                     <Route path="/board">
                        <Board />
                     </Route>
-                    <ProtectedRoute
-                        path="/admin"
-                        redirectTo="/board"
-                        exact={false}
-                    >
-                        <Admin />
-                    </ProtectedRoute>
 
                     <ProtectedRoute
                         path="/"
                         redirectTo="/board"
-                        exact={true}
+                        exact
                     >
                         <Admin />
                     </ProtectedRoute>
@@ -44,11 +61,14 @@ export default function Home() {
                     >
                         <Admin />
                     </ProtectedRoute>
-                    <Route path="/login">
+                    <Route path="/login" exact>
                         <Login />
                     </Route>
                     <Route path="/confirm">
                         <ConfirmPart />
+                    </Route>
+                    <Route path='/setup'>
+                        <Setup />
                     </Route>
                     <Route path="/invite">
                         <Invite />

@@ -1,8 +1,8 @@
 import React, { createContext, useReducer, useEffect, ReactNode } from 'react';
 import { InitialState } from '../models/initialState';
 import reducer from './AppReducer';
-import firebase from 'firebase/app';
-import 'firebase/auth'
+import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
+import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
 import 'firebase/storage'
@@ -37,13 +37,21 @@ import AddSpeakerView from '../components/AddSpeakerView';
 import { useMediaQuery } from 'react-responsive';
 import AddGroupView from '../components/AddGroupView';
 import EditGroupView from '../components/EditGroupView';
+import { getFirestore, connectFirestoreEmulator, doc, getDoc, collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
+import { getStorage } from 'firebase/storage';
 
 
 type GlobalProps = {
     children: ReactNode
 }
 
-const _firebase: firebase.app.App = firebase.apps.length === 0 ? firebase.initializeApp(config) : firebase.app()
+const firebaseApp = initializeApp(config);
+const storage = getStorage(firebaseApp);
+const firestore = getFirestore(firebaseApp);
+const functions = getFunctions(firebaseApp);
+const auth = getAuth(firebaseApp);
+
 if (process.env.NODE_ENV === 'development') {
     // eslint-disable-next-line
     let congregation: Congregation = {
@@ -78,11 +86,9 @@ if (process.env.NODE_ENV === 'development') {
             title: t.Title
         }
     })
-
-
-  //  _firebase.functions().useEmulator("localhost", 5001)
-  //  _firebase.firestore().useEmulator("localhost", 8080)
-  //  _firebase.auth().useEmulator("http://localhost:9099");
+    connectAuthEmulator(auth, "http://localhost:9099");
+    connectFirestoreEmulator(firestore, "localhost", 8080);
+    connectFunctionsEmulator(functions, "localhost", 5001);
   //  _firebase.firestore().doc(`congregations/${congregation.id}`).set(congregation);
   //  _firebase.firestore().doc(`languages/${language.languageCode}`).set(language);
     // _talks.forEach(talk => {
@@ -94,10 +100,10 @@ if (process.env.NODE_ENV === 'development') {
 const initialState: InitialState = {
     parts: [],
     weeks: [],
-    auth: _firebase.auth(),
-    firestore: _firebase.firestore(),
-    functions: _firebase.functions(),
-    storage: _firebase.storage(),
+    auth,
+    firestore,
+    functions,
+    storage,
     week: {},
     congregation: {},
     part: {},
@@ -140,10 +146,6 @@ export const GlobalProvider = (props: GlobalProps) => {
     useEffect(() => {
         load();
         return () => { 
-            if (state.user.uid) {
-                let query = state.firestore.doc(`users/${state.user.uid}`);
-                query.update({ isOnline: false })
-            }
             if (state.listener) state.listener()
          }
     // eslint-disable-next-line
@@ -151,21 +153,17 @@ export const GlobalProvider = (props: GlobalProps) => {
 
     const load = async () => {
         try {
-            let congregationDoc = await _firebase.firestore().doc(`congregations/${CONG_ID}`).get();
-             
-            let _weeks = await _firebase.firestore()
-            .collection(`congregations/${CONG_ID}/weeks`)
-            .limit(8)
-            .orderBy('date')
-            .where('isSent', '==', true)
-            .get();
-         
-            let weeks: WeekProgram[] = _weeks.docs.map(d => d.data());
-            let parts: Part[] = weeks && weeks.length > 0 ? await _firebase.firestore()
-            .collection(`congregations/${CONG_ID}/weeks/${weeks[0].id}/parts`)
-            .orderBy('index')
-            .get()
-            .then(_ => _.docs.map(d => d.data())) : []
+            const congregationRef = doc(firestore, `congregations/${CONG_ID}`);
+            const congregationDoc = await getDoc(congregationRef);
+            const weekCollectionRef = collection(firestore, `congregations/${CONG_ID}/weeks`);
+            const weeksQuery = query(weekCollectionRef, limit(8), orderBy('date'), where('isSent', '==', true));
+            const _weeks = await getDocs(weeksQuery);
+            const weeks: WeekProgram[] = _weeks.docs.map(doc => doc.data());
+
+            const partsRef = collection(firestore, `congregations/${CONG_ID}/weeks/${weeks[0].id}/parts`);
+            const partsQuery = query(partsRef, orderBy('index'));
+            const partsDocuments = await getDocs(partsQuery);
+            const parts: Part[] = weeks && weeks.length > 0 ? partsDocuments.docs.map(doc => doc.data()) : []
 
             let listener = state.auth
             .onAuthStateChanged(user => {
@@ -186,11 +184,12 @@ export const GlobalProvider = (props: GlobalProps) => {
 
     const loadWeekParts = async (option: IDropdownOption) => {
         try {
-            let parts: Part[] = await _firebase.firestore()
-                .collection(`congregations/${CONG_ID}/weeks/${option.key}/parts`)
-                .orderBy('index')
-                .get()
-                .then(_ => _.docs.map(d => d.data()))
+
+            const partsRef = collection(firestore, `congregations/${CONG_ID}/weeks/${option.key}/parts`);
+            const partsQuery = query(partsRef, orderBy('index'));
+            const partsDocuments = await getDocs(partsQuery);
+            const parts: Part[] = partsDocuments.docs.map(doc => doc.data());
+
             if (parts && parts.length > 0) {
                 dispatch({
                     type: CHANGE_WEEK,
@@ -207,12 +206,11 @@ export const GlobalProvider = (props: GlobalProps) => {
 
     const reloadWeeks = async () => {
         try {
-            let weeks: WeekProgram[] = await state.firestore
-                .collection(`congregations/${CONG_ID}/weeks`)
-                .orderBy('date')
-                .where('isSent', '==', true)
-                .get()
-                .then(_ => _.docs.map(d => d.data()))
+            const weekCollectionRef = collection(firestore, `congregations/${CONG_ID}/weeks`);
+            const weeksQuery = query(weekCollectionRef, limit(8), orderBy('date'), where('isSent', '==', true));
+            const _weeks = await getDocs(weeksQuery);
+            const weeks: WeekProgram[] = _weeks.docs.map(doc => doc.data());
+
             if (weeks && weeks.length > 0) {
                 dispatch({
                     type: RELOAD_WEEKS,
@@ -311,8 +309,9 @@ export const GlobalProvider = (props: GlobalProps) => {
     const getTalks = async (id: string) => {
         let talks : IDropdownOption[] = [];
         try {
-            const publisherQuery = state.firestore.doc(`congregations/${CONG_ID}/publishers/${id}`);
-            const isPublisher = (await publisherQuery.get()).exists
+            const publisherRef = doc(state.firestore, `congregations/${CONG_ID}/publishers/${id}`);
+            const publisherQuery = await getDoc(publisherRef);
+            const isPublisher = publisherQuery.exists()
             if (isPublisher) {
                 const talksCollection = await state.firestore.collection(`congregations/${CONG_ID}/publishers/${id}/talks`).get()
                 talks = [

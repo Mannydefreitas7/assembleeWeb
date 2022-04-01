@@ -13,7 +13,7 @@ export default function PublisherPartsView({ publisher }: { publisher: Publisher
     const [collection, loading] = useCollection(firestore.collection(`congregations/${CONG_ID}/publishers/${publisher.uid}/parts`).orderBy('date'));
     return (
         <div>
-            {
+            {/* {
                 loading ? <Spinner className="pt-10" size={SpinnerSize.large} /> :
                     collection?.docs.map(part => {
                         let _part: Part = {
@@ -25,7 +25,7 @@ export default function PublisherPartsView({ publisher }: { publisher: Publisher
                             </div>
                         )
                     })
-            }
+            } */}
         </div>
     )
 }

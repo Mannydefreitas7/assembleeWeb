@@ -11,19 +11,25 @@ import { CONG_ID } from '../constants';
 import { Permission } from '../models/publisher';
 import UserRow from './UserRow';
 import { useAlert } from 'react-alert';
+import { collection, doc, getDoc, query, where } from 'firebase/firestore';
 
 export default function UserView() {
     const { auth, storage, firestore, functions } = useContext(GlobalContext);
     const [ userState ] = useAuthState(auth);
     const [userInfo, setUserInfo] = useState<User>();
    // const [password, setPassword] = useState<string>();
-    const [isEditing, setIsEditing] = useState(false)
-    const [ users, usersLoading ] = useCollection(firestore.collection('users').where('congregation', '==', CONG_ID))
-    const [userDoc, userDocloading] = useDocument(firestore.doc(`users/${userState?.uid}`));
-    let alert = useAlert()
+    const [isEditing, setIsEditing] = useState(false);
+    const usersCollectionRef = collection(firestore, 'users');
+    const userQuery = query(usersCollectionRef, where('congregation', '==', CONG_ID))
+    const [ users, usersLoading ] = useCollection(userQuery);
+    const userRef = doc(firestore, `users/${userState?.uid}`);
+    const [userDoc, userDocloading] = useDocument(userRef);
+    let alert = useAlert();
+
+
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
             if (acceptedFiles[0].type === 'image/jpeg' || acceptedFiles[0].type === 'image/png') {
-               let ref = storage.ref().child(`users/${acceptedFiles[0].name}`);
+               let ref = storage..child(`users/${acceptedFiles[0].name}`);
                let buffer = await acceptedFiles[0].arrayBuffer();
                    let task = await ref.put(buffer);
                    let url = await task.ref.getDownloadURL();
@@ -42,13 +48,13 @@ export default function UserView() {
     })
 
     const saveData = () => {
-        if (auth.currentUser) {
-            firestore.doc(`users/${auth.currentUser.uid}`)
-            .update({ firstName: userInfo?.firstName, lastName: userInfo?.lastName })
-            .then(() => setIsEditing(false))
-            .then(() => { alert.success("User Info updated successfully!") })
-            .catch(error => alert.error(`Error: ${error}`))
-        }
+        // if (auth.currentUser) {
+        //     firestore.doc(`users/${auth.currentUser.uid}`)
+        //     .update({ firstName: userInfo?.firstName, lastName: userInfo?.lastName })
+        //     .then(() => setIsEditing(false))
+        //     .then(() => { alert.success("User Info updated successfully!") })
+        //     .catch(error => alert.error(`Error: ${error}`))
+        // }
         
     }
     return (
@@ -136,7 +142,7 @@ export default function UserView() {
                 <Text className="text-xl font-bold">Users</Text> : null
             }
             <div className="mt-4">
-                {
+                {/* {
                     usersLoading ? <Spinner title="Users Loading" labelPosition="right" /> :
                     userDoc?.data()?.permissions?.includes(Permission.admin) && users?.docs && users?.docs.length > 0 ? users.docs.map(_otherUser => {
                         let otherUser : User = {
@@ -146,7 +152,7 @@ export default function UserView() {
                             <UserRow key={otherUser.uid} user={otherUser} />
                         )
                     }) : null
-                }
+                } */}
             </div>
         </div>
     )

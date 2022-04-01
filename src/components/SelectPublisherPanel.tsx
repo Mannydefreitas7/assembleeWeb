@@ -33,15 +33,15 @@ export default function SelectPublisherPanel() {
             >
                 <p className="mb-5">{week?.range ?? ""}</p>
                 <PartTile part={part} publisher={publisher} />
-
+{/* 
                 {
                     part.parent !== Parent.talk && publishersCollection && publishersCollection.docs.map(p => p.data()).length > 0 ?
                         <SearchBox
                             className="mt-5"
                             placeholder="Search Publishers" onKeyDown={(newValue) => setSearch(newValue.currentTarget.value)} /> : null
-                }
+                } */}
 
-                {
+                {/* {
                     part.parent !== Parent.talk ?
                         publishersLoading ? <Spinner className="pt-10" size={SpinnerSize.large} /> :
                             publishersCollection && publishersCollection.docs
@@ -134,7 +134,7 @@ export default function SelectPublisherPanel() {
                                     }
                                 </div>
                             </div>
-                }
+                } */}
             </Panel>
         </div>
     )

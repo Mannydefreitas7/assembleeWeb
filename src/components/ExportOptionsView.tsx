@@ -22,18 +22,18 @@ export default function ExportOptionsView() {
                 let weeks = await firestore.collection(`congregations/${CONG_ID}/weeks`)
                 .orderBy('date')
                 .get();
-                let _weeks : WeekProgram[] = weeks.docs.map(w => w.data())
-                setWeeks(_weeks)
+               // let _weeks : WeekProgram[] = weeks.docs.map(w => w.data())
+              //  setWeeks(_weeks)
                 let _months : IDropdownOption[] = []
-                _weeks.forEach(w => {
-                    if (!_months.find(m => moment(m.data).month() === moment(w.date.toDate()).month())) {
-                        _months.push({
-                            key: `${w.id}`,
-                            data: w.date.toDate(),
-                            text: moment(w.date.toDate()).format('MMMM')
-                        })
-                    }
-                })
+                // _weeks.forEach(w => {
+                //     if (!_months.find(m => moment(m.data).month() === moment(w.date.toDate()).month())) {
+                //         _months.push({
+                //             key: `${w.id}`,
+                //             data: w.date.toDate(),
+                //             text: moment(w.date.toDate()).format('MMMM')
+                //         })
+                //     }
+                // })
                setMonths(_months)  
             } catch (err) { console.log(err) }
         },

@@ -159,7 +159,7 @@ export default function AddPublisherView() {
                         options={publisher.gender === Gender.brother ? privileges : privileges.filter(p => p.key === Privilege.pub)}
                     />
                </div>
-               {
+               {/* {
                         groupLoading ? <Spinner /> :
                                 <Dropdown
                                     label="Group"
@@ -182,7 +182,7 @@ export default function AddPublisherView() {
                                     return option
                                 }) : []}
                                 />
-                        }
+                        } */}
                <div className="flex py-4 justify-center">
                     <PrimaryButton
                     onClick={addPublisher}
