@@ -79,3 +79,27 @@ export interface Midweek {
    weekday: number;
    time:    string;
 }
+
+export const congregation: Congregation = {
+   id: '0927216B-2451-4AB5-AD08-11AC5777CCB1',
+   fireLanguage: {
+       apiURL: "wol/dt/r30/lp-f/",
+       languageCode: "F"
+   },
+   language: {
+       isSignLanguage: false,
+       languageCode: 'F',
+       languageName: 'Francais',
+       scriptDirection: 'LTR',
+       writtenLanguageCode: ['fr']
+   },
+   properties: {
+       orgName: 'West Hudson French - NY (USA)',
+       orgGuid: '0927216B-2451-4AB5-AD08-11AC5777CCB1'
+   }
+}
+
+export const language: FireLanguage = {
+   apiURL: 'wol/dt/r30/lp-f/',
+   languageCode: 'F'
+}

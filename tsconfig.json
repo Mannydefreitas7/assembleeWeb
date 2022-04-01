@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-  ]
+, ".old/pages", ".old/components", ".old/store"  ]
 }

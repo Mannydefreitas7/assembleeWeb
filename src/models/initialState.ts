@@ -1,8 +1,4 @@
 import { Part, PartType, WeekProgram } from "./wol";
-import firestore from "firebase/firestore";
-import functions from "firebase/functions";
-import storage from "firebase/storage";
-import auth from 'firebase/auth';
 import { Publisher } from "./publisher";
 import { ReactNode } from "react";
 import { Congregation } from "./congregation";
@@ -14,10 +10,6 @@ export interface InitialState {
   weeks: WeekProgram[];
   parts: Part[];
   congregation: Congregation; 
-  auth: auth.Auth;
-  firestore: firestore.Firestore;
-  functions: functions.Functions;
-  storage: storage.FirebaseStorage;
   loading: boolean;
   part: Part;
   publisher: Publisher;
@@ -38,7 +30,6 @@ export interface InitialState {
   openPublisherModal: any;
   openExportModal: any;
   user: User;
-  listener: firestore.Unsubscribe | null;
   openRenameModal: any;
   reloadWeeks: any;
   openSpeakerModal: any;

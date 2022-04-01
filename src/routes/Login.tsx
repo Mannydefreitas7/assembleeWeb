@@ -1,47 +1,49 @@
 import { PrimaryButton, TextField } from '@fluentui/react'
-import React, { FormEvent, useContext, useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 import logo from './../assets/logo.jpg'
 import apple from './../assets/apple.svg'
 import google from './../assets/google.svg'
-import { useHistory } from "react-router-dom";
-import { GlobalContext } from '../store/GlobalState'
+import { useNavigate } from "react-router-dom";
 import { useAlert } from 'react-alert'
 import { Separator } from 'office-ui-fabric-react';
-import auth from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, OAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc, getDoc, getFirestore } from 'firebase/firestore'
 
 
 
-export default function Login() {
+const Login = () => {
 
+    const auth = getAuth();
+    const db = getFirestore();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { auth, firestore } = useContext(GlobalContext);
-    let history = useHistory();
-   
+    let navigate = useNavigate();
     const alert = useAlert()
 
     const loginWithEmailAndPassword = async () => {
         try {
             if (email.length > 0 && password.length > 0) {
-                const newCredential = await auth.signInWithEmailAndPassword(email, password)
-                await firestore.doc(`users/${newCredential?.user?.uid}`).update({ isOnline: true })
-                history.push("/admin")
-                alert.success('Logged In')
+                const newCredential = await signInWithEmailAndPassword(auth, email, password)
+                if (newCredential.user) {
+                    navigate("/admin")
+                    alert.success('Logged In')
+                }
             }
         } catch (error) { alert.error(`${error}`) }
     }
 
     const loginWithProvider = async (provider: string) => {
         try {
-            const _provider = provider === 'google' ? new auth.GoogleAuthProvider() : new auth.OAuthProvider('apple');
-                let result = await auth.signInWithPopup(_provider)
+            const _provider = provider === 'google' ? new GoogleAuthProvider() : new OAuthProvider('apple');
+                const result = await signInWithPopup(auth, _provider)
                 if (result) {
-                    let userDoc = await firestore.doc(`users/${result.user?.uid}`).get()
-                    if (userDoc.exists) {
-                        history.push("/admin")
+                    const userRef = doc(db, `users/${result.user.uid}`);
+                    const userDoc = await getDoc(userRef);
+                    if (userDoc.exists()) {
+                        navigate("/admin", { state: userDoc.data() })
                     } else {
-                        result.user?.delete()
-                        .then((_: any) => alert.error('Oops, user account does not exist.'))
+                        await result.user.delete()
+                        alert.error('Oops, user account does not exist.');
                     }
                 }
         } catch (error) {
@@ -106,4 +108,5 @@ export default function Login() {
     )
 }
 
+export default Login;
 
