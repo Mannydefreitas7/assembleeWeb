@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet";
 import {
     BrowserRouter as Router,
     Routes,
@@ -10,17 +11,21 @@ import Login from './Login';
 // import ProtectedRoute from '../components/ProtectedRoute';
 // import ConfirmPart from "./ConfirmPart";
 // import Invite from "./Invite";
-// import Setup from "./Setup";
+ import Setup from "./Setup";
 
 
 export default function Home() {
   
     return (
-        <>
+        <div>
+            <Helmet>
+                <body className="bg-gray-50" />
+            </Helmet>
             <Router>
                 <Routes>
-                    <Route path="/" element={<Login />}>
-
+                    <Route path="/">
+                        <Route index element={<Login />} />
+                        <Route path='setup' element={<Setup />} />
                     </Route>
                     {/* <Route path="/board">
                        <Board />
@@ -61,6 +66,6 @@ export default function Home() {
                     } */}
                 </Routes>
             </Router>
-        </>
+        </div>
     )
 }

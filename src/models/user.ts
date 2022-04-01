@@ -7,13 +7,13 @@ export class User {
 	email?: string;
 	photoURL?: string;
 	congregation?: string;
-   displayName?: string;
-   firstName?: string;
-   lastName?: string;
-   permissions?: Permission[];
-   loginProvider?: string;
-   isEmailVerified?: boolean;
-   isOnline?: boolean;
+  displayName?: string;
+  firstName?: string;
+  lastName?: string;
+  permissions?: Permission[];
+  loginProvider?: string;
+  isEmailVerified?: boolean;
+  isOnline?: boolean;
 };
 
 export interface Attachment {

@@ -103,3 +103,37 @@ export const language: FireLanguage = {
    apiURL: 'wol/dt/r30/lp-f/',
    languageCode: 'F'
 }
+
+export interface WOLLanguages {
+   items?: WOLLanguage[];
+}
+
+export interface WOLLanguage {
+   languageTitle?:       string;
+   englishName?:         string;
+   asciiEnglishName?:    string;
+   vernacularName?:      string;
+   asciiVernacularName?: string;
+   mepsSymbol?:          string;
+   mepsScript?:          string;
+   isScriptVariant?:     boolean;
+   direction?:           Direction;
+   isSignLanguage?:      boolean;
+   locale?:              string;
+   libLangClasses?:      string;
+   libLangAttributes?:   string;
+   libs?:                LIB[];
+}
+
+export enum Direction {
+   LTR = "ltr",
+   RTL = "rtl",
+}
+
+export interface LIB {
+   title?:                   string;
+   researchConfigurationID?: string;
+   symbol?:                  string;
+   hasRuby?:                 boolean;
+   isPrivileged?:            boolean;
+}
